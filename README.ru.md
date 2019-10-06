@@ -8,7 +8,7 @@
 
 ## Как этим пользоваться?
 
-Первым делом вам нужно будет установить этот скрипт через предпочтительное расширение (типа Tampermonkey](https://www.tampermonkey.net/), [Greasemonkey](https://www.greasespot.net/) или [Violentmonkey](https://violentmonkey.github.io/)). Нажатие следующей кнопки откроет окно установки:
+Первым делом вам нужно будет установить этот скрипт через предпочтительное расширение (типа [Tampermonkey](https://www.tampermonkey.net/), [Greasemonkey](https://www.greasespot.net/) или [Violentmonkey](https://violentmonkey.github.io/)). Нажатие следующей кнопки откроет окно установки:
 
 [![Кнопка установки](https://img.shields.io/badge/VK%20List%20Add-%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%B8%D1%82%D1%8C-brightgreen)](https://github.com/Sasha-Sorokin/vklistadd/raw/master/vklistadd.user.js)
 
