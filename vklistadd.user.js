@@ -728,10 +728,10 @@
     
             boxContainer.appendChild(
                 VK_DOM.createPublicInfoRow({
-                        link: CONTEXT.getPageLink(),
-                        thumb: CONTEXT.getPageIcon(),
+                        link: CONTEXT.getLink(),
+                        thumb: CONTEXT.getIcon(),
                         name: DOM.decodeDOMString(cur.options.back),
-                        description: CONTEXT.getPageFollowStatus()
+                        description: CONTEXT.getFollowStatus()
                     },
                     LIST_DIALOG.addHint
                 )
