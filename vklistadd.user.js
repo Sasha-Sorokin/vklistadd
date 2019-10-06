@@ -408,6 +408,56 @@
      */
     const CONTEXT = {
         /**
+         * Returns user icon
+         */
+        getUserIcon() {
+            const pageAvatarImg = document.querySelector("img.page_avatar_img");
+
+            if (pageAvatarImg) return pageAvatarImg.src;
+
+            return "https://vk.com/images/camera_50.png?ava=1";
+        },
+
+        getUserLink() {
+            return `/${cur.options.loc}`;
+        },
+
+        /**
+         * Returns user following status
+         */
+        getUserFollowStatus() {
+            const ruLocale = VK_API.isUsingRuLocale();
+
+            const statusElem = document.querySelector("#friend_status");
+
+            if (statusElem != null) {
+                const addFriendButton = statusElem.querySelector(".profile_action_btn");
+
+                if (addFriendButton != null) {
+                    return ruLocale
+                        ? "Не в списке друзей."
+                        : "Not in the friends list.";
+                }
+    
+                // Dropdown button is only present on the followed pages (friends / following)
+                const dropDownLabel = statusElem.querySelector(".page_actions_dd_label");
+    
+                if (dropDownLabel != null) {
+                    return ruLocale
+                        ? "Вы подписаны."
+                        : "You are following.";
+                }
+            }
+
+            // Status is unknown, probably us
+            // TODO: Find a way to check if ours profile is opened
+
+            return ruLocale
+                ? "Интересный пользователь."
+                : "Interesting user.";
+        },
+
+        /**
          * Returns group page icon
          */
         _getPageIconFallback() {
