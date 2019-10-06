@@ -641,26 +641,18 @@
         }
     };
 
-    /**
-     * Collection of stuff related to `public` object wrapping
-     * 
-     * `public` is used to contain methods related to public pages
-     */
-    const PUBLIC_WRAPPING = {
-        /**
-         * Default callback for public initialization
-         * 
-         * Used to add button to pop up dialog
-         */
-        publicInitCallback() {
-            LIST_DIALOG.mountActionButton();
-        },
-
+    const WRAPPING = {
         /**
          * Invokes callback function in try-catch block to not interrupt VK API
          * @param {*} wrapper Wrapper function containing callback
          */
         safeInvokeCallback(wrapper) {
+            if (wrapper == null) {
+                throw new Error("No wrapper provided");
+            } else if (wrapper[SYMBOLS.IS_WRAPPED] == null) {
+                throw new Error("Non-wrapper object provided");
+            }
+
             try {
                 wrapper[SYMBOLS.WRAPPER_CALLBACK]();
             } catch (err) {
@@ -674,10 +666,13 @@
          * Wrapper will have a Symbol on it so it will not re-wrap itself as precaution
          */
         makeInitWrapper(originalFc, callbackFc) {
+            if (originalFc == null) throw new Error("No original function provided");
+            if (callbackFc == null) throw new Error("No callback function provided");
+
             function initWrapper(...args) { 
                 const returning = originalFc(...args);
 
-                PUBLIC_WRAPPING.safeInvokeCallback(initWrapper);
+                WRAPPING.safeInvokeCallback(initWrapper);
 
                 return returning;
             };
@@ -693,47 +688,50 @@
          * 
          * @param {*} public `public` object used for public pages
          */
-        wrapInit(public) {
-            if (public.init[SYMBOLS.IS_WRAPPED]) {
+        wrapInit(obj, initCallback) {
+            if (obj.init[SYMBOLS.IS_WRAPPED]) {
                 return console.warn("[VKLISTADD] That's odd: wrapInit called with wrapped public.init");
             }
 
-            const initWrapper = PUBLIC_WRAPPING.makeInitWrapper(
-                public.init,
-                PUBLIC_WRAPPING.publicInitCallback
+            const initWrapper = WRAPPING.makeInitWrapper(
+                obj.init,
+                initCallback
             );
 
-            public.init = initWrapper;
+            obj.init = initWrapper;
 
             return initWrapper;
         },
 
         /**
-         * Creates a wrap for the `public` window object
+         * Creates a wrap for the property in window object
          * 
          * This allows us to wrap init function at the moment of creation
          */
-        createPublicWrap() {
-            let $public = unsafeWindow.public;
+        createWindowWrap(property, initCallback) {
+            if (property == null) throw new Error("No property name provided");
+            if (initCallback == null) throw new Error("No init function callback provided");
 
-            if ($public != null) {
+            let $original = unsafeWindow[property];
+
+            if ($original != null) {
                 console.warn("[VKLISTADD] We are late to initialization, is @run-at directive ignored by userscipt manager???");
 
                 console.warn("[VKLISTADD] Rewrapping init function NOW and manually invoking callback");
 
-                const wrapper = PUBLIC_WRAPPING.wrapInit($public);
+                const wrapper = WRAPPING.wrapInit($original, initCallback);
 
-                PUBLIC_WRAPPING.safeInvokeCallback(wrapper);
+                WRAPPING.safeInvokeCallback(wrapper);
             }
 
-            Object.defineProperty(unsafeWindow, "public", {
+            Object.defineProperty(unsafeWindow, property, {
                 get() {
-                    return $public;
+                    return $original;
                 },
                 set(value) {
-                    PUBLIC_WRAPPING.wrapInit(value);
+                    WRAPPING.wrapInit(value, initCallback);
 
-                    $public = value;
+                    $original = value;
                 },
                 enumerable: true,
                 configurable: true
@@ -741,5 +739,21 @@
         },
     };
 
-    PUBLIC_WRAPPING.createPublicWrap();
+    /**
+     * Collection of callbacks of models initializations
+     */
+    const INIT_CALLBACKS = {
+        /**
+         * Default callback for `public` initialization
+         * 
+         * Used to add button to pop up dialog
+         * 
+         * `public` is used to contain methods related to public pages
+         */
+        publicInitCallback() {
+            LIST_DIALOG.mountActionButton();
+        },
+    };
+
+    WRAPPING.createWindowWrap("public", INIT_CALLBACKS.publicInitCallback);
 })();
