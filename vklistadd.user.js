@@ -4,6 +4,7 @@
 // @version 1.0.2
 // @author Sasha_Sorokin
 // @supportURL https://github.com/Sasha-Sorokin/vklistadd/issues
+// @updateURL https://github.com/Sasha-Sorokin/vklistadd/raw/master/vklistadd.user.js
 // @run-at document-start
 // @include https://vk.com/*
 // @noframes
