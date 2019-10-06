@@ -957,8 +957,20 @@
         publicInitCallback() {
             LIST_DIALOG.mountActionButton();
         },
+
+        /**
+         * Default callback for `profile` initialization
+         * 
+         * Used to mount menu item to pop up dialog
+         * 
+         * `profile` is used to contain methods related to user profile pages
+         */
+        profileInitCallback() {
+            LIST_DIALOG.mountMenuItem();
+        },
     };
 
     WRAPPING.createWindowWrap("public", INIT_CALLBACKS.publicInitCallback);
     WRAPPING.createWindowWrap("Groups", INIT_CALLBACKS.publicInitCallback);
+    WRAPPING.createWindowWrap("Profile", INIT_CALLBACKS.profileInitCallback);
 })();
