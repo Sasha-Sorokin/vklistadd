@@ -22,6 +22,7 @@
         INITIALIZED_STYLES: Symbol("initializedStyles"),
         RU_LOCALES_IDS: Symbol("ruLocaleIds"),
         DIALOG_ACTION_BUTTON: Symbol("dialogActionButton"),
+        DIALOG_MENU_ITEM: Symbol("dialogMenuItem"),
         DIALOG_HINT: Symbol("dialogHint"),
         DIALOG_LABEL: Symbol("dialogLabel"),
     };
@@ -560,6 +561,11 @@
         [SYMBOLS.DIALOG_ACTION_BUTTON]: undefined,
 
         /**
+         * Cached menu item for later re-use
+         */
+        [SYMBOLS.DIALOG_MENU_ITEM]: undefined,
+
+        /**
          * Cached dialog hint for later re-use
          */
         [SYMBOLS.DIALOG_HINT]: undefined,
@@ -605,6 +611,42 @@
             return button;
         },
 
+        /**
+         * Returns previous or creates new menu item
+         * 
+         * Dialog menu item is a button used on user pages to pop up this dialog
+         */
+        getMenuItem() {
+            let item = LIST_DIALOG[SYMBOLS.DIALOG_MENU_ITEM];
+
+            if (item == null) {
+                item = DOM.createElement("a", {
+                    props: {
+                        className: "page_actions_item",
+                        tabIndex: "0",
+                        role: "link",
+                        innerText: VK_API.isUsingRuLocale()
+                            ? "Настроить списки"
+                            : "Manage lists"
+                    },
+                    events: {
+                        click: function onClick() {
+                            LIST_DIALOG.initAddListDialog();
+                        }
+                    }
+                });
+
+                LIST_DIALOG[SYMBOLS.DIALOG_MENU_ITEM] = item;
+            }
+
+            return item;
+        },
+
+        /**
+         * Mount action button to current page actions container
+         * 
+         * Only for use on public pages and groups
+         */
         mountActionButton() {
             const container = document.querySelector("._page_actions_container");
 
@@ -620,6 +662,17 @@
             }
 
             DOM.insertBefore(referenceNode, LIST_DIALOG.getActionButton());
+        },
+
+        /**
+         * Mount menu item to current page menu
+         * 
+         * Only for use on profile pages
+         */
+        mountMenuItem() {
+            const container = document.querySelector(".page_extra_actions_wrap > .page_actions_inner");
+
+            DOM.insertBefore(container.firstElementChild, LIST_DIALOG.getMenuItem());
         },
 
         /**
