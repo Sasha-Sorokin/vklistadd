@@ -167,7 +167,7 @@
         /**
          * Appends all elements in the array to the parent
          * @param {HTMLElement[]} elements Elements to append
-         * @param {HTMLEllement} parent Parent to append elements to
+         * @param {HTMLElement} parent Parent to append elements to
          */
         appendEvery(elements, parent) {
             for (const element of elements) parent.appendChild(element);
