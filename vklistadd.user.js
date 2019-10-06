@@ -771,8 +771,6 @@
 
             STYLES.initStyle("checkboxes", STYLES[SYMBOLS.CHECKBOX_CSS]);
 
-            const ruLocale = VK_API.isUsingRuLocale();
-
             const boxContainer = DOM.createElement("div", {
                 props: {
                     className: "vklistadd_container page_list_module"
