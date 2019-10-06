@@ -421,7 +421,11 @@
         },
 
         getUserLink() {
-            return `/${cur.options.loc}`;
+            const { loc } = cur.options;
+
+            if (loc) return `/${loc}`;
+
+            return `/id${cur.user_id}`;
         },
 
         /**
@@ -492,7 +496,11 @@
             if (cur.module === "public") {
                 return cur.options.public_link;
             } else if (cur.module === "groups") {
-                return `/${cur.options.loc}`;
+                const { loc } = cur.options.loc;
+
+                if (loc) return `/${loc}`;
+
+                return `/club${cur.options.group_id}`
             }
         },
 
