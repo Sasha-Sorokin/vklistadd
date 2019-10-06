@@ -172,6 +172,16 @@
         appendEvery(elements, parent) {
             for (const element of elements) parent.appendChild(element);
         },
+
+        /**
+         * Decodes DOM string to normal Unicode string
+         * @param {string} input DOM (HTML) string to decode
+         */
+        decodeDOMString(input) {
+            const doc = new DOMParser().parseFromString(input, "text/html");
+
+            return doc.documentElement.textContent;
+        }
     };
 
     /**
@@ -646,7 +656,6 @@
                 VK_DOM.createPublicInfoRow({
                         link: cur.options.public_link,
                         thumb: document.querySelector(".page_cover_image").children[0].src,
-                        name: cur.options.back,
                         description: cur.options.liked 
                             ? ruLocale
                                 ? "Вы подписаны на это сообщество."
@@ -654,6 +663,7 @@
                             : ruLocale
                                 ? "Вы не подписаны на это сообщество."
                                 : "You are not following this community."
+                        name: DOM.decodeDOMString(cur.options.back),
                     },
                     LIST_DIALOG.addHint
                 )
