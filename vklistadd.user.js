@@ -3,7 +3,7 @@
 // @description Implements a darky button to add communities to feed lists without subscribing to them
 // @version 1.0.2
 // @author Sasha_Sorokin
-// @supportURL https://github.com/Sasha-Sorokin/vkaintegra/issues
+// @supportURL https://github.com/Sasha-Sorokin/vklistadd/issues
 // @run-at document-start
 // @include https://vk.com/*
 // @noframes
