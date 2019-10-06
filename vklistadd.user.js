@@ -833,4 +833,5 @@
     };
 
     WRAPPING.createWindowWrap("public", INIT_CALLBACKS.publicInitCallback);
+    WRAPPING.createWindowWrap("Groups", INIT_CALLBACKS.publicInitCallback);
 })();
