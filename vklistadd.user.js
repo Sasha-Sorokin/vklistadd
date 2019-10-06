@@ -394,6 +394,79 @@
     };
 
     /**
+     * Collection used by Manage lists dialog to show context
+     */
+    const CONTEXT = {
+        /**
+         * Returns group page icon
+         */
+        _getPageIconFallback() {
+            const pageAvatarImg = document.querySelector("img.page_avatar_img");
+
+            if (pageAvatarImg) return pageAvatarImg.src;
+
+            return "https://vk.com/images/camera_50.png?ava=1";
+        },
+
+        /**
+         * Returns public page icon
+         */
+        getPageIcon() {
+            const pageCoverImg = document.querySelector(".page_cover_image");
+
+            if (pageCoverImg) try {
+                return pageCoverImg.children[0].src;
+            } catch {
+                console.warn("[VKLISTADD] Failed to get public page cover image");
+            }
+
+            return CONTEXT._getPageIconFallback();
+        },
+
+        /**
+         * Returns public page link
+         */
+        getPageLink() {
+            if (cur.module === "public") {
+                return cur.options.public_link;
+            } else if (cur.module === "groups") {
+                return `/${cur.options.loc}`;
+            }
+        },
+        
+        /**
+         * Returns public page following status
+         */
+        getPageFollowStatus() {
+            const ruLocale = VK_API.isUsingRuLocale();
+
+            if (cur.module === "public") {
+                return cur.options.liked 
+                    ? ruLocale
+                        ? "Вы подписаны на эту страницу."
+                        : "You are following this page."
+                    : ruLocale
+                        ? "Вы не подписаны на эту страницу."
+                        : "You are not following this page.";
+            } else if (cur.module === "groups") {
+                const pageActionBtn = document.querySelector(".page_actions_btn");
+
+                return pageActionBtn
+                    ? ruLocale
+                        ? "Вы участник этой группы."
+                        : "You are member of this group."
+                    : ruLocale
+                        ? "Вы не вступили в группу."
+                        : "You have not joined the group."
+            }
+
+            return ruLocale
+                ? "Статус подписки неизвестен."
+                : "Unknown follow status.";
+        },
+    };
+
+    /**
      * Collection of Manage lists dialog stuff
      */
     const LIST_DIALOG = {
