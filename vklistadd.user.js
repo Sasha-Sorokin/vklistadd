@@ -524,6 +524,30 @@
                 ? "Статус подписки неизвестен."
                 : "Unknown follow status.";
         },
+
+        /**
+         * Returns icon of current public page or user
+         */
+        getIcon() {
+            if (cur.module === "profile") return CONTEXT.getUserIcon();
+            else return CONTEXT.getPageIcon();
+        },
+
+        /**
+         * Returns link of current public page or user
+         */
+        getLink() {
+            if (cur.module === "profile") return CONTEXT.getUserLink();
+            else return CONTEXT.getPageLink();
+        },
+
+        /**
+         * Returns follow status for current public page or user
+         */
+        getFollowStatus() {
+            if (cur.module === "profile") return CONTEXT.getUserFollowStatus();
+            else return CONTEXT.getPageFollowStatus();
+        },
     };
 
     /**
