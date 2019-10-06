@@ -654,16 +654,10 @@
     
             boxContainer.appendChild(
                 VK_DOM.createPublicInfoRow({
-                        link: cur.options.public_link,
-                        thumb: document.querySelector(".page_cover_image").children[0].src,
-                        description: cur.options.liked 
-                            ? ruLocale
-                                ? "Вы подписаны на это сообщество."
-                                : "You are following this community."
-                            : ruLocale
-                                ? "Вы не подписаны на это сообщество."
-                                : "You are not following this community."
+                        link: CONTEXT.getPageLink(),
+                        thumb: CONTEXT.getPageIcon(),
                         name: DOM.decodeDOMString(cur.options.back),
+                        description: CONTEXT.getPageFollowStatus()
                     },
                     LIST_DIALOG.addHint
                 )
