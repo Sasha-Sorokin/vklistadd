@@ -437,6 +437,18 @@
      * Collection used by Manage lists dialog to show context
      */
     const CONTEXT = {
+        _getIconFromPosts() {
+            const postImage = document.querySelector(
+                `.post_image[href="${CONTEXT.getLink()}"]`
+            );
+
+            if (postImage) {
+                return postImage.querySelector(".post_img").src;
+            }
+
+            return null;
+        },
+
         /**
          * Returns user icon
          */
@@ -579,6 +591,10 @@
          * Returns icon of current public page or user
          */
         getIcon() {
+            const postImg = CONTEXT._getIconFromPosts();
+
+            if (postImg != null) return postImg;
+
             if (cur.module === "profile") return CONTEXT.getUserIcon();
 
             return CONTEXT.getPageIcon();
