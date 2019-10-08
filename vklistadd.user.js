@@ -27,6 +27,7 @@
         DIALOG_MENU_ITEM: Symbol("dialogMenuItem"),
         DIALOG_HINT: Symbol("dialogHint"),
         DIALOG_LABEL: Symbol("dialogLabel"),
+        DIALOG_PRIVATE_WARNING_TEXTS: Symbol("privateWarningTexts"),
     };
 
     /**
@@ -469,6 +470,13 @@
         },
 
         /**
+         *
+         */
+        isPrivateUser() {
+            return document.querySelector(".profile_closed_wall_dummy") != null;
+        },
+
+        /**
          * Returns group page icon
          */
         _getPageIconFallback() {
@@ -541,6 +549,13 @@
         },
 
         /**
+         * Checks whether the current cummunity is private
+         */
+        isPrivatePage() {
+            return document.querySelector(".group_closed") != null;
+        },
+
+        /**
          * Returns icon of current public page or user
          */
         getIcon() {
@@ -562,6 +577,14 @@
         getFollowStatus() {
             if (cur.module === "profile") return CONTEXT.getUserFollowStatus();
             else return CONTEXT.getPageFollowStatus();
+
+        /**
+         * Checks whether the current community or user is private
+         */
+        isPrivate() {
+            if (cur.module === "profile") return CONTEXT.isPrivateUser();
+
+            return CONTEXT.isPrivatePage();
         },
     };
 
@@ -588,6 +611,32 @@
          * Cached dialog label for later re-use
          */
         [SYMBOLS.DIALOG_LABEL]: undefined,
+
+        /**
+         * Text for warnings about private communities or profiles
+         */
+        [SYMBOLS.DIALOG_PRIVATE_WARNING_TEXTS]: {
+            profile: {
+                en: [
+                    "Please note: this is a private profile.",
+                    "To see its news in selected lists, you need to add user as friend."
+                ],
+                ru: [
+                    "Обратите внимание: это закрытый профиль.",
+                    "Чтобы его новости отображались в выбранных списках, необходимо добавить пользователя в друзья."
+                ]
+            },
+            community: {
+                en: [
+                    "Please note: this is a private community.",
+                    "To see its news in selected lists, you need to join it."
+                ],
+                ru: [
+                    "Обратите внимание: это закрытое сообщество.",
+                    "Чтобы его новости отображались в выбранных списках, необходимо вступить в него."
+                ]
+            }
+        },
 
         /**
          * Returns previous or creates new dialog action button
@@ -747,6 +796,28 @@
         },
 
         /**
+         * Creates box with message about private page or profile
+         */
+        createPrivateBox() {
+            const texts = LIST_DIALOG[SYMBOLS.DIALOG_PRIVATE_WARNING_TEXTS];
+            const context = cur.module === "profile" ? "profile" : "community";
+            const locale = VK_API.isUsingRuLocale() ? "ru" : "en";
+
+            const [title, description] = texts[context][locale];
+
+            return DOM.createElement("div", {
+                props: {
+                    innerHTML: `<b>${title}</b><br>${description}`,
+                    className: "error"
+                },
+                style: {
+                    margin: "15px 0 0 0",
+                    lineHeight: "unset"
+                }
+            })
+        },
+
+        /**
          * Returns previous or creates new dialog label
          */
         getDialogLabel() {
@@ -834,6 +905,10 @@
                 DOM.appendEvery(checkboxElements, row);
 
                 boxContainer.appendChild(row);
+            }
+
+            if (CONTEXT.isPrivate()) {
+                boxContainer.appendChild(LIST_DIALOG.createPrivateBox());
             }
 
             const box = LIST_DIALOG.prepareMessageBox(
