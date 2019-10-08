@@ -19,6 +19,7 @@
         CHECKBOX_CSS: Symbol("checkboxesCss"),
         ACTION_BUTTON_CSS: Symbol("actionButtonCss"),
         TOOLTIP_CSS: Symbol("tooltipCss"),
+        ADD_LIST_BUTTON_CSS: Symbol("addListButtonCss"),
         IS_WRAPPED: Symbol("isWrapped"),
         WRAPPER_CALLBACK: Symbol("wrapperCallback"),
         INITIALIZED_STYLES: Symbol("initializedStyles"),
@@ -27,6 +28,7 @@
         DIALOG_MENU_ITEM: Symbol("dialogMenuItem"),
         DIALOG_HINT: Symbol("dialogHint"),
         DIALOG_LABEL: Symbol("dialogLabel"),
+        DIALOG_ADD_LIST_BUTTON: Symbol("addListButton"),
         DIALOG_PRIVATE_WARNING_TEXTS: Symbol("privateWarningTexts"),
     };
 
@@ -84,6 +86,26 @@
 
         [SYMBOLS.TOOLTIP_CSS]: `.vklistadd_tt {
             width: 250px;
+        }`,
+
+        [SYMBOLS.ADD_LIST_BUTTON_CSS]: `.vklistadd_newlist {
+            width: max-content;
+            line-height: 20px;
+            cursor: pointer;
+        }
+
+        .vklistadd_newlist:hover {
+            text-decoration: underline;
+        }
+
+        .vklistadd_newlist:before {
+            content: "";
+            background: url("/images/icons/filter_add.png") 1px 3px no-repeat;
+            width: 15px;
+            height: 15px;
+            display: inline-block;
+            float: left;
+            margin: 0 7px 0 0;
         }`,
 
         /**
@@ -615,6 +637,11 @@
         [SYMBOLS.DIALOG_LABEL]: undefined,
 
         /**
+         * Cached dialog add list button for later re-use
+         */
+        [SYMBOLS.DIALOG_ADD_LIST_BUTTON]: undefined,
+
+        /**
          * Text for warnings about private communities or profiles
          */
         [SYMBOLS.DIALOG_PRIVATE_WARNING_TEXTS]: {
@@ -802,6 +829,97 @@
         },
 
         /**
+         * Creates list to create new list
+         */
+        createNewListLink() {
+            let link = LIST_DIALOG[SYMBOLS.DIALOG_ADD_LIST_BUTTON];
+
+            if (link == null) {
+                STYLES.initStyle("add_list_button", STYLES[SYMBOLS.ADD_LIST_BUTTON_CSS]);
+
+                const ruLocale = VK_API.isUsingRuLocale();
+
+                link = DOM.createElement("div", {
+                    props: {
+                        className: "vklistadd_newlist",
+                        innerText: ruLocale
+                            ? "Создать новый список"
+                            : "Create a new list"
+                    },
+                    style: {
+                        color: getComputedStyle(document.querySelector("a")).color
+                    },
+                    events: {
+                        click: function navigateToFeed() {
+                            const targetId = cur.oid;
+                            const targetName = DOM.decodeDOMString(cur.options.back);
+                            const targetLink = CONTEXT.getLink();
+                            const targetIcon = CONTEXT.getIcon();
+
+                            nav.go("feed", null, {
+                                onDone: function showCreateDialog() {
+                                    // Unfortunately there is no other way we can get into "OList"
+                                    // so I create a fake one and immediately set it back to normal
+                                    // in constructor() call; as it extends original OList there is
+                                    // no difference for VK, but for us - we can get inside of it
+                                    const $OList = unsafeWindow.OList;
+
+                                    class FakeOList extends $OList {
+                                        constructor(...args) {
+                                            const [, list, selected] = args;
+
+                                            unsafeWindow.OList = $OList;
+
+                                            const targetIndex = list.findIndex(
+                                                _ => _[0] === targetId
+                                            );
+
+                                            if (targetIndex === -1) {
+                                                list.splice(0, 0, [targetId, targetName, targetIcon,targetLink, 0]);
+                                            }
+
+                                            selected[targetId] = 1;
+
+                                            super(...args);
+
+                                            const itemElem = document.querySelector(`#olist_item_wrap${targetId}`);
+
+                                            if (itemElem) {
+                                                DOM.assignStyles(itemElem, {
+                                                    backgroundColor: "#e1e5eb"
+                                                });
+
+                                                itemElem.scrollIntoView();
+                                            }
+                                        }
+                                    }
+
+                                    unsafeWindow.OList = FakeOList;
+
+                                    feed.editList(-1);
+                                }
+                            });
+                        },
+                        mouseover: function displayTooltip() {
+                            showTitle(
+                                link,
+                                ruLocale
+                                    ? "Перенаправление в ленту новостей"
+                                    : "Redirect to news page",
+                                [-10, 8],
+                                { center: true }
+                            );
+                        }
+                    }
+                });
+
+                LIST_DIALOG[SYMBOLS.DIALOG_ADD_LIST_BUTTON] = link;
+            }
+
+            return link;
+        },
+
+        /**
          * Creates box with message about private page or profile
          */
         createPrivateBox() {
@@ -962,10 +1080,21 @@
                 boxContainer.appendChild(row);
             }
 
+            // ----------------------------------
+
+            boxContainer.appendChild(DOM.createElement("div", {
+                props: {
+                    className: "top_profile_sep"
+                }
+            }));
+
+            boxContainer.appendChild(LIST_DIALOG.createNewListLink());
+
             if (CONTEXT.isPrivate()) {
                 boxContainer.appendChild(LIST_DIALOG.createPrivateBox());
             }
 
+            // ----------------------------------
 
             let errorAnimation;
 
