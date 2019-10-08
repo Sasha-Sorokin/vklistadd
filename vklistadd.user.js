@@ -846,6 +846,91 @@
         },
 
         /**
+         * Creates simple controller for notifications
+         */
+        _makeNotificationsController() {
+            let actionButton;
+            let enabledCheck;
+
+            if (cur.module === "profile") {
+                const items = document.querySelectorAll(".page_actions_item");
+
+                for (const item of items) {
+                    if (item.onclick != null && item.onclick.toString().includes("Page.toggleSubscription")) {
+                        actionButton = item;
+
+                        break;
+                    }
+                }
+
+                if (actionButton != null) {
+                    enabledCheck = () => actionButton.dataset.act === "1" ? false : true;
+                }
+            } else {
+                actionButton = document.querySelector("#page_menu_notifications_item");
+
+                if (actionButton != null) {
+                    enabledCheck = () => actionButton.classList.contains("on");
+                }
+            }
+
+            if (actionButton == null) return { available: false };
+
+            return {
+                available: true,
+                isEnabled: enabledCheck,
+                toggle: () => actionButton.click()
+            };
+        },
+
+        /**
+         * Creates a notification links
+         * @param {HTMLAnchorElement} link Link element itself
+         * @param {boolean} status Current notifications status
+         */
+        _renderNotificationsLink(link, status) {
+            link.innerText = status
+                ? VK_API.isUsingRuLocale()
+                    ? "Уведомления включены."
+                    : "Notifications enabled."
+                : VK_API.isUsingRuLocale()
+                    ? "Уведомления отключены."
+                    : "Notifications disabled.";
+        },
+
+        /**
+         * Adds notification link to the description
+         */
+        addNotificationLink({ description }) {
+            const notifications = LIST_DIALOG._notificationStatus();
+
+            if (!notifications.available) return;
+
+            DOM.createElement("br", { mount: description });
+
+            const link = DOM.createElement("a", {
+                events: {
+                    click: function toggleNotifications(e) {
+                        console.log("clickity click");
+
+                        e.preventDefault();
+
+                        let newStatus = !notifications.isEnabled();
+
+                        notifications.toggle();
+
+                        LIST_DIALOG._renderNotificationsLink(link, newStatus);
+
+                        return false;
+                    }
+                },
+                mount: description
+            });
+
+            LIST_DIALOG._renderNotificationsLink(link, notifications.isEnabled());
+        },
+
+        /**
          * Creates list to create new list
          */
         createNewListLink() {
@@ -1068,7 +1153,10 @@
                         name: DOM.decodeDOMString(cur.options.back),
                         description: CONTEXT.getFollowStatus()
                     },
-                    LIST_DIALOG.addHint
+                    function customize(elements) {
+                        LIST_DIALOG.addHint(elements);
+                        LIST_DIALOG.addNotificationLink(elements);
+                    }
                 )
             );
 
