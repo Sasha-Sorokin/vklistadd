@@ -532,9 +532,7 @@
                         ? "Вы не подписаны на эту страницу."
                         : "You are not following this page.";
             } else if (cur.module === "groups") {
-                const pageActionBtn = document.querySelector(".page_actions_btn");
-
-                return pageActionBtn
+                return document.querySelector(".page_actions_btn") != null
                     ? ruLocale
                         ? "Вы участник этой группы."
                         : "You are member of this group."
@@ -560,7 +558,8 @@
          */
         getIcon() {
             if (cur.module === "profile") return CONTEXT.getUserIcon();
-            else return CONTEXT.getPageIcon();
+
+            return CONTEXT.getPageIcon();
         },
 
         /**
@@ -568,7 +567,8 @@
          */
         getLink() {
             if (cur.module === "profile") return CONTEXT.getUserLink();
-            else return CONTEXT.getPageLink();
+
+            return CONTEXT.getPageLink();
         },
 
         /**
@@ -576,7 +576,9 @@
          */
         getFollowStatus() {
             if (cur.module === "profile") return CONTEXT.getUserFollowStatus();
-            else return CONTEXT.getPageFollowStatus();
+
+            return CONTEXT.getPageFollowStatus();
+        },
 
         /**
          * Checks whether the current community or user is private
