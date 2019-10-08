@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name VK List Add
 // @description Implements a darky button to add communities to feed lists without subscribing to them
-// @version 1.2.1
+// @version 1.4.0
 // @author Sasha_Sorokin
 // @supportURL https://github.com/Sasha-Sorokin/vklistadd/issues
 // @updateURL https://github.com/Sasha-Sorokin/vklistadd/raw/master/vklistadd.user.js
