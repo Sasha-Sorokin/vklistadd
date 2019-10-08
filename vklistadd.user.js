@@ -840,6 +840,8 @@
                         }
 
                         box.hide();
+
+                        showDoneBox(lang.global_changes_saved, { timeout: 1000 });
                     } catch (err) {
                         console.error("[VKLISTADD] Failed to save changes:", err);
 
