@@ -782,6 +782,10 @@
                 DOM.assignStyles(hint, { margin: "0 20px 0 5px", top: "-1px" });
 
                 LIST_DIALOG[SYMBOLS.DIALOG_HINT] = hint;
+            } else if (hint.tt) {
+                // Previous tooltip must be destroyed or else it will be attached to previous box;
+                // it will be re-created as soon as the showTooltip function is called on hint
+                hint.tt.destroy();
             }
 
             description.appendChild(hint);
