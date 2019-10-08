@@ -331,9 +331,8 @@
 
             if (typeof customizeElements === "function") {
                 customizeElements({
-                    nameLink: publicInfoGroupNameLink,
                     description: publicInfoGroupDesc,
-                    avatarThumb: publicInfoAvatarThumb
+                    infoContainer: publicInfoContent
                 });
             }
 
@@ -715,7 +714,7 @@
         /**
          * Adds hint to the group description
          */
-        addHint({ description }) {
+        addHint({ description, infoContainer }) {
             let hint = LIST_DIALOG[SYMBOLS.DIALOG_HINT];
 
             if (hint == null) {
@@ -728,17 +727,23 @@
                     { className: "vklistadd_tt", center: true, shift: [-8, 10] }
                 );
 
-                // By unknown reasons hint is partially hidden and we must
-                // manually assign it padding and left margin to fix it
-                DOM.assignStyles(hint, {
-                    padding: "2px",
-                    marginLeft: "5px"
-                });
+                // By default hint is too far away from the text, let's move it closer
+                DOM.assignStyles(hint, { margin: "0 20px 0 5px", top: "-1px" });
 
                 LIST_DIALOG[SYMBOLS.DIALOG_HINT] = hint;
             }
 
             description.appendChild(hint);
+
+            // Info container and description elements have "overflow" set to "hidden",
+            // this causes hint part to be hidden, so we must manually override it to "visible"
+            DOM.assignStyles(infoContainer, {
+                overflow: "visible"
+            });
+
+            DOM.assignStyles(description, {
+                overflow: "visible"
+            });
         },
 
         /**
