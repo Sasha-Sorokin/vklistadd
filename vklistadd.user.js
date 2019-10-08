@@ -18,6 +18,7 @@
     const SYMBOLS = {
         CHECKBOX_CSS: Symbol("checkboxesCss"),
         ACTION_BUTTON_CSS: Symbol("actionButtonCss"),
+        TOOLTIP_CSS: Symbol("tooltipCss"),
         IS_WRAPPED: Symbol("isWrapped"),
         WRAPPER_CALLBACK: Symbol("wrapperCallback"),
         INITIALIZED_STYLES: Symbol("initializedStyles"),
@@ -78,6 +79,10 @@
 
         .page_menu_group_lists:hover {
             text-decoration: underline;
+        }`,
+
+        [SYMBOLS.TOOLTIP_CSS]: `.vklistadd_tt {
+            width: 250px;
         }`,
 
         /**
@@ -228,7 +233,7 @@
          * Requires `common.css` (mostly loaded)
          * @param {string} text Text to show on hover
          */
-        createHint(text) {
+        createHint(text, opts) {
             const hint = DOM.createElement("span", {
                 props: { className: "hint_icon" },
                 events: {
@@ -237,7 +242,8 @@
                             text,
                             dir: "auto",
                             shift: [22, 10],
-                            slide: 15
+                            slide: 15,
+                            ...opts
                         })
                     }
                 }
@@ -713,10 +719,13 @@
             let hint = LIST_DIALOG[SYMBOLS.DIALOG_HINT];
 
             if (hint == null) {
+                STYLES.initStyle("hint_tooltip", STYLES[SYMBOLS.TOOLTIP_CSS]);
+
                 hint = VK_DOM.createHint(
                     VK_API.isUsingRuLocale()
                         ? "Вы можете добавить сообщество в список, даже если не подписаны на него."
                         : "You can add the community to a list even if you are not following it."
+                    { className: "vklistadd_tt", center: true, shift: [-8, 10] }
                 );
 
                 // By unknown reasons hint is partially hidden and we must
