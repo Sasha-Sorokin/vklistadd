@@ -771,8 +771,8 @@
 
                 hint = VK_DOM.createHint(
                     VK_API.isUsingRuLocale()
-                        ? "Вы можете добавить сообщество в список, даже если не подписаны на него."
-                        : "You can add the community to a list even if you are not following it."
+                        ? "Вносить в списки можно без подписки или добавления в друзья."
+                        : "You can add to the lists without following or adding to friends.",
                     { className: "vklistadd_tt", center: true, shift: [-8, 10] }
                 );
 
