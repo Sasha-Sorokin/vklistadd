@@ -89,6 +89,7 @@
         }`,
 
         [SYMBOLS.ADD_LIST_BUTTON_CSS]: `.vklistadd_newlist {
+            margin-top: 10px;
             width: max-content;
             line-height: 20px;
             cursor: pointer;
