@@ -848,6 +848,55 @@
         },
 
         /**
+         * Creates error animation function to play if error occurs
+         * @param {MessageBox} box VK MessageBox to play animation in
+         */
+        createErrorAnimation(box) {
+            let errorLabel;
+
+            return function showBoxError() {
+                if (errorLabel) {
+                    if (errorLabel.timeout) clearTimeout(errorLabel.timeout);
+
+                    if (errorLabel.animation) errorLabel.animation.stop();
+                } else {
+                    hide(box.controlsTextNode);
+
+                    errorLabel = {
+                        element: DOM.createElement("span", {
+                            props: {
+                                innerText: lang.global_error_occured
+                            },
+                            style: { color: "#777" }
+                        })
+                    };
+
+                    box.controlsTextNode.appendChild(errorLabel.element);
+                }
+
+                // If user by some reason clicks button too fast, animation may stuck
+                // with incorrect opacity value, so better reset it every time
+                DOM.assignStyles(box.controlsTextNode, { opacity: 1 });
+
+                errorLabel.animation = fadeIn(box.controlsTextNode, {
+                    duration: 150,
+                    onComplete: () => {
+                        errorLabel.animation = undefined;
+
+                        errorLabel.timeout = setTimeout(() => {
+                            errorLabel.timeout = undefined;
+
+                            errorLabel.animation = fadeOut(box.controlsTextNode, {
+                                duration: 500,
+                                onComplete: () => { errorLabel.animation = undefined; }
+                            });
+                        }, 2000);
+                    }
+                });
+            };
+        },
+
+        /**
          * Initializes a message box containing the dialog
          */
         async initAddListDialog() {
@@ -917,6 +966,9 @@
                 boxContainer.appendChild(LIST_DIALOG.createPrivateBox());
             }
 
+
+            let errorAnimation;
+
             const box = LIST_DIALOG.prepareMessageBox(
                 boxContainer,
                 async function saveChanges() {
@@ -938,6 +990,10 @@
 
                         showDoneBox(lang.global_changes_saved, { timeout: 1000 });
                     } catch (err) {
+                        if (!errorAnimation) errorAnimation = LIST_DIALOG.createErrorAnimation(box);
+
+                        errorAnimation();
+
                         console.error("[VKLISTADD] Failed to save changes:", err);
 
                         box.hideProgress();
