@@ -919,7 +919,7 @@
          * Adds notification link to the description
          */
         addNotificationLink({ description }) {
-            const notifications = LIST_DIALOG._notificationStatus();
+            const notifications = LIST_DIALOG._makeNotificationsController();
 
             if (!notifications.available) return;
 
@@ -928,8 +928,6 @@
             const link = DOM.createElement("a", {
                 events: {
                     click: function toggleNotifications(e) {
-                        console.log("clickity click");
-
                         e.preventDefault();
 
                         let newStatus = !notifications.isEnabled();
