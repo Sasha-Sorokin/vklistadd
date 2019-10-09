@@ -100,7 +100,7 @@
         [SYMBOLS.ADD_LIST_BUTTON_CSS]: `.vklistadd_newlist {
             margin-top: 10px;
             width: max-content;
-            line-height: 20px;
+            line-height: 19px;
             cursor: pointer;
         }
 
