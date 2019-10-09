@@ -23,7 +23,7 @@
         IS_WRAPPED: Symbol("isWrapped"),
         WRAPPER_CALLBACK: Symbol("wrapperCallback"),
         INITIALIZED_STYLES: Symbol("initializedStyles"),
-        RU_LOCALES_IDS: Symbol("ruLocaleIds"),
+        RU_LOCALE_USED: Symbol("ruLocaleUsed"),
         DIALOG_ACTION_BUTTON: Symbol("dialogActionButton"),
         DIALOG_MENU_ITEM: Symbol("dialogMenuItem"),
         DIALOG_HINT: Symbol("dialogHint"),
@@ -409,18 +409,6 @@
      */
     const VK_API = {
         /**
-         * IDs of Russian (or kinda "Russian") locales
-         */
-        [SYMBOLS.RU_LOCALES_IDS]: [0, 1, 100, 114, 777],
-
-        /**
-         * Checks if using "kinda 'Russian'" locale
-         */
-        isUsingRuLocale() {
-            return VK_API[SYMBOLS.RU_LOCALES_IDS].includes(langConfig.id);
-        },
-
-        /**
          * Makes requests to initialize needed page options
          * @param {number} itemId ID of the page
          * @returns {Promise} Promise which resolves once request is done
@@ -473,6 +461,29 @@
             });
         },
     };
+
+    { // Making a function used to rewrite RU_LOCALE_USED of first use
+        function isUsingRuLocale() {
+            if (langConfig == null) {
+                throw new Error("Language configuration is not loaded.");
+            }
+
+            return [0, 1, 100, 114, 777].includes(langConfig.id)
+        }
+
+        Object.defineProperty(VK_API, SYMBOLS.RU_LOCALE_USED, {
+            get: function ruLocaleMemo() {
+                let ruLocaleUsed = isUsingRuLocale();
+
+                Object.defineProperty(VK_API, SYMBOLS.RU_LOCALE_USED, {
+                    value: ruLocaleUsed
+                });
+
+                return ruLocaleUsed;
+            },
+            configurable: true
+        });
+    }
 
     /**
      * Collection used by Manage lists dialog to show context
@@ -772,7 +783,7 @@
                         className: "page_actions_item page_menu_group_lists",
                         tabIndex: "0",
                         role: "link",
-                        innerText: VK_API.isUsingRuLocale()
+                        innerText: VK_API[SYMBOLS.RU_LOCALE_USED]
                             ? "Настроить списки"
                             : "Manage lists"
                     },
@@ -806,7 +817,7 @@
                         className: "page_actions_item",
                         tabIndex: "0",
                         role: "link",
-                        innerText: VK_API.isUsingRuLocale()
+                        innerText: VK_API[SYMBOLS.RU_LOCALE_USED]
                             ? "Настроить списки"
                             : "Manage lists"
                     },
@@ -863,7 +874,7 @@
             const box = new MessageBox();
 
             box.setOptions({
-                title: VK_API.isUsingRuLocale()
+                title: VK_API[SYMBOLS.RU_LOCALE_USED]
                     ? "Управление списками"
                     : "Manage lists",
                 hideButtons: false
@@ -888,7 +899,7 @@
                 STYLES.initStyle("hint_tooltip", STYLES[SYMBOLS.TOOLTIP_CSS]);
 
                 hint = VK_DOM.createHint(
-                    VK_API.isUsingRuLocale()
+                    VK_API[SYMBOLS.RU_LOCALE_USED]
                         ? "Вносить в списки можно без подписки или добавления в друзья."
                         : "You can add to the lists without following or adding to friends.",
                     { className: "vklistadd_tt", center: true, shift: [-8, 10] }
@@ -962,10 +973,10 @@
          */
         _renderNotificationsLink(link, status) {
             link.innerText = status
-                ? VK_API.isUsingRuLocale()
+                ? VK_API[SYMBOLS.RU_LOCALE_USED]
                     ? "Уведомления включены."
                     : "Notifications enabled."
-                : VK_API.isUsingRuLocale()
+                : VK_API[SYMBOLS.RU_LOCALE_USED]
                     ? "Уведомления отключены."
                     : "Notifications disabled.";
         },
@@ -1009,7 +1020,7 @@
             if (link == null) {
                 STYLES.initStyle("add_list_button", STYLES[SYMBOLS.ADD_LIST_BUTTON_CSS]);
 
-                const ruLocale = VK_API.isUsingRuLocale();
+                const ruLocale = VK_API[SYMBOLS.RU_LOCALE_USED];
 
                 link = DOM.createElement("div", {
                     props: {
@@ -1097,7 +1108,7 @@
         createPrivateBox(followStatus) {
             const texts = LIST_DIALOG[SYMBOLS.DIALOG_PRIVATE_WARNING_TEXTS];
             const context = cur.module;
-            const locale = VK_API.isUsingRuLocale() ? "ru" : "en";
+            const locale = VK_API[SYMBOLS.RU_LOCALE_USED] ? "ru" : "en";
 
             let [title, description, following] = texts[context][locale];
 
@@ -1120,7 +1131,7 @@
          * @param {boolean|null} status Following status
          */
         getFollowStatusText(status) {
-            const lang = VK_API.isUsingRuLocale() ? "ru" : "en";
+            const lang = VK_API[SYMBOLS.RU_LOCALE_USED] ? "ru" : "en";
             const texts = LIST_DIALOG[SYMBOLS.DIALOG_FOLLOW_TEXTS];
             const textIndex = status != null ? +status : null;
 
@@ -1146,7 +1157,7 @@
             if (label == null) {
                 label = DOM.createElement("div", {
                     props: {
-                        innerText: VK_API.isUsingRuLocale()
+                        innerText: VK_API[SYMBOLS.RU_LOCALE_USED]
                             ? "Отображать новости сообщества в списках:"
                             : "Show this community's news in the lists:",
                     },
