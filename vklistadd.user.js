@@ -1233,7 +1233,10 @@
                 const listName = feedLists[i];
 
                 const row = DOM.createElement("div", {
-                    style: { marginBottom: "10px" }
+                    style: {
+                        marginBottom: "10px",
+                        lineHeight: "15px"
+                    }
                 });
 
                 const checkboxElements = VK_DOM.createCheckbox({
