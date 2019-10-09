@@ -371,6 +371,37 @@
 
             return publicInfo;
         },
+
+        /**
+         * Changes progress bar display state
+         * @param {boolean} state Progress bar state
+         */
+        _changeProgessState(state) {
+            DOM.assignStyles(this, {
+                display: state ? "block" : "none"
+            });
+        },
+
+        /**
+         * Creates an indeterminate progress bar
+         * @param {boolean} state Initial progress bar state
+         * @returns Function to change state of progress bar
+         * and containing `control` property with bar element
+         */
+        createProgress(state, mount) {
+            const progress = DOM.createElement("div", {
+                props: { className: "progress" },
+                mount
+            });
+
+            const fc = VK_DOM._changeProgessState.bind(progress);
+
+            fc.control = progress;
+
+            fc(state);
+
+            return fc;
+        },
     };
 
     /**
@@ -1180,25 +1211,88 @@
         },
 
         /**
-         * Initializes a message box containing the dialog
+         * Saves changes to the lists if any
+         * @param {object} state State shared with listsContainer
          */
-        async initAddListDialog() {
-            // ----------------------------------
+        async saveChanges(state) {
+            if (!state.ready) return;
+
+            const { changes, targetId, hash } = state;
+
+            const toggles = [];
+
+            for (const i in changes) toggles.push(changes[i] * i);
+
+            await VK_API.toggleLists(targetId, toggles.join(","), hash);
+
+            // After saving lists, we need to tweak cur options accordingly
+            for (const i in changes) {
+                cur.options.feedListsSet[i] = changes[i] === -1 ? 0 : 1;
+            }
+        },
+
+        /**
+         * Loads and display lists in given container
+         * @param {HTMLDivElement} container Lists container
+         * @param {object} state Object with current state
+         */
+        async displayLists(container, state) {
+            // --- INITIALIZATION
 
             let { feedLists } = cur.options;
 
-            const itemId = cur.oid;
+            state.targetId = cur.oid;
 
-            // We must init lists if they aren't
-            if (!feedLists) {
-                await VK_API.initLists(itemId);
+            if (feedLists == null) {
+                await VK_API.initLists(state.targetId);
 
                 feedLists = cur.options.feedLists;
             }
 
-            const hash = cur.options.feedListsHash;
-            const changes = Object.create(null);
+            state.hash = cur.options.feedListsHash;
+            state.changes = Object.create(null);
 
+            // --- CHECKBOXES CREATION
+
+            const rows = [];
+
+            for (const i in feedLists) {
+                const listName = feedLists[i];
+
+                const row = DOM.createElement("div", {
+                    style: {
+                        marginBottom: "10px",
+                        lineHeight: "15px"
+                    }
+                });
+
+                const checkboxElements = VK_DOM.createCheckbox({
+                    id: `list_${i}`,
+                    text: listName,
+                    isChecked: cur.options.feedListsSet[i] === 1,
+                    onChange: function onCheckboxChange(e) {
+                        state.changes[i] = e.target.checked ? 1 : -1;
+                    }
+                });
+
+                DOM.appendEvery(checkboxElements, row);
+
+                rows.push(row);
+            }
+
+            // --- FINALIZATION
+
+            container.removeChild(state.progress.control);
+
+            DOM.appendEvery(rows, container);
+
+            state.ready = true;
+        },
+
+        /**
+         * Initializes a message box containing the dialog
+         */
+        async initAddListDialog() {
             // ----------------------------------
 
             STYLES.initStyle("checkboxes", STYLES[SYMBOLS.CHECKBOX_CSS]);
@@ -1229,28 +1323,19 @@
 
             // ----------------------------------
 
-            for (const i in feedLists) {
-                const listName = feedLists[i];
+            const listsState = { ready: false };
 
-                const row = DOM.createElement("div", {
-                    style: {
-                        marginBottom: "10px",
-                        lineHeight: "15px"
-                    }
+            {
+                const listsContainer = DOM.createElement("div", {
+                    props: { className: "lists_container" },
+                    style: { marginBottom: "10px" },
+                    mount: boxContainer
                 });
 
-                const checkboxElements = VK_DOM.createCheckbox({
-                    id: `list_${i}`,
-                    text: listName,
-                    isChecked: cur.options.feedListsSet[i] === 1,
-                    onChange: function onCheckboxChange(e) {
-                        changes[i] = e.target.checked ? 1 : -1;
-                    }
-                });
+                listsState.progress = VK_DOM.createProgress(true, listsContainer);
 
-                DOM.appendEvery(checkboxElements, row);
 
-                boxContainer.appendChild(row);
+                LIST_DIALOG.displayLists(listsContainer, listsState);
             }
 
             // ----------------------------------
@@ -1278,16 +1363,7 @@
                     box.showProgress();
 
                     try {
-                        const toggles = [];
-
-                        for (const i in changes) toggles.push(changes[i] * i);
-
-                        await VK_API.toggleLists(itemId, toggles.join(","), hash);
-
-                        // List is saved, let's change options
-                        for (const i in changes) {
-                            cur.options.feedListsSet[i] = changes[i] === -1 ? 0 : 1;
-                        }
+                        await LIST_DIALOG.saveChanges(listsState)
 
                         box.hide();
 
