@@ -1238,11 +1238,10 @@
 
             // ----------------------------------
 
-            boxContainer.appendChild(DOM.createElement("div", {
-                props: {
-                    className: "top_profile_sep"
-                }
-            }));
+            DOM.createElement("div", {
+                props: { className: "top_profile_sep" },
+                mount: boxContainer
+            });
 
             boxContainer.appendChild(LIST_DIALOG.createNewListLink());
 
