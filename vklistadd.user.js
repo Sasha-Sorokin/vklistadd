@@ -30,6 +30,7 @@
         DIALOG_LABEL: Symbol("dialogLabel"),
         DIALOG_ADD_LIST_BUTTON: Symbol("addListButton"),
         DIALOG_PRIVATE_WARNING_TEXTS: Symbol("privateWarningTexts"),
+        DIALOG_FOLLOW_TEXTS: Symbol("followTexts"),
     };
 
     /**
@@ -473,35 +474,21 @@
          * Returns user following status
          */
         getUserFollowStatus() {
-            const ruLocale = VK_API.isUsingRuLocale();
-
             const statusElem = document.querySelector("#friend_status");
 
             if (statusElem != null) {
                 const addFriendButton = statusElem.querySelector(".profile_action_btn");
 
-                if (addFriendButton != null) {
-                    return ruLocale
-                        ? "Не в списке друзей."
-                        : "Not in the friends list.";
-                }
+                if (addFriendButton != null) return false;
 
                 // Dropdown button is only present on the followed pages (friends / following)
                 const dropDownLabel = statusElem.querySelector(".page_actions_dd_label");
 
-                if (dropDownLabel != null) {
-                    return ruLocale
-                        ? "Вы подписаны."
-                        : "You are following.";
-                }
+                if (dropDownLabel != null) return true;
             }
 
-            // Status is unknown, probably us
-            // TODO: Find a way to check if ours profile is opened
+            return null;
 
-            return ruLocale
-                ? "Интересный пользователь."
-                : "Interesting user.";
         },
 
         /**
@@ -556,29 +543,13 @@
          * Returns public page following status
          */
         getPageFollowStatus() {
-            const ruLocale = VK_API.isUsingRuLocale();
-
             if (cur.module === "public") {
-                return cur.options.liked
-                    ? ruLocale
-                        ? "Вы подписаны на эту страницу."
-                        : "You are following this page."
-                    : ruLocale
-                        ? "Вы не подписаны на эту страницу."
-                        : "You are not following this page.";
+                return cur.options.liked;
             } else if (cur.module === "groups") {
-                return document.querySelector(".page_actions_btn") != null
-                    ? ruLocale
-                        ? "Вы участник этой группы."
-                        : "You are member of this group."
-                    : ruLocale
-                        ? "Вы не вступили в группу."
-                        : "You have not joined the group."
+                return document.querySelector(".page_actions_btn") != null;
             }
 
-            return ruLocale
-                ? "Статус подписки неизвестен."
-                : "Unknown follow status.";
+            return null;
         },
 
         /**
@@ -682,6 +653,52 @@
                     "Чтобы его новости отображались в выбранных списках, необходимо вступить в него."
                 ]
             }
+        },
+
+        /**
+         * Texts for displaying in the info row
+         */
+        [SYMBOLS.DIALOG_FOLLOW_TEXTS]: {
+            profile: {
+                en: [
+                    "Not in the friends list.",
+                    "You are following them.",
+                ],
+                ru: [
+                    "Не в списке друзей.",
+                    "Вы подписаны на этот профиль.",
+                ]
+            },
+            public: {
+                en: [
+                    "You are not following this page.",
+                    "You are following this page.",
+                ],
+                ru: [
+                    "Вы не подписаны на эту страницу.",
+                    "Вы подписаны на эту страницу.",
+                ]
+            },
+            groups: {
+                en: [
+                    "You have not joined the group.",
+                    "You are member of this group.",
+                ],
+                ru: [
+                    "Вы не вступили в группу.",
+                    "Вы участник этой группы.",
+                ]
+            },
+            unknown: {
+                community: {
+                    en: "Unknown follow status.",
+                    ru: "Статус подписки неизвестен."
+                },
+                user: {
+                    en: "Interesting user.",
+                    ru: "Интересный пользователь."
+                }
+            },
         },
 
         /**
@@ -1044,6 +1061,26 @@
         },
 
         /**
+         * Gets current following status label text
+         * @param {boolean|null} status Following status
+         */
+        getFollowStatusText(status) {
+            const lang = VK_API.isUsingRuLocale() ? "ru" : "en";
+            const texts = LIST_DIALOG[SYMBOLS.DIALOG_FOLLOW_TEXTS];
+            const textIndex = status != null ? +status : null;
+
+            if (cur.module === "profile") {
+                if (status == null) return texts.unknown.user[lang];
+
+                return texts.profile[lang][textIndex];
+            } else {
+                if (status == null) return texts.unknown.community[lang];
+
+                return texts[cur.module][lang][textIndex];
+            }
+        },
+
+        /**
          * Returns previous or creates new dialog label
          */
         getDialogLabel() {
@@ -1146,12 +1183,14 @@
                 }
             });
 
+            const followStatus = CONTEXT.getFollowStatus();
+
             boxContainer.appendChild(
                 VK_DOM.createPublicInfoRow({
                         link: CONTEXT.getLink(),
                         thumb: CONTEXT.getIcon(),
                         name: DOM.decodeDOMString(cur.options.back),
-                        description: CONTEXT.getFollowStatus()
+                        description: LIST_DIALOG.getFollowStatusText(followStatus)
                     },
                     function customize(elements) {
                         LIST_DIALOG.addHint(elements);
