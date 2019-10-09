@@ -644,21 +644,25 @@
             profile: {
                 en: [
                     "Please note: this is a private profile.",
-                    "To see its news in selected lists, you need to add user as friend."
+                    "In order to see its news in selected lists, you first need to add user as friend.",
+                    // "To see its news in selected lists, you need to keep this user as friend."
                 ],
                 ru: [
                     "Обратите внимание: это закрытый профиль.",
-                    "Чтобы его новости отображались в выбранных списках, необходимо добавить пользователя в друзья."
+                    "Чтобы его новости отображались в выбранных списках, необходимо добавить пользователя в друзья.",
+                    // "Чтобы его новости отображались в выбранных списках, необходимо оставаться в списке друзей пользователя."
                 ]
             },
-            community: {
+            groups: {
                 en: [
                     "Please note: this is a private community.",
-                    "To see its news in selected lists, you need to join it."
+                    "In order to see its news in selected lists, you first need to join it.",
+                    "If you leave it, it will remain on the list, but its news will stop showing up.",
                 ],
                 ru: [
                     "Обратите внимание: это закрытое сообщество.",
-                    "Чтобы его новости отображались в выбранных списках, необходимо вступить в него."
+                    "Чтобы его новости отображались в выбранных списках, необходимо вступить в него.",
+                    "Если вы покините его, оно останется в списке, но его новости перестанут отображаться.",
                 ]
             }
         },
@@ -1051,12 +1055,14 @@
         /**
          * Creates box with message about private page or profile
          */
-        createPrivateBox() {
+        createPrivateBox(followStatus) {
             const texts = LIST_DIALOG[SYMBOLS.DIALOG_PRIVATE_WARNING_TEXTS];
-            const context = cur.module === "profile" ? "profile" : "community";
+            const context = cur.module;
             const locale = VK_API.isUsingRuLocale() ? "ru" : "en";
 
-            const [title, description] = texts[context][locale];
+            let [title, description, following] = texts[context][locale];
+
+            if (context === "groups" && followStatus) description = following;
 
             return DOM.createElement("div", {
                 props: {
@@ -1246,7 +1252,9 @@
             boxContainer.appendChild(LIST_DIALOG.createNewListLink());
 
             if (CONTEXT.isPrivate()) {
-                boxContainer.appendChild(LIST_DIALOG.createPrivateBox());
+                boxContainer.appendChild(
+                    LIST_DIALOG.createPrivateBox(followStatus)
+                );
             }
 
             // ----------------------------------
