@@ -721,7 +721,7 @@
             },
             own: {
                 en: "This is breathtaking you!",
-                ru: "Это потрясающий вы!"
+                ru: "Это вы!"
             },
         },
 
