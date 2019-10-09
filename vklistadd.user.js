@@ -62,6 +62,14 @@
 
         .vklistadd_container input[type=checkbox]:checked+label:before {
             background-image: url(\"data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2215%22%20height%3D%2215%22%20viewBox%3D%220%200%2015%2015%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Crect%20width%3D%2215%22%20height%3D%2215%22%20fill%3D%22%235181B8%22%20rx%3D%223%22%2F%3E%3Cpath%20stroke%3D%22%23FFF%22%20stroke-width%3D%221.7%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M4%207.5L6.5%2010%2011%204.5%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E\")
+        }
+
+        .vklistadd_container input[type=checkbox]+label:hover:before {
+            filter: brightness(0.95);
+        }
+
+        .vklistadd_container input[type=checkbox]+label:active:before {
+            filter: brightness(0.9);
         }`,
         /**
          * CSS styles for the action button in the group menu
