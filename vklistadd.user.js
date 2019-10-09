@@ -488,7 +488,15 @@
             }
 
             return null;
+        },
 
+        /**
+         * Check if current profile is user profile
+         */
+        isOwnProfile() {
+            const topLink = document.querySelector("#top_myprofile_link");
+
+            return topLink.getAttribute("href") === CONTEXT.getLink();
         },
 
         /**
@@ -698,6 +706,10 @@
                     en: "Interesting user.",
                     ru: "Интересный пользователь."
                 }
+            },
+            own: {
+                en: "This is breathtaking you!",
+                ru: "Это потрясающий вы!"
             },
         },
 
@@ -1068,6 +1080,8 @@
             const textIndex = status != null ? +status : null;
 
             if (cur.module === "profile") {
+                if (CONTEXT.isOwnProfile()) return texts.own[lang];
+
                 if (status == null) return texts.unknown.user[lang];
 
                 return texts.profile[lang][textIndex];
