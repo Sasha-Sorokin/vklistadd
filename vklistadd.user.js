@@ -114,10 +114,7 @@
             width: max-content;
             line-height: 19px;
             cursor: pointer;
-        }
-
-        .vklistadd_newlist:hover {
-            text-decoration: underline;
+            display: block;
         }
 
         .vklistadd_newlist:before {
@@ -1104,18 +1101,17 @@
 
                 const ruLocale = VK_API[SYM__RU_LOCALE_USED];
 
-                link = DOM.createElement("div", {
+                link = DOM.createElement("a", {
                     props: {
                         className: "vklistadd_newlist",
                         innerText: ruLocale
                             ? "Создать новый список"
                             : "Create a new list"
                     },
-                    style: {
-                        color: getComputedStyle(document.querySelector("a")).color
-                    },
                     events: {
-                        click: function navigateToFeed() {
+                        click: function navigateToFeed(e) {
+                            e.preventDefault();
+
                             const targetId = cur.oid;
                             const targetName = DOM.decodeDOMString(cur.options.back);
                             const targetLink = CONTEXT.getLink();
@@ -1164,6 +1160,8 @@
                                     feed.editList(-1);
                                 }
                             });
+
+                            return false;
                         },
                         mouseover: function displayTooltip() {
                             showTitle(
