@@ -5,6 +5,7 @@
 // @description:ru Реализует тёмную кнопку для добавления сообществ или пользователей в списки новостей без подписки на них
 // @version 1.6.5
 // @author Sasha_Sorokin
+// @namespace https://github.com/Sasha-Sorokin/vklistadd
 // @supportURL https://github.com/Sasha-Sorokin/vklistadd/issues
 // @updateURL https://github.com/Sasha-Sorokin/vklistadd/raw/master/vklistadd.user.js
 // @run-at document-start
