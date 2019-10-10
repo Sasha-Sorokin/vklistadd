@@ -300,7 +300,13 @@
             return hint;
         },
 
-        [SYM__UPDATE_INFO_BLOCK](block, state, customize) {
+        /**
+         * Updates information block to new state
+         * @param {object} block Block to update
+         * @param {object} state Current state
+         * @param {function} postUpdate Post update function to customize elements
+         */
+        [SYM__UPDATE_INFO_BLOCK](block, state, postUpdate) {
             if (state) {
                 // info.groupName
                 block.avatarThumb.alt = state.name;
@@ -319,7 +325,7 @@
                 block.targetDescription.innerText = state.description;
             }
 
-            if (customize) customize(block);
+            if (postUpdate) postUpdate(block);
         },
 
         /**
