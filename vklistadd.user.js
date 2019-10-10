@@ -1230,7 +1230,7 @@
             if (block == null) {
                 block = VK_DOM.createInfoBlock();
 
-                LIST_DIALOG[SYM__DIALOG_INFO_BLOCK];
+                LIST_DIALOG[SYM__DIALOG_INFO_BLOCK] = block;
             }
 
             return block;
