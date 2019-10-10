@@ -32,7 +32,10 @@
     const SYM__DIALOG_NOTIFICATIONS_CONTROLLERS = Symbol("notificationsControllers");
     const SYM__DIALOG_UPDATE_NOTIFICATIONS_LINK = Symbol("updateNotificationLink");
     const SYM__DIALOG_NOTIFICATIONS_LINK = Symbol("notificationsLink");
-    const SYM__DIALOG_NOTIFICATIONS_LINK_BIND = Symbol("notificationsLinkBindController")
+    const SYM__DIALOG_NOTIFICATIONS_LINK_BIND = Symbol("notificationsLinkBindController");
+    const SYM__DIALOG_LABEL_TEXTS = Symbol("labelTexts");
+    const SYM__DIALOG_LABEL_CURRENT_STATE = Symbol("labelCurrentState");
+    const SYM__DIALOG_UPDATE_LABEL = Symbol("updateLabel");
     const SYM__DIALOG_LABEL = Symbol("label");
     const SYM__DIALOG_ADD_LIST_BUTTON = Symbol("addListButton");
     const SYM__DIALOG_PRIVATE_WARNING_TEXTS = Symbol("privateWarningTexts");
@@ -1234,24 +1237,62 @@
         },
 
         /**
+         * Texts for use by a dialog label
+         */
+        [SYM__DIALOG_LABEL_TEXTS]: {
+            base: {
+                en: "Show this {}'s news in the lists:",
+                ru: "Отображать новости {} в списках:",
+            },
+            public: {
+                en: "community",
+                ru: "этого сообщества",
+            },
+            groups: {
+                en: "group",
+                ru: "этой группы",
+            },
+            profile: {
+                en: "user",
+                ru: "этого пользователя",
+            },
+        },
+
+        /**
+         * Updates dialog label according to current state
+         * @param {HTMLDivElement} label Label to update
+         * @param {string} state Current used module
+         */
+        [SYM__DIALOG_UPDATE_LABEL](label, state) {
+            const locale = VK_API[SYM__RU_LOCALE_USED] ? "ru" : "en";
+            const base = LIST_DIALOG[SYM__DIALOG_LABEL_TEXTS].base[locale];
+            const placeholder = LIST_DIALOG[SYM__DIALOG_LABEL_TEXTS][state][locale];
+
+            label.innerText = base.replace("{}", placeholder);
+        },
+
+        /**
          * Returns previous or creates new dialog label
          */
         getDialogLabel() {
             let label = LIST_DIALOG[SYM__DIALOG_LABEL];
 
             if (label == null) {
-                label = DOM.createElement("div", {
-                    props: {
-                        innerText: VK_API[SYM__RU_LOCALE_USED]
-                            ? "Отображать новости сообщества в списках:"
-                            : "Show this community's news in the lists:",
-                    },
+                const control = DOM.createElement("div", {
                     style: {
                         marginBottom: "10px"
                     }
                 });
 
-                LIST_DIALOG[SYM__DIALOG_LABEL] = label;
+                const updateFc = (state) => {
+                    if (updateFc[SYM__DIALOG_LABEL_CURRENT_STATE] === state) return;
+
+                    LIST_DIALOG[SYM__DIALOG_UPDATE_LABEL](control, state);
+                };
+
+                updateFc[SYM__CONTROL] = control;
+
+                label = LIST_DIALOG[SYM__DIALOG_LABEL] = updateFc;
             }
 
             return label;
@@ -1425,6 +1466,8 @@
 
             const followStatus = CONTEXT.getFollowStatus();
 
+            // ----------------------------------
+
             const updateInfoBlockState = LIST_DIALOG.getDialogInfoBlock();
 
             const newInfoBlockState = LIST_DIALOG.getInfoBlockState();
@@ -1443,7 +1486,13 @@
 
             boxContainer.appendChild(updateInfoBlockState[SYM__CONTROL]);
 
-            boxContainer.appendChild(LIST_DIALOG.getDialogLabel());
+            // ----------------------------------
+
+            const updateDialogLabel = LIST_DIALOG.getDialogLabel();
+
+            updateDialogLabel(cur.module);
+            
+            boxContainer.appendChild(updateDialogLabel[SYM__CONTROL]);
 
             // ----------------------------------
 
