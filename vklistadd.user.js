@@ -1,6 +1,8 @@
 // ==UserScript==
 // @name VK List Add
-// @description Implements a darky button to add communities to feed lists without subscribing to them
+// @name:ru VK Добавление в списки
+// @description Implements a darky button to add communities or users to feed lists without subscribing to them
+// @description:ru Реализует тёмную кнопку для добавления сообществ или пользователей в списки новостей без подписки на них
 // @version 1.6.5
 // @author Sasha_Sorokin
 // @supportURL https://github.com/Sasha-Sorokin/vklistadd/issues
