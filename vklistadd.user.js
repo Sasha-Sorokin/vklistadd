@@ -1177,6 +1177,9 @@
                 });
 
                 LIST_DIALOG[SYM__DIALOG_ADD_LIST_BUTTON] = link;
+            } else if (link.tt) {
+                // See addHint commentary for details
+                link.tt.destroy();
             }
 
             return link;
