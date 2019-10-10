@@ -780,7 +780,7 @@
             },
             own: {
                 en: "This is breathtaking you!",
-                ru: "Это вы!"
+                ru: "Гляньте-ка, это же вы!"
             },
         },
 
