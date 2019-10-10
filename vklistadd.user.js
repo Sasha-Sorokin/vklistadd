@@ -20,10 +20,20 @@
     const SYM__WRAPPER_CALLBACK = Symbol("wrapperCallback");
     const SYM__INITIALIZED_STYLES = Symbol("initializedStyles");
     const SYM__RU_LOCALE_USED = Symbol("ruLocaleUsed");
-    const SYM__DIALOG_ACTION_BUTTON = Symbol("dialogActionButton");
-    const SYM__DIALOG_MENU_ITEM = Symbol("dialogMenuItem");
-    const SYM__DIALOG_HINT = Symbol("dialogHint");
-    const SYM__DIALOG_LABEL = Symbol("dialogLabel");
+    // VK_DOM
+    const SYM__CONTROL = Symbol("boundControl");
+    const SYM__UPDATE_PROGRESS_INDICATOR = Symbol("updateProgressBar");
+    const SYM__UPDATE_INFO_BLOCK = Symbol("updateInfoBlock");
+    // LIST_DIALOG
+    const SYM__DIALOG_ACTION_BUTTON = Symbol("actionButton");
+    const SYM__DIALOG_MENU_ITEM = Symbol("menuItem");
+    const SYM__DIALOG_INFO_BLOCK = Symbol("infoBlock");
+    const SYM__DIALOG_HINT = Symbol("hint");
+    const SYM__DIALOG_NOTIFICATIONS_CONTROLLERS = Symbol("notificationsControllers");
+    const SYM__DIALOG_UPDATE_NOTIFICATIONS_LINK = Symbol("updateNotificationLink");
+    const SYM__DIALOG_NOTIFICATIONS_LINK = Symbol("notificationsLink");
+    const SYM__DIALOG_NOTIFICATIONS_LINK_BIND = Symbol("notificationsLinkBindController")
+    const SYM__DIALOG_LABEL = Symbol("label");
     const SYM__DIALOG_ADD_LIST_BUTTON = Symbol("addListButton");
     const SYM__DIALOG_PRIVATE_WARNING_TEXTS = Symbol("privateWarningTexts");
     const SYM__DIALOG_FOLLOW_TEXTS = Symbol("followTexts");
@@ -187,16 +197,20 @@
          * @param {*} options.events Event listeners to add
          */
         createElement(tagName, options) {
-            const { props, style, events, attributes, mount } = options;
+            const { props, style, events, attributes, mount, child, children } = options;
 
             const el = document.createElement(tagName);
 
-            if (attributes) DOM.assignAttributes(el, attributes);
-            if (style) DOM.assignStyles(el, style);
-            if (events) DOM.addEventListeners(el, events);
+            if (props != null) Object.assign(el, props);
+            if (attributes != null) DOM.assignAttributes(el, attributes);
+            if (style != null) DOM.assignStyles(el, style);
+            if (events != null) DOM.addEventListeners(el, events);
             if (mount instanceof HTMLElement) mount.appendChild(el);
 
-            return props ? Object.assign(el, props) : el;
+            if (child != null) el.appendChild(child);
+            if (children != null) DOM.appendEvery(children, el);
+
+            return el;
         },
 
         /**
@@ -216,7 +230,7 @@
             const doc = new DOMParser().parseFromString(input, "text/html");
 
             return doc.documentElement.textContent;
-        }
+        },
     };
 
     /**
@@ -280,6 +294,28 @@
             return hint;
         },
 
+        [SYM__UPDATE_INFO_BLOCK](block, state, customize) {
+            if (state) {
+                // info.groupName
+                block.avatarThumb.alt = state.name;
+                block.targetName.innerText = state.name;
+
+                // info.url
+                block.avatarLink.href = state.url;
+                block.targetName.href = state.url;
+
+                // info.iconUrl
+                DOM.assignStyles(block.avatarThumb, {
+                    backgroundImage: `url("${state.iconUrl}")`
+                });
+
+                // info.description
+                block.targetDescription.innerText = state.description;
+            }
+
+            if (customize) customize(block);
+        },
+
         /**
          * Creates a page row in module element
          *
@@ -287,115 +323,97 @@
          * @param {*} public Information about public page
          * @param {*} customizeElements Callback to customize some elements
          */
-        createPublicInfoRow(public, customizeElements) {
+        createInfoBlock() {
+            let avatarLink, avatarThumb;
+            let targetInfoContainer, targetName, targetDescription;
+
             const publicInfo = DOM.createElement("div", {
-                props: {
-                    className: "line_cell clear_fix"
-                }
+                props: { className: "line_cell clear_fix" },
+                style: { marginBottom: "15px" },
+                children: [
+                    // GROUP AVATAR
+                    // <--
+                    avatarLink = DOM.createElement("a", {
+                        props: {
+                            className: "fl_l",
+                            // There is no sense for the avatar to be visible
+                            ariaHidden: true
+                        },
+                        child: avatarThumb = DOM.createElement("div", {
+                            props: {
+                                className: "thumb",
+                                ariaHidden: true
+                            },
+                            mount: avatarLink
+                        })
+                    }),
+                    // GROUP NAME AND DESCRIPTION
+                    // -->
+                    targetInfoContainer = DOM.createElement("div", {
+                        props: { className: "fl_l desc_info" },
+                        style: { width: "auto" },
+                        children: [
+                            DOM.createElement("div", {
+                                props: { className: "group_name" },
+                                children: [
+                                    targetName = document.createElement("a")
+                                ]
+                            }),
+
+                            targetDescription = DOM.createElement("div", {
+                                props: { className: "group_desc" }
+                            })
+                        ]
+                    })
+                ]
             });
 
-            publicInfo.style.marginBottom = "15px";
+            const block = {
+                avatarLink,
+                avatarThumb,
+                targetInfoContainer,
+                targetName,
+                targetDescription
+            };
 
-            // GROUP AVATAR
-            // <--
+            const updateFc =  (state, customize) =>
+                VK_DOM[SYM__UPDATE_INFO_BLOCK](block, state, customize);
 
-            const publicInfoAvatar = DOM.createElement("a", {
-                props: {
-                    href: public.link,
-                    className: "fl_l",
-                    // There is no sense for the avatar to be visible
-                    ariaHidden: true
-                }
-            });
+            updateFc[SYM__CONTROL] = publicInfo;
 
-            publicInfo.appendChild(publicInfoAvatar);
-
-            const publicInfoAvatarThumb = DOM.createElement("div", {
-                props: {
-                    className: "thumb",
-                    ariaHidden: true
-                },
-                style: {
-                    backgroundImage: `url("${public.thumb}")`
-                },
-                mount: publicInfoAvatar
-            });
-
-            // GROUP NAME AND DESCRIPTION
-            // -->
-
-            const publicInfoContent = DOM.createElement("div", {
-                props: {
-                    className: "fl_l desc_info"
-                },
-                style: {
-                    width: "auto"
-                },
-                mount: publicInfo
-            });
-
-            const publicInfoGroupName = DOM.createElement("div", {
-                props: {
-                    className: "group_name"
-                },
-                mount: publicInfoContent
-            });
-
-            const publicInfoGroupNameLink = DOM.createElement("a", {
-                props: {
-                    href: public.link,
-                    innerText: public.name
-                },
-                mount: publicInfoGroupName
-            });
-
-            const publicInfoGroupDesc = DOM.createElement("div", {
-                props: {
-                    className: "group_desc",
-                    innerText: public.description
-                },
-                mount: publicInfoContent
-            });
-
-            if (typeof customizeElements === "function") {
-                customizeElements({
-                    description: publicInfoGroupDesc,
-                    infoContainer: publicInfoContent
-                });
-            }
-
-            return publicInfo;
+            return updateFc;
         },
 
         /**
-         * Changes progress bar display state
-         * @param {boolean} state Progress bar state
+         * Changes progress indicator display state
+         * @param {boolean} state Indicator state
          */
-        _changeProgessState(state) {
-            DOM.assignStyles(this, {
+        [SYM__UPDATE_PROGRESS_INDICATOR](indicator, state) {
+            DOM.assignStyles(indicator, {
                 display: state ? "block" : "none"
             });
         },
 
         /**
-         * Creates an indeterminate progress bar
-         * @param {boolean} state Initial progress bar state
-         * @returns Function to change state of progress bar
-         * and containing `control` property with bar element
+         * Creates an indeterminate progress indicator
+         * @param {boolean} state Initial indicator state
+         * @returns Function to change state of the indicator
+         * and containing `CONTROL` symbol with indicator element
          */
-        createProgress(state, mount) {
-            const progress = DOM.createElement("div", {
+        createProgressIndicator(state, mount) {
+            const indicator = DOM.createElement("div", {
                 props: { className: "progress" },
                 mount
             });
 
-            const fc = VK_DOM._changeProgessState.bind(progress);
+            const updateFc = (state) =>
+                VK_DOM[SYM__UPDATE_PROGRESS_INDICATOR](indicator, state);
 
-            fc.control = progress;
+            updateFc[SYM__CONTROL] = indicator;
 
-            fc(state);
+            updateFc(state);
 
-            return fc;
+            return updateFc;
         },
     };
 
@@ -786,9 +804,7 @@
                         color: "#3f3f3f",
                     },
                     events: {
-                        click: function onClick() {
-                            LIST_DIALOG.initAddListDialog();
-                        }
+                        click: () => LIST_DIALOG.initAddListDialog()
                     }
                 });
 
@@ -817,9 +833,7 @@
                             : "Manage lists"
                     },
                     events: {
-                        click: function onClick() {
-                            LIST_DIALOG.initAddListDialog();
-                        }
+                        click: () => LIST_DIALOG.initAddListDialog();
                     }
                 });
 
@@ -887,7 +901,7 @@
         /**
          * Adds hint to the group description
          */
-        addHint({ description, infoContainer }) {
+        addHint({ targetDescription, targetInfoContainer }) {
             let hint = LIST_DIALOG[SYM__DIALOG_HINT];
 
             if (hint == null) {
@@ -903,6 +917,16 @@
                 // By default hint is too far away from the text, let's move it closer
                 DOM.assignStyles(hint, { margin: "0 20px 0 5px", top: "-1px" });
 
+                // Info container and description elements have "overflow" set to "hidden",
+                // this causes hint part to be hidden, so we must manually override it to "visible"
+                DOM.assignStyles(targetInfoContainer, {
+                    overflow: "visible"
+                });
+
+                DOM.assignStyles(targetDescription, {
+                    overflow: "visible"
+                });
+
                 LIST_DIALOG[SYM__DIALOG_HINT] = hint;
             } else if (hint.tt) {
                 // Previous tooltip must be destroyed or else it will be attached to previous box;
@@ -910,64 +934,73 @@
                 hint.tt.destroy();
             }
 
-            description.appendChild(hint);
-
-            // Info container and description elements have "overflow" set to "hidden",
-            // this causes hint part to be hidden, so we must manually override it to "visible"
-            DOM.assignStyles(infoContainer, {
-                overflow: "visible"
-            });
-
-            DOM.assignStyles(description, {
-                overflow: "visible"
-            });
+            targetDescription.appendChild(hint);
         },
 
         /**
-         * Creates simple controller for notifications
+         * Weak of controllers based on `cur` of the page
          */
-        _makeNotificationsController() {
-            let actionButton;
-            let enabledCheck;
+        [SYM__DIALOG_NOTIFICATIONS_CONTROLLERS]: new WeakMap(),
 
-            if (cur.module === "profile") {
-                const items = document.querySelectorAll(".page_actions_item");
+        /**
+         * Gets current notifications controller or creates a new one
+         */
+        getNotificationsController() {
+            // `cur` updates whenever the page updates and can be used as the weak reference
+            let controller = LIST_DIALOG[SYM__DIALOG_NOTIFICATIONS_CONTROLLERS].get(cur);
 
-                for (const item of items) {
-                    if (item.onclick != null && item.onclick.toString().includes("Page.toggleSubscription")) {
-                        actionButton = item;
+            if (controller == null) {
+                let actionButton;
+                let enabledCheck;
 
-                        break;
+                if (cur.module === "profile") {
+                    const items = document.querySelectorAll(".page_actions_item");
+
+                    for (const item of items) {
+                        if (item.onclick != null) {
+                            const callbackMatches = item.onclick
+                                .toString().includes("Page.toggleSubscription");
+
+                            if (callbackMatches) {
+                                actionButton = item;
+
+                                break;
+                            }
+                        }
+                    }
+
+                    if (actionButton != null) {
+                        enabledCheck = () => actionButton.dataset.act === "1" ? false : true;
+                    }
+                } else {
+                    actionButton = document.querySelector("#page_menu_notifications_item");
+
+                    if (actionButton != null) {
+                        enabledCheck = () => actionButton.classList.contains("on");
                     }
                 }
 
-                if (actionButton != null) {
-                    enabledCheck = () => actionButton.dataset.act === "1" ? false : true;
-                }
-            } else {
-                actionButton = document.querySelector("#page_menu_notifications_item");
+                if (actionButton == null) return { available: false };
 
-                if (actionButton != null) {
-                    enabledCheck = () => actionButton.classList.contains("on");
-                }
+                controller = {
+                    available: true,
+                    isEnabled: enabledCheck,
+                    toggle: () => actionButton.click()
+                };
+
+                LIST_DIALOG[SYM__DIALOG_NOTIFICATIONS_CONTROLLERS].set(cur, controller);
             }
 
-            if (actionButton == null) return { available: false };
-
-            return {
-                available: true,
-                isEnabled: enabledCheck,
-                toggle: () => actionButton.click()
-            };
+            return controller;
         },
 
         /**
-         * Creates a notification links
-         * @param {HTMLAnchorElement} link Link element itself
-         * @param {boolean} status Current notifications status
+         * Updates notification link according to current state
+         * @param {HTMLAnchorElement} link Link to update
+         * @param {boolean} state Current state
          */
-        _renderNotificationsLink(link, status) {
-            link.innerText = status
+        [SYM__DIALOG_UPDATE_NOTIFICATIONS_LINK](link, state) {
+            link.innerText = state
                 ? VK_API[SYM__RU_LOCALE_USED]
                     ? "Уведомления включены."
                     : "Notifications enabled."
@@ -977,33 +1010,74 @@
         },
 
         /**
+         * Returns previous or creates new notification link
+         */
+        getNotificationsLink() {
+            let link = LIST_DIALOG[SYM__DIALOG_NOTIFICATIONS_LINK];
+
+            if (link == null) {
+                let control;
+
+                let updateState = (state) =>
+                    LIST_DIALOG[SYM__DIALOG_UPDATE_NOTIFICATIONS_LINK](control, state);
+
+                // Bound notifications controller
+                let controller;
+
+                const lineBreak = document.createElement("br");
+
+                control = DOM.createElement("a", {
+                    style: { display: "none" },
+                    events: {
+                        click: function toggleNotifications(e) {
+                            e.preventDefault();
+
+                            if (controller) {
+                                let newState = !controller.isEnabled();
+
+                                controller.toggle();
+
+                                updateState(newState);
+                            }
+
+                            return false;
+                        }
+                    }
+                });
+
+                updateState[SYM__CONTROL] = [lineBreak, control];
+
+                updateState[SYM__DIALOG_NOTIFICATIONS_LINK_BIND] = (newController) => {
+                    controller = newController;
+
+                    if (newController) {
+                        control.style.display = "";
+
+                        if (newController.available) {
+                            updateState(newController.isEnabled());
+                        }
+                    } else {
+                        control.style.display = "none";
+                    }
+                };
+
+                link = updateState;
+            }
+
+            return link;
+        },
+
+        /**
          * Adds notification link to the description
          */
-        addNotificationLink({ description }) {
-            const notifications = LIST_DIALOG._makeNotificationsController();
+        addNotificationLink({ targetDescription }) {
+            const controller = LIST_DIALOG.getNotificationsController();
 
-            if (!notifications.available) return;
+            const link = LIST_DIALOG.getNotificationsLink();
 
-            DOM.createElement("br", { mount: description });
+            link[SYM__DIALOG_NOTIFICATIONS_LINK_BIND](controller);
 
-            const link = DOM.createElement("a", {
-                events: {
-                    click: function toggleNotifications(e) {
-                        e.preventDefault();
-
-                        let newStatus = !notifications.isEnabled();
-
-                        notifications.toggle();
-
-                        LIST_DIALOG._renderNotificationsLink(link, newStatus);
-
-                        return false;
-                    }
-                },
-                mount: description
-            });
-
-            LIST_DIALOG._renderNotificationsLink(link, notifications.isEnabled());
+            DOM.appendEvery(link[SYM__CONTROL], targetDescription);
         },
 
         /**
@@ -1144,6 +1218,21 @@
         },
 
         /**
+         * Returns previous or creates new dialog target info block
+         */
+        getDialogInfoBlock() {
+            let block = LIST_DIALOG[SYM__DIALOG_INFO_BLOCK];
+
+            if (block == null) {
+                block = VK_DOM.createInfoBlock();
+
+                LIST_DIALOG[SYM__DIALOG_INFO_BLOCK];
+            }
+
+            return block;
+        },
+
+        /**
          * Returns previous or creates new dialog label
          */
         getDialogLabel() {
@@ -1276,7 +1365,7 @@
                     id: `list_${i}`,
                     text: listName,
                     isChecked: cur.options.feedListsSet[i] === 1,
-                    onChange: function onCheckboxChange(e) {
+                    onChange: (e) => {
                         state.changes[i] = e.target.checked ? 1 : -1;
                     }
                 });
@@ -1288,7 +1377,7 @@
 
             // --- FINALIZATION
 
-            container.removeChild(state.progress.control);
+            container.removeChild(state.progress[SYM__CONTROL]);
 
             DOM.appendEvery(rows, container);
 
@@ -1311,19 +1400,22 @@
 
             const followStatus = CONTEXT.getFollowStatus();
 
-            boxContainer.appendChild(
-                VK_DOM.createPublicInfoRow({
-                        link: CONTEXT.getLink(),
-                        thumb: CONTEXT.getIcon(),
-                        name: DOM.decodeDOMString(cur.options.back),
-                        description: LIST_DIALOG.getFollowStatusText(followStatus)
-                    },
-                    function customize(elements) {
-                        LIST_DIALOG.addHint(elements);
-                        LIST_DIALOG.addNotificationLink(elements);
-                    }
-                )
+            const infoBlock = LIST_DIALOG.getDialogInfoBlock();
+
+            infoBlock(
+                {
+                    name: DOM.decodeDOMString(cur.options.back),
+                    url: CONTEXT.getLink(),
+                    iconUrl: CONTEXT.getIcon(),
+                    description: LIST_DIALOG.getFollowStatusText(followStatus)
+                },
+                function postUpdate(block) {
+                    LIST_DIALOG.addHint(block);
+                    LIST_DIALOG.addNotificationLink(block);
+                }
             );
+
+            boxContainer.appendChild(infoBlock[SYM__CONTROL]);
 
             boxContainer.appendChild(LIST_DIALOG.getDialogLabel());
 
@@ -1338,9 +1430,7 @@
                     mount: boxContainer
                 });
 
-                listsState.progress = VK_DOM.createProgress(true, listsContainer);
-
-                console.time("displayLists");
+                listsState.progress = VK_DOM.createProgressIndicator(true, listsContainer);
 
                 LIST_DIALOG.displayLists(listsContainer, listsState);
             }
