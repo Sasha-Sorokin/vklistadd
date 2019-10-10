@@ -37,6 +37,7 @@
     const SYM__DIALOG_ADD_LIST_BUTTON = Symbol("addListButton");
     const SYM__DIALOG_PRIVATE_WARNING_TEXTS = Symbol("privateWarningTexts");
     const SYM__DIALOG_FOLLOW_TEXTS = Symbol("followTexts");
+    const SYM__DIALOG_INFO_BLOCK_STATES = Symbol("infoBlockInfos");
 
     /**
      * Collection of the CSS related stuff
@@ -938,7 +939,7 @@
         },
 
         /**
-         * Weak of controllers based on `cur` of the page
+         * Weak map of controllers based on `cur` of the page
          */
         [SYM__DIALOG_NOTIFICATIONS_CONTROLLERS]: new WeakMap(),
 
@@ -1385,6 +1386,30 @@
         },
 
         /**
+         * Weak map of states for target information block
+         */
+        [SYM__DIALOG_INFO_BLOCK_STATES]: new WeakMap(),
+
+        /**
+         * Gets *updated* state for target information block
+         */
+        getInfoBlockState() {
+            let info = LIST_DIALOG[SYM__DIALOG_INFO_BLOCK_STATES].get(cur);
+
+            if (info != null) return null;
+
+            info = {
+                name: DOM.decodeDOMString(cur.options.back),
+                url: CONTEXT.getLink(),
+                iconUrl: CONTEXT.getIcon()
+            };
+
+            LIST_DIALOG[SYM__DIALOG_INFO_BLOCK_STATES].set(cur, info);
+
+            return info;
+        },
+
+        /**
          * Initializes a message box containing the dialog
          */
         async initAddListDialog() {
@@ -1400,22 +1425,23 @@
 
             const followStatus = CONTEXT.getFollowStatus();
 
-            const infoBlock = LIST_DIALOG.getDialogInfoBlock();
+            const updateInfoBlockState = LIST_DIALOG.getDialogInfoBlock();
 
-            infoBlock(
-                {
-                    name: DOM.decodeDOMString(cur.options.back),
-                    url: CONTEXT.getLink(),
-                    iconUrl: CONTEXT.getIcon(),
-                    description: LIST_DIALOG.getFollowStatusText(followStatus)
-                },
-                function postUpdate(block) {
-                    LIST_DIALOG.addHint(block);
-                    LIST_DIALOG.addNotificationLink(block);
-                }
-            );
+            const newInfoBlockState = LIST_DIALOG.getInfoBlockState();
 
-            boxContainer.appendChild(infoBlock[SYM__CONTROL]);
+            if (newInfoBlockState) {
+                newInfoBlockState.description = LIST_DIALOG.getFollowStatusText(followStatus);
+
+                updateInfoBlockState(
+                    newInfoBlockState,
+                    function postUpdate(block) {
+                        LIST_DIALOG.addHint(block);
+                        LIST_DIALOG.addNotificationLink(block);
+                    }
+                );
+            }
+
+            boxContainer.appendChild(updateInfoBlockState[SYM__CONTROL]);
 
             boxContainer.appendChild(LIST_DIALOG.getDialogLabel());
 
