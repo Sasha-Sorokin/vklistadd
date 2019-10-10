@@ -833,7 +833,7 @@
                             : "Manage lists"
                     },
                     events: {
-                        click: () => LIST_DIALOG.initAddListDialog();
+                        click: () => LIST_DIALOG.initAddListDialog()
                     }
                 });
 
