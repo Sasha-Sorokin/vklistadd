@@ -1404,7 +1404,7 @@
             const rows = [];
 
             for (const i in feedLists) {
-                const listName = feedLists[i];
+                const listName = DOM.decodeDOMString(feedLists[i]);
 
                 const row = DOM.createElement("div", {
                     style: {
