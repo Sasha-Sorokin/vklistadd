@@ -27,6 +27,8 @@
     const SYM__CONTROL = Symbol("boundControl");
     const SYM__UPDATE_PROGRESS_INDICATOR = Symbol("updateProgressBar");
     const SYM__UPDATE_INFO_BLOCK = Symbol("updateInfoBlock");
+    // CONTEXT
+    const SYM_BOOKMARK_NAME_ELEM = Symbol("bookmarkElem");
     // LIST_DIALOG
     const SYM__DIALOG_ACTION_BUTTON = Symbol("actionButton");
     const SYM__DIALOG_MENU_ITEM = Symbol("menuItem");
@@ -44,6 +46,7 @@
     const SYM__DIALOG_PRIVATE_WARNING_TEXTS = Symbol("privateWarningTexts");
     const SYM__DIALOG_FOLLOW_TEXTS = Symbol("followTexts");
     const SYM__DIALOG_INFO_BLOCK_STATES = Symbol("infoBlockInfos");
+    const SYM__DIALOG_LATEST_TARGET_ID = Symbol("latestTargetId");
 
     /**
      * Collection of the CSS related stuff
@@ -510,6 +513,11 @@
     }
 
     /**
+     * Weak references to current selected bookmark
+     */
+    const CURRENT_BOOKMARKS = new WeakMap();
+
+    /**
      * Collection used by Manage lists dialog to show context
      */
     const CONTEXT = {
@@ -634,6 +642,56 @@
             return null;
         },
 
+        // icon, link
+
+        /**
+         * Returns icon of current bookmark
+         */
+        getCurrentBookmarkIcon() {
+            const bookmark = CURRENT_BOOKMARKS.get(cur);
+
+            if (bookmark == null) return null;
+
+            const image = bookmark.querySelector(".bookmark_page_item__image");
+
+            return image != null
+                ? image.style.backgroundImage.slice(4, -1).replace(/"/g, "")
+                : null;
+        },
+
+        /**
+         * Gets link element of current bookmark
+         */
+        _getCurrentBookmarkNameLink() {
+            const bookmark = CURRENT_BOOKMARKS.get(cur);
+
+            if (bookmark == null) return null;
+
+            let link = bookmark[SYM_BOOKMARK_NAME_ELEM];
+
+            if (link == null) {
+                link = bookmark.querySelector(".bookmark_page_item__name > a")
+
+                bookmark[SYM_BOOKMARK_NAME_ELEM] = link;
+            }
+
+            return link == null ? null : link;
+        },
+
+        /**
+         * Returns name of the current bookmark
+         */
+        getCurrentBookmarkName() {
+            return CONTEXT._getCurrentBookmarkNameLink().textContent;
+        },
+
+        /**
+         * Returns link of current bookmark
+         */
+        getCurrentBookmarkLink() {
+            return CONTEXT._getCurrentBookmarkNameLink().href;
+        },
+
         /**
          * Checks whether the current cummunity is private
          */
@@ -645,6 +703,10 @@
          * Returns icon of current public page or user
          */
         getIcon() {
+            if (cur.module === "bookmarks") {
+                return CONTEXT.getCurrentBookmarkIcon();
+            }
+
             const postImg = CONTEXT._getIconFromPosts();
 
             if (postImg != null) return postImg;
@@ -658,7 +720,11 @@
          * Returns link of current public page or user
          */
         getLink() {
-            if (cur.module === "profile") return CONTEXT.getUserLink();
+            if (cur.module === "profile") {
+                return CONTEXT.getUserLink();
+            } else if (cur.module === "bookmarks") {
+                return CONTEXT.getCurrentBookmarkLink();
+            }
 
             return CONTEXT.getPageLink();
         },
@@ -668,8 +734,20 @@
          */
         getFollowStatus() {
             if (cur.module === "profile") return CONTEXT.getUserFollowStatus();
+            else if (cur.module === "bookmarks") return null;
 
             return CONTEXT.getPageFollowStatus();
+        },
+
+        /**
+         * Gets name of the current public or bookmark
+         */
+        getName() {
+            if (cur.module === "bookmarks") {
+                return CONTEXT.getCurrentBookmarkName();
+            }
+
+            return cur.options.back;
         },
 
         /**
@@ -885,6 +963,53 @@
             const container = document.querySelector(".page_extra_actions_wrap > .page_actions_inner");
 
             DOM.insertBefore(container.firstElementChild, LIST_DIALOG.getMenuItem());
+        },
+
+        /**
+         * Creates bookmark menu item to mount
+         * @param {HTMLDivElement} bookmark Bookmark element
+         */
+        createBookmarkMenuItem(bookmark) {
+            const objId = bookmark.dataset.id;
+
+            return DOM.createElement("a", {
+                props: {
+                    innerText: VK_API[SYM__RU_LOCALE_USED]
+                        ? "Списки новостей"
+                        : "News feeds",
+                    className: "ui_actions_menu_item",
+                    tabIndex: "0"
+                },
+                events: {
+                    click() {
+                        CURRENT_BOOKMARKS.set(cur, bookmark);
+
+                        cur.oid = objId;
+
+                        LIST_DIALOG.initAddListDialog();
+                    }
+                },
+                attributes: {
+                    role: "link"
+                }
+            });
+        },
+
+        /**
+         * Mount menu items to current pages
+         * @param {HTMLDivElement} bookmark Bookmark
+         */
+        mountBookmarksMenuItem(bookmark) {
+            const menu = bookmark.querySelector(".ui_actions_menu");
+
+            if (menu == null) return;
+
+            const separator = menu.querySelector(".ui_actions_menu_sep");
+
+            DOM.insertBefore(
+                separator,
+                LIST_DIALOG.createBookmarkMenuItem(bookmark)
+            );
         },
 
         /**
@@ -1114,7 +1239,7 @@
                             e.preventDefault();
 
                             const targetId = cur.oid;
-                            const targetName = DOM.decodeDOMString(cur.options.back);
+                            const targetName = DOM.decodeDOMString(CONTEXT.getName());
                             const targetLink = CONTEXT.getLink();
                             const targetIcon = CONTEXT.getIcon();
 
@@ -1267,6 +1392,10 @@
                 en: "user",
                 ru: "этого пользователя",
             },
+            bookmarks: {
+                en: "bookmark",
+                ru: "этой закладки"
+            }
         },
 
         /**
@@ -1380,6 +1509,11 @@
         },
 
         /**
+         * ID of the latest target for the lists display
+         */
+        [SYM__DIALOG_LATEST_TARGET_ID]: null,
+
+        /**
          * Loads and display lists in given container
          * @param {HTMLDivElement} container Lists container
          * @param {object} state Object with current state
@@ -1387,14 +1521,18 @@
         async displayLists(container, state) {
             // --- INITIALIZATION
 
-            let { feedLists } = cur.options;
+            let { feedLists } = cur.options || (cur.options = {});
 
             state.targetId = cur.oid;
 
-            if (feedLists == null) {
+            const latestTargetId = LIST_DIALOG[SYM__DIALOG_LATEST_TARGET_ID];
+
+            if (feedLists == null || latestTargetId !== state.targetId) {
                 await VK_API.initLists(state.targetId);
 
                 feedLists = cur.options.feedLists;
+
+                LIST_DIALOG[SYM__DIALOG_LATEST_TARGET_ID] = state.targetId;
             }
 
             state.hash = cur.options.feedListsHash;
@@ -1446,12 +1584,16 @@
          * Gets *updated* state for target information block
          */
         getInfoBlockState() {
-            let info = LIST_DIALOG[SYM__DIALOG_INFO_BLOCK_STATES].get(cur);
+            let info = LIST_DIALOG[SYM__DIALOG_INFO_BLOCK_STATES].get(
+                cur.module === "bookmarks"
+                    ? CURRENT_BOOKMARKS.get(cur)
+                    : cur
+            );
 
             if (info != null) return null;
 
             info = {
-                name: DOM.decodeDOMString(cur.options.back),
+                name: DOM.decodeDOMString(CONTEXT.getName()),
                 url: CONTEXT.getLink(),
                 iconUrl: CONTEXT.getIcon()
             };
@@ -1690,9 +1832,56 @@
         profileInitCallback() {
             LIST_DIALOG.mountMenuItem();
         },
+
+        /**
+         * Default callback for `Bookmarks` initialization
+         * 
+         * Used to mount items to bookmarks menus
+         */
+        bookmarksInitCallback() {
+            const currentType = new URL(location.href).searchParams.get("type");
+
+            if (currentType !== "group" && currentType !== "user") return;
+
+            // Sorry I cannot proxies but can forkin' magica bwah
+
+            const proto = Object.getPrototypeOf(cur.pagesAll);
+
+            function pushInterceptor(...args) {
+                let result = proto.push.apply(this, args);
+
+                let arg;
+
+                try {
+                    if (args == null || args.length === 0) return;
+
+                    for (let i = 0, l = args.length; i < l; i++) {
+                        arg = args[i];
+
+                        LIST_DIALOG.mountBookmarksMenuItem(arg);
+                    }
+                } catch (err) {
+                    console.error("[VKLISTADD] Failed mount bookmark menu item during interception of", arg, "- error:", err);
+                }
+
+                return result;
+            }
+
+            const newProto = Object.create(proto, {
+                push: {
+                    value: pushInterceptor,
+                    writable: false,
+                    enumerable: false,
+                    configurable: true
+                }
+            });
+
+            Object.setPrototypeOf(cur.pagesAll, newProto);
+        },
     };
 
     WRAPPING.createWindowWrap("public", INIT_CALLBACKS.publicInitCallback);
     WRAPPING.createWindowWrap("Groups", INIT_CALLBACKS.publicInitCallback);
     WRAPPING.createWindowWrap("Profile", INIT_CALLBACKS.profileInitCallback);
+    WRAPPING.createWindowWrap("Bookmarks", INIT_CALLBACKS.bookmarksInitCallback);
 })();
