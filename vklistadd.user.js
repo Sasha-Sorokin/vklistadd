@@ -434,9 +434,10 @@
         /**
          * Makes requests to initialize needed page options
          * @param {number} itemId ID of the page
+         * @param {boolean} cache Should be cache enabled
          * @returns {Promise} Promise which resolves once request is done
          */
-        initLists(itemId) {
+        initLists(itemId, cache = false) {
             return new Promise((resolve, reject) => {
                 ajax.post("al_feed.php", {
                     act: "a_get_lists_by_item",
@@ -451,7 +452,7 @@
                     onFail: function onFail() {
                         reject("Request failed");
                     },
-                    cache: 1
+                    cache
                 });
             });
         },
