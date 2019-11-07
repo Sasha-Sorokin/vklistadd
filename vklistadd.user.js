@@ -1540,30 +1540,47 @@
 
             // --- CHECKBOXES CREATION
 
+            const listIds = Object.keys(feedLists);
+
             const rows = [];
 
-            for (const i in feedLists) {
-                const listName = DOM.decodeDOMString(feedLists[i]);
-
-                const row = DOM.createElement("div", {
-                    style: {
-                        marginBottom: "10px",
-                        lineHeight: "15px"
-                    }
-                });
-
-                const checkboxElements = VK_DOM.createCheckbox({
-                    id: `list_${i}`,
-                    text: listName,
-                    isChecked: cur.options.feedListsSet[i] === 1,
-                    onChange: (e) => {
-                        state.changes[i] = e.target.checked ? 1 : -1;
-                    }
-                });
-
-                DOM.appendEvery(checkboxElements, row);
-
-                rows.push(row);
+            if (listIds.length === 0) {
+                rows.push(
+                    DOM.createElement("div", {
+                        props: {
+                            innerText: VK_API[SYM__RU_LOCALE_USED]
+                                ? "У вас нет списков новостей."
+                                : "You have no newsfeed lists."
+                        },
+                        style: {
+                            color: "#656565"
+                        }
+                    })
+                );
+            } else {
+                for (const id of listIds) {
+                    const listName = DOM.decodeDOMString(feedLists[id]);
+    
+                    const row = DOM.createElement("div", {
+                        style: {
+                            marginBottom: "10px",
+                            lineHeight: "15px"
+                        }
+                    });
+    
+                    const checkboxElements = VK_DOM.createCheckbox({
+                        id: `list_${id}`,
+                        text: listName,
+                        isChecked: cur.options.feedListsSet[id] === 1,
+                        onChange: (e) => {
+                            state.changes[id] = e.target.checked ? 1 : -1;
+                        }
+                    });
+    
+                    DOM.appendEvery(checkboxElements, row);
+    
+                    rows.push(row);
+                }
             }
 
             // --- FINALIZATION
