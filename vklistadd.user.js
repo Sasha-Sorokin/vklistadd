@@ -1762,7 +1762,7 @@
             if (callbackFc == null) throw new Error("No callback function provided");
 
             function initWrapper(...args) {
-                const returning = originalFc(...args);
+                const returning = originalFc.apply(this, args);
 
                 WRAPPING.safeInvokeCallback(initWrapper);
 
