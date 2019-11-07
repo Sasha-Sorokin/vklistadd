@@ -28,7 +28,8 @@
     const SYM__UPDATE_PROGRESS_INDICATOR = Symbol("updateProgressBar");
     const SYM__UPDATE_INFO_BLOCK = Symbol("updateInfoBlock");
     // CONTEXT
-    const SYM_BOOKMARK_NAME_ELEM = Symbol("bookmarkElem");
+    const SYM__ALT_ITEM = Symbol("currentAlternativeItem");
+    const SYM__ALT_ITEM_LINK = Symbol("currentAlternativeItemLink");
     // LIST_DIALOG
     const SYM__DIALOG_ACTION_BUTTON = Symbol("actionButton");
     const SYM__DIALOG_MENU_ITEM = Symbol("menuItem");
@@ -514,14 +515,27 @@
     }
 
     /**
-     * Weak references to current selected bookmark
+     * Kind of alternative item
+     * @enum
      */
-    const CURRENT_BOOKMARKS = new WeakMap();
+    const CONTEXT_ALT_KIND = {
+        BOOKMARK: "bookmark",
+    };
 
     /**
      * Collection used by Manage lists dialog to show context
      */
     const CONTEXT = {
+        /**
+         * Weak references to current selected item
+         */
+        [SYM__ALT_ITEM]: new WeakMap(),
+
+        /**
+         * Weak references to current selected item link
+         */
+        [SYM__ALT_ITEM_LINK]: new WeakMap(),
+
         _getIconFromPosts() {
             const postImage = document.querySelector(
                 `.post_image[href="${CONTEXT.getLink()}"]`
@@ -646,51 +660,82 @@
         // icon, link
 
         /**
-         * Returns icon of current bookmark
+         * Gets current alternative item
          */
-        getCurrentBookmarkIcon() {
-            const bookmark = CURRENT_BOOKMARKS.get(cur);
+        getCurrentAltItem() {
+            return CONTEXT[SYM__ALT_ITEM].get(cur);
+        },
 
-            if (bookmark == null) return null;
+        /**
+         * Sets alternative item
+         * @param {*} element Current alternative item
+         * @param {string} kind Kind of the item
+         */
+        setCurrentAltItem(element, kind) {
+            CONTEXT[SYM__ALT_ITEM].set(cur, { element, kind });
+        },
 
-            const image = bookmark.querySelector(".bookmark_page_item__image");
+        /**
+         * Returns icon of current alternative item
+         */
+        getCurrentAltIcon(altItem) {
+            if (altItem == null) return null;
 
+            const { element, kind } = altItem;
+
+            switch (kind) {
+                case CONTEXT_ALT_KIND.BOOKMARK: {
+                    const image = element.querySelector(".bookmark_page_item__image");
+
+                    return image == null
+                        ? null
+                        : image.style.backgroundImage.slice(4, -1).replace(/"/g, "")
+                }
             return image != null
                 ? image.style.backgroundImage.slice(4, -1).replace(/"/g, "")
                 : null;
+            }
+
+            return null;
         },
 
         /**
          * Gets link element of current bookmark
          */
-        _getCurrentBookmarkNameLink() {
-            const bookmark = CURRENT_BOOKMARKS.get(cur);
+        _getCurrentAltNameLink(altItem) {
+            if (altItem == null) return null;
 
-            if (bookmark == null) return null;
+            const { element, kind } = altItem;
 
-            let link = bookmark[SYM_BOOKMARK_NAME_ELEM];
+            switch (kind) {
+                case CONTEXT_ALT_KIND.BOOKMARK: {
+                    let link = CONTEXT[SYM__ALT_ITEM_LINK].get(element);
 
-            if (link == null) {
-                link = bookmark.querySelector(".bookmark_page_item__name > a")
+                    if (link == null) {
+                        link = element.querySelector(".bookmark_page_item__name > a");
 
-                bookmark[SYM_BOOKMARK_NAME_ELEM] = link;
+                        CONTEXT[SYM__ALT_ITEM_LINK].set(element, link);
+                    }
+
+                    return link;
+                }
             }
 
-            return link == null ? null : link;
+            return null;
         },
 
         /**
          * Returns name of the current bookmark
          */
-        getCurrentBookmarkName() {
-            return CONTEXT._getCurrentBookmarkNameLink().textContent;
+        getCurrentAltName(altItem) {
+            return CONTEXT._getCurrentAltNameLink(altItem).textContent;
         },
 
         /**
          * Returns link of current bookmark
          */
-        getCurrentBookmarkLink() {
-            return CONTEXT._getCurrentBookmarkNameLink().href;
+        getCurrentAltLink(altItem) {
+            return CONTEXT._getCurrentAltNameLink(altItem).href;
         },
 
         /**
@@ -704,9 +749,9 @@
          * Returns icon of current public page or user
          */
         getIcon() {
-            if (cur.module === "bookmarks") {
-                return CONTEXT.getCurrentBookmarkIcon();
-            }
+            const altItem = CONTEXT.getCurrentAltItem();
+
+            if (altItem != null) return CONTEXT.getCurrentAltIcon(altItem);
 
             const postImg = CONTEXT._getIconFromPosts();
 
@@ -721,10 +766,15 @@
          * Returns link of current public page or user
          */
         getLink() {
+
             if (cur.module === "profile") {
                 return CONTEXT.getUserLink();
-            } else if (cur.module === "bookmarks") {
-                return CONTEXT.getCurrentBookmarkLink();
+            } else {
+                const altItem = CONTEXT.getCurrentAltItem();
+
+                if (altItem != null) {
+                    return CONTEXT.getCurrentAltLink(altItem);
+                }
             }
 
             return CONTEXT.getPageLink();
@@ -735,7 +785,11 @@
          */
         getFollowStatus() {
             if (cur.module === "profile") return CONTEXT.getUserFollowStatus();
-            else if (cur.module === "bookmarks") return null;
+            else {
+                const altItem = CONTEXT.getCurrentAltItem();
+
+                if (altItem != null) return null;
+            }
 
             return CONTEXT.getPageFollowStatus();
         },
@@ -744,9 +798,9 @@
          * Gets name of the current public or bookmark
          */
         getName() {
-            if (cur.module === "bookmarks") {
-                return CONTEXT.getCurrentBookmarkName();
-            }
+            const altItem = CONTEXT.getCurrentAltItem();
+
+            if (altItem != null) return CONTEXT.getCurrentAltName(altItem);
 
             return cur.options.back;
         },
@@ -756,6 +810,12 @@
          */
         isPrivate() {
             if (cur.module === "profile") return CONTEXT.isPrivateUser();
+            else {
+                const altItem = CONTEXT.getCurrentAltItem();
+
+                // we never can know for sure
+                if (altItem != null) return false;
+            }
 
             return CONTEXT.isPrivatePage();
         },
@@ -968,10 +1028,11 @@
 
         /**
          * Creates bookmark menu item to mount
-         * @param {HTMLDivElement} bookmark Bookmark element
+         * @param {HTMLDivElement} element Alternative item element
+         * @param {string} elementKind Kind of alternative item element
          */
-        createBookmarkMenuItem(bookmark) {
-            const objId = bookmark.dataset.id;
+        createActionsMenuItem(element, elementKind) {
+            const objId = element.dataset.id;
 
             return DOM.createElement("a", {
                 props: {
@@ -983,7 +1044,7 @@
                 },
                 events: {
                     click() {
-                        CURRENT_BOOKMARKS.set(cur, bookmark);
+                        CONTEXT.setCurrentAltItem(element, elementKind);
 
                         cur.oid = objId;
 
@@ -997,20 +1058,45 @@
         },
 
         /**
-         * Mount menu items to current pages
-         * @param {HTMLDivElement} bookmark Bookmark
+         * Gets where object should be mounted
+         * @param {HTMLDivElement} menu Menu itself
+         * @param {string} elementKind Kind of the element
          */
-        mountBookmarksMenuItem(bookmark) {
-            const menu = bookmark.querySelector(".ui_actions_menu");
+        _getActionsMenuItemDisposition(menu, elementKind) {
+            switch (elementKind) {
+                case CONTEXT_ALT_KIND.BOOKMARK: {
+                    const separator = menu.querySelector(".ui_actions_menu_sep");
+
+                    if (separator == null) return { place: menu };
+
+                    return {
+                        isBefore: true,
+                        place: separator
+                    };
+                }
+                default: return { place: menu };
+            }
+        },
+
+        /**
+         * Mounts menu item to the element
+         * @param {HTMLDivElement} elem Element with actions menu
+         * @param {string} elementKind Kind of the element
+         */
+        mountActionsMenuItem(elem, elementKind) {
+            const menu = elem.querySelector(".ui_actions_menu");
 
             if (menu == null) return;
 
-            const separator = menu.querySelector(".ui_actions_menu_sep");
+            const disposition = LIST_DIALOG._getActionsMenuItemDisposition(menu, elementKind);
 
-            DOM.insertBefore(
-                separator,
-                LIST_DIALOG.createBookmarkMenuItem(bookmark)
-            );
+            const menuItem = LIST_DIALOG.createActionsMenuItem(elem, elementKind);
+
+            if (disposition.isBefore) {
+                DOM.insertBefore(disposition.place, menuItem);
+            } else {
+                disposition.place.appendChild(menuItem);
+            }
         },
 
         /**
@@ -1618,10 +1704,10 @@
          * Gets *updated* state for target information block
          */
         getInfoBlockState() {
+            const altItem = CONTEXT.getCurrentAltItem();
+
             let info = LIST_DIALOG[SYM__DIALOG_INFO_BLOCK_STATES].get(
-                cur.module === "bookmarks"
-                    ? CURRENT_BOOKMARKS.get(cur)
-                    : cur
+                altItem != null ? altItem : cur
             );
 
             if (info != null) return null;
@@ -1903,7 +1989,7 @@
                     for (let i = 0, l = args.length; i < l; i++) {
                         arg = args[i];
 
-                        LIST_DIALOG.mountBookmarksMenuItem(arg);
+                        LIST_DIALOG.mountActionsMenuItem(arg, CONTEXT_ALT_KIND.BOOKMARK);
                     }
                 } catch (err) {
                     console.error("[VKLISTADD] Failed mount bookmark menu item during interception of", arg, "- error:", err);
