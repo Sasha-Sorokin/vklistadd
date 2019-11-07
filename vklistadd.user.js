@@ -1064,10 +1064,6 @@
                 });
 
                 LIST_DIALOG[SYM__DIALOG_HINT] = hint;
-            } else if (hint.tt) {
-                // Previous tooltip must be destroyed or else it will be attached to previous box;
-                // it will be re-created as soon as the showTooltip function is called on hint
-                hint.tt.destroy();
             }
 
             targetDescription.appendChild(hint);
@@ -1655,6 +1651,17 @@
             }
 
             boxContainer.appendChild(updateInfoBlockState[SYM__CONTROL]);
+
+            {
+                const hint = LIST_DIALOG[SYM__DIALOG_HINT];
+
+                if (hint.tt != null) {
+                    // Previous tooltip must be destroyed or else it will be
+                    // attached to previous box; it will be re-created as soon
+                    // as the showTooltip function is called from the hint element
+                    hint.tt.destroy();
+                }
+            }
 
             // ----------------------------------
 
