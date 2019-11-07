@@ -520,6 +520,7 @@
      */
     const CONTEXT_ALT_KIND = {
         BOOKMARK: "bookmark",
+        GROUP_ROW: "group_row",
     };
 
     /**
@@ -691,9 +692,13 @@
                         ? null
                         : image.style.backgroundImage.slice(4, -1).replace(/"/g, "")
                 }
-            return image != null
-                ? image.style.backgroundImage.slice(4, -1).replace(/"/g, "")
-                : null;
+                case CONTEXT_ALT_KIND.GROUP_ROW: {
+                    const image = element.querySelector(".group_row_img");
+
+                    return image == null
+                        ? null
+                        : image.src;
+                }
             }
 
             return null;
@@ -708,11 +713,16 @@
             const { element, kind } = altItem;
 
             switch (kind) {
-                case CONTEXT_ALT_KIND.BOOKMARK: {
+                case CONTEXT_ALT_KIND.BOOKMARK:
+                case CONTEXT_ALT_KIND.GROUP_ROW: {
                     let link = CONTEXT[SYM__ALT_ITEM_LINK].get(element);
 
                     if (link == null) {
-                        link = element.querySelector(".bookmark_page_item__name > a");
+                        link = element.querySelector(
+                            kind === CONTEXT_ALT_KIND.BOOKMARK
+                                ? ".bookmark_page_item__name > a"
+                                : ".group_row_title"
+                        );
 
                         CONTEXT[SYM__ALT_ITEM_LINK].set(element, link);
                     }
@@ -1064,14 +1074,17 @@
          */
         _getActionsMenuItemDisposition(menu, elementKind) {
             switch (elementKind) {
-                case CONTEXT_ALT_KIND.BOOKMARK: {
+                case CONTEXT_ALT_KIND.BOOKMARK:
+                case CONTEXT_ALT_KIND.GROUP_ROW: {
                     const separator = menu.querySelector(".ui_actions_menu_sep");
 
                     if (separator == null) return { place: menu };
 
                     return {
                         isBefore: true,
-                        place: separator
+                        place: elementKind === CONTEXT_ALT_KIND.BOOKMARK
+                            ? separator
+                            : separator.nextElementSibling
                     };
                 }
                 default: return { place: menu };
@@ -1663,14 +1676,14 @@
             } else {
                 for (const id of listIds) {
                     const listName = DOM.decodeDOMString(feedLists[id]);
-    
+
                     const row = DOM.createElement("div", {
                         style: {
                             marginBottom: "10px",
                             lineHeight: "15px"
                         }
                     });
-    
+
                     const checkboxElements = VK_DOM.createCheckbox({
                         id: `list_${id}`,
                         text: listName,
@@ -1679,9 +1692,9 @@
                             state.changes[id] = e.target.checked ? 1 : -1;
                         }
                     });
-    
+
                     DOM.appendEvery(checkboxElements, row);
-    
+
                     rows.push(row);
                 }
             }
@@ -1775,7 +1788,7 @@
             const updateDialogLabel = LIST_DIALOG.getDialogLabel();
 
             updateDialogLabel(cur.module);
-            
+
             boxContainer.appendChild(updateDialogLabel[SYM__CONTROL]);
 
             // ----------------------------------
@@ -1966,7 +1979,7 @@
 
         /**
          * Default callback for `Bookmarks` initialization
-         * 
+         *
          * Used to mount items to bookmarks menus
          */
         bookmarksInitCallback() {
@@ -2009,10 +2022,21 @@
 
             Object.setPrototypeOf(cur.pagesAll, newProto);
         },
+
+        groupsListInitCallback() {
+            const groupsList = document.querySelector(".groups_list");
+
+            const groupRows = groupsList.querySelectorAll(".group_list_row");
+
+            for (const row of groupRows) {
+                LIST_DIALOG.mountActionsMenuItem(row, CONTEXT_ALT_KIND.GROUP_ROW);
+            }
+        },
     };
 
     WRAPPING.createWindowWrap("public", INIT_CALLBACKS.publicInitCallback);
     WRAPPING.createWindowWrap("Groups", INIT_CALLBACKS.publicInitCallback);
     WRAPPING.createWindowWrap("Profile", INIT_CALLBACKS.profileInitCallback);
     WRAPPING.createWindowWrap("Bookmarks", INIT_CALLBACKS.bookmarksInitCallback);
+    WRAPPING.createWindowWrap("GroupsList", INIT_CALLBACKS.groupsListInitCallback);
 })();
