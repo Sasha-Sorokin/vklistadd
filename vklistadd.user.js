@@ -15,10 +15,13 @@
 // ==/UserScript==
 
 (function injectHiddenSubscription() {
+    // STYLES
     const SYM__CHECKBOX_CSS = Symbol("checkboxesCss");
     const SYM__ACTION_BUTTON_CSS = Symbol("actionButtonCss");
     const SYM__TOOLTIP_CSS = Symbol("tooltipCss");
     const SYM__ADD_LIST_BUTTON_CSS = Symbol("addListButtonCss");
+    const SYM__INFO_BLOCK_CSS = Symbol("infoBlockCss");
+    // WRAPPING
     const SYM__IS_WRAPPED = Symbol("isWrapped");
     const SYM__WRAPPER_CALLBACK = Symbol("wrapperCallback");
     const SYM__INITIALIZED_STYLES = Symbol("initializedStyles");
@@ -130,6 +133,43 @@
             display: inline-block;
             float: left;
             margin: 0 7px 0 0;
+        }`,
+
+        [SYM__INFO_BLOCK_CSS]: `.vklistadd_container .info_block {
+            display: block;
+            margin-bottom: 15px;
+            line-height: 130%;
+        }
+
+        .vklistadd_container .info_block .avatar_link {
+            float: left;
+        }
+
+        .vklistadd_container .info_block .avatar_link .avatar {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-size: cover;
+            background-position: 50%;
+        }
+
+        .vklistadd_container .info_block .info {
+            float: left;
+            word-wrap: break-word;
+            padding: 4px 0 0 12px;
+        }
+
+        .vklistadd_container .info_block .info .target_name {
+            margin-bottom: 2px;
+        }
+
+        .vklistadd_container .info_block .info .target_info {
+            font-size: 12px;
+            max-height: 48px;
+            overflow: visible;
+            color: #656565;
         }`,
 
         /**
@@ -343,20 +383,19 @@
             let targetInfoContainer, targetName, targetDescription;
 
             const publicInfo = DOM.createElement("div", {
-                props: { className: "line_cell clear_fix" },
-                style: { marginBottom: "15px" },
+                props: { className: "info_block clear_fix" },
                 children: [
                     // GROUP AVATAR
                     // <--
                     avatarLink = DOM.createElement("a", {
                         props: {
-                            className: "fl_l",
+                            className: "avatar_link",
                             // There is no sense for the avatar to be visible
                             ariaHidden: true
                         },
                         child: avatarThumb = DOM.createElement("div", {
                             props: {
-                                className: "thumb",
+                                className: "avatar",
                                 ariaHidden: true
                             },
                             mount: avatarLink
@@ -365,18 +404,17 @@
                     // GROUP NAME AND DESCRIPTION
                     // -->
                     targetInfoContainer = DOM.createElement("div", {
-                        props: { className: "fl_l desc_info" },
-                        style: { width: "auto" },
+                        props: { className: "info" },
                         children: [
                             DOM.createElement("div", {
-                                props: { className: "group_name" },
+                                props: { className: "target_name" },
                                 children: [
                                     targetName = document.createElement("a")
                                 ]
                             }),
 
                             targetDescription = DOM.createElement("div", {
-                                props: { className: "group_desc" }
+                                props: { className: "target_info" }
                             })
                         ]
                     })
@@ -395,6 +433,8 @@
                 VK_DOM[SYM__UPDATE_INFO_BLOCK](block, state, customize);
 
             updateFc[SYM__CONTROL] = publicInfo;
+
+            STYLES.initStyle("info_block_css", STYLES[SYM__INFO_BLOCK_CSS]);
 
             return updateFc;
         },
