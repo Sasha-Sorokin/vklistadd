@@ -38,7 +38,8 @@
     const SYM__DIALOG_UPDATE_NOTIFICATIONS_LINK = Symbol("updateNotificationLink");
     const SYM__DIALOG_NOTIFICATIONS_LINK = Symbol("notificationsLink");
     const SYM__DIALOG_NOTIFICATIONS_LINK_BIND = Symbol("notificationsLinkBindController");
-    const SYM__DIALOG_LABEL_TEXTS = Symbol("labelTexts");
+    const SYM__DIALOG_LABEL_TEXT_BASE = Symbol("labelBaseText");
+    const SYM__DIALOG_LABEL_TEXT = Symbol("labelTexts");
     const SYM__DIALOG_LABEL_CURRENT_STATE = Symbol("labelCurrentState");
     const SYM__DIALOG_UPDATE_LABEL = Symbol("updateLabel");
     const SYM__DIALOG_LABEL = Symbol("label");
@@ -1369,28 +1370,48 @@
         },
 
         /**
+         * Base text for use by a dialog label
+         */
+        [SYM__DIALOG_LABEL_TEXT_BASE]: {
+            en: "Show {} news in the lists:",
+            ru: "Отображать новости {} в списках:",
+        },
+
+        /**
          * Texts for use by a dialog label
          */
-        [SYM__DIALOG_LABEL_TEXTS]: {
-            base: {
-                en: "Show this {}'s news in the lists:",
-                ru: "Отображать новости {} в списках:",
-            },
-            public: {
-                en: "community",
-                ru: "этого сообщества",
-            },
-            groups: {
-                en: "group",
-                ru: "этой группы",
-            },
-            profile: {
-                en: "user",
-                ru: "этого пользователя",
-            },
-            bookmarks: {
-                en: "bookmark",
-                ru: "этой закладки"
+        [SYM__DIALOG_LABEL_TEXT](state) {
+            switch (state) {
+                case "groups": {
+                    return {
+                        en: "this group's",
+                        ru: "этой группы",
+                    };
+                }
+                case "public": {
+                    return {
+                        en: "this community's",
+                        ru: "этого сообщества",
+                    }
+                }
+                case "profile": {
+                    return {
+                        en: "this user's",
+                        ru: "этого пользователя",
+                    }
+                }
+                case "bookmarks": {
+                    return {
+                        en: "for this bookmark",
+                        ru: "для этой закладки"
+                    }
+                }
+                default: {
+                    return {
+                        en: "this page's",
+                        ru: "этой страницы"
+                    }
+                }
             }
         },
 
@@ -1401,8 +1422,8 @@
          */
         [SYM__DIALOG_UPDATE_LABEL](label, state) {
             const locale = VK_API[SYM__RU_LOCALE_USED] ? "ru" : "en";
-            const base = LIST_DIALOG[SYM__DIALOG_LABEL_TEXTS].base[locale];
-            const placeholder = LIST_DIALOG[SYM__DIALOG_LABEL_TEXTS][state][locale];
+            const base = LIST_DIALOG[SYM__DIALOG_LABEL_TEXT_BASE][locale];
+            const placeholder = LIST_DIALOG[SYM__DIALOG_LABEL_TEXT](state)[locale];
 
             label.innerText = base.replace("{}", placeholder);
         },
