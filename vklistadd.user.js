@@ -1755,6 +1755,18 @@
             DOM.appendEvery(rows, container);
 
             state.ready = true;
+
+            document.dispatchEvent(
+                new CustomEvent("vklistadd_list_ready", {
+                    detail: {
+                        rows,
+                        container
+                    },
+                    cancelable: false,
+                    bubbles: false,
+                    composed: false
+                })
+            );
         },
 
         /**
