@@ -17,6 +17,7 @@
 (function injectHiddenSubscription() {
     // STYLES
     const SYM__CHECKBOX_CSS = Symbol("checkboxesCss");
+    const SYM__ROW_CSS = Symbol("rowsCss");
     const SYM__ACTION_BUTTON_CSS = Symbol("actionButtonCss");
     const SYM__TOOLTIP_CSS = Symbol("tooltipCss");
     const SYM__ADD_LIST_BUTTON_CSS = Symbol("addListButtonCss");
@@ -91,6 +92,15 @@
         .vklistadd_container input[type=checkbox]+label:active:before {
             filter: brightness(0.9);
         }`,
+
+        /**
+         * CSS styles for the checkboxes rows
+         */
+        [SYM__ROW_CSS]: `.vklistadd_row {
+            margin-bottom: 10px;
+            line-height: 15px;
+        }`,
+
         /**
          * CSS styles for the action button in the group menu
          */
@@ -1718,9 +1728,8 @@
                     const listName = DOM.decodeDOMString(feedLists[id]);
 
                     const row = DOM.createElement("div", {
-                        style: {
-                            marginBottom: "10px",
-                            lineHeight: "15px"
+                        props: {
+                            className: "vklistadd_row"
                         }
                     });
 
@@ -1783,6 +1792,7 @@
             // ----------------------------------
 
             STYLES.initStyle("checkboxes", STYLES[SYM__CHECKBOX_CSS]);
+            STYLES.initStyle("rows", STYLES[SYM__ROW_CSS]);
 
             const boxContainer = DOM.createElement("div", {
                 props: {
