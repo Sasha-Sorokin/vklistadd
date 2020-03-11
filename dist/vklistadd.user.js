@@ -49,12 +49,12 @@
       tooltip:"Redirect to news page" },
     actionButton:{ text:"Manage lists" },
     actionsMenuItem:{ text:"News feed lists" },
-    actionLabel:{ template:"Show news for the {} in the lists:",
-      context:{ group:"group",
-        "public":"public page",
-        profile:"user",
-        bookmark:"bookmark",
-        other:"page" } },
+    actionLabel:{ template:"Show news {} in the lists:",
+      context:{ group:"this group's",
+        "public":"this community's",
+        profile:"this user's",
+        bookmark:"for this bookmark",
+        other:"this page's" } },
     followStatus:{ context:{ group:[ "You have not joined this group.",
           "You are a member of this group." ],
         "public":[ "You are not following page.",
@@ -2249,6 +2249,7 @@
           border: "none",
           textAlign: "left",
           font: "inherit",
+          width: "100%",
           "&::before": {
               "--icon": GearIcon.url,
               background: `${ACTION_BUTTON_ACCENT} !important`,
@@ -2567,7 +2568,7 @@
   }
 
   const VERSION_SETTING = "lastVersion";
-  const CURRENT_VERSION = "2.0.0--1583947873318";
+  const CURRENT_VERSION = "2.0.0--1583950857350";
   const NEVER = "never";
   function checkVersion() {
       return __awaiter(this, void 0, void 0, function* () {
