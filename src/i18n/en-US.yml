@@ -1,0 +1,65 @@
+addListButton:
+  text: "Create a new list"
+  tooltip: "Redirect to news page"
+
+actionButton:
+  text: "Manage lists"
+
+actionsMenuItem:
+  text: "News feed lists"
+
+actionLabel:
+  template: "Show news {} in the lists:"
+  context:
+    group: "this group's"
+    public: "this community's"
+    profile: "this user's"
+    bookmark: "for this bookmark"
+    other: "this page's"
+
+followStatus:
+  context:
+    group:
+    - "You have not joined this group."
+    - "You are a member of this group."
+    public:
+    - "You are not following page."
+    - "You are following this page."
+    profile:
+    - "Not in the friends list."
+    - "You are following them."
+    own: "This is beautiful you!"
+
+  unknown: "Unknown follow status."
+
+  hint: "You can add to the tabs without following or adding to friends."
+
+errorMessages:
+  WRAPPING_A_WRAPPER: "Attempting to wrap already wrapped function."
+  VK_LANGUAGE_DETECT_FAIL: "Failed to detect VK language."
+  NO_OR_INVALID_CONTEXT: "Window doesn't contain context or current context object doesn't contain options (odd behavior)."
+  NO_PARENT_NODE: "Referenced node has no parent node."
+  ALREADY_INJECTED: "Interceptors already were injected in the window."
+
+box:
+  title: "Manage lists"
+
+listLoader:
+  loadFailed: "Unable to fetch your lists :("
+
+lists:
+  empty: "You have no lists."
+
+listCreation:
+  highlightTooltip: "{} is here"
+
+errorBoundary:
+  text: "Unfortunately, due to a bug in our code, this window has failed to render :(\n\nPlease, try another browser and !!report to extension developer!! if that won't solve the problem."
+
+notificationsStatus:
+- Notifications disabled.
+- Notifications enabled.
+
+versionChecker:
+  installed: '<b>Yay! VK List Add is now installed.</b><br>Thank you for installing our extension. <a href="__wiki__" target="blank" rel="noreferrer">Do you want to learn how to use it?</a>'
+  updated: '<b>VK List Add has been updated!</b></br>Want to see <a href="__changeLogLink__" target="blank" rel="noreferrer">our changelog?</a>'

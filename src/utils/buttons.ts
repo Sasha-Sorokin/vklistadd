@@ -1,0 +1,68 @@
+import { POINTER_LOCKED } from "@common/css";
+import { hasFlag } from "./bitwise";
+import { getWindow } from "./window";
+
+type Button = HTMLButtonElement;
+
+/**
+ * Перечисление состояний кнопки
+ */
+export const enum ButtonState {
+	/**
+	 * Кнопка в своём привычном состоянии, живёт себе припеваючи
+	 */
+	Interactive = 2,
+
+	/**
+	 * Кнопка отключена
+	 */
+	Disabled = 4,
+
+	/**
+	 * Кнопка заблокирована и на ней отображается прогресс
+	 */
+	Progress = 6,
+}
+
+const BUTTON_CLASS = {
+	LOCKED: "flat_btn_lock",
+	DISABLED: "button_disabled",
+} as const;
+
+const BUTTON_DISABLE = [POINTER_LOCKED, BUTTON_CLASS.DISABLED];
+
+/**
+ * Переключает "выключеное" состояние кнопки
+ *
+ * @param button Кнопка, которую нужно включить/выключить
+ * @param isDisabled Выключена ли кнопка
+ */
+function toggleButtonDisable(button: Button, isDisabled: boolean) {
+	for (const className of BUTTON_DISABLE) {
+		button.classList.toggle(className, isDisabled);
+	}
+}
+
+/**
+ * Переключает "заблокированное" состояние кнопки
+ *
+ * @param button Кнопка, которую нужно разблокировать/заблокировать
+ * @param isLocked Заблокирована ли кнопка
+ */
+function toggleButtonLock(button: Button, isLocked: boolean) {
+	const window = getWindow();
+
+	if (isLocked) window.lockButton(button);
+	else window.unlockButton(button);
+}
+
+/**
+ * Устанавливает состояние кнопки
+ *
+ * @param button Кнопка, состояние которой необходимо изменить
+ * @param state Новое состояние кнопки
+ */
+export function setButtonState(button: Button, state: ButtonState) {
+	toggleButtonDisable(button, hasFlag(state, ButtonState.Disabled));
+	toggleButtonLock(button, hasFlag(state, ButtonState.Progress));
+}
