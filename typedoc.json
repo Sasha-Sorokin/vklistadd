@@ -1,0 +1,6 @@
+{
+    "mode": "modules",
+    "out": "api_doc",
+    "excludeNotExported": true,
+    "excludePrivate": true
+}

@@ -1,0 +1,14 @@
+{
+    "rules": {
+        "no-default-import": true,
+        "no-unnecessary-callback-wrapper": true,
+        "prefer-method-signature": true,
+        "no-var-before-return": true,
+        "early-exit": true,
+        "strict-string-expressions": true
+    },
+    "extends": [
+        "tslint-consistent-codestyle"
+    ],
+    "defaultSeverity": "error"
+}
