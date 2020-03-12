@@ -1,6 +1,6 @@
 {
   "name": "vk_listadd",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Implements a darky button to add communities or users to feed lists without subscribing to them",
   "author": {
     "name": "Sasha Sorokin",
