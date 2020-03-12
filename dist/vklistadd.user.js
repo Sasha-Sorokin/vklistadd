@@ -4,7 +4,7 @@
 // @name:ru VK Добавление в списки
 // @description Implements a darky button to add communities or users to feed lists without subscribing to them
 // @description:ru Реализует тёмную кнопку для добавления сообществ или пользователей в списки новостей без подписки на них
-// @version 2.0.0
+// @version 2.0.1
 // @author Sasha Sorokin https://github.com/Sasha-Sorokin
 // @license MIT
 //
@@ -2568,7 +2568,7 @@
   }
 
   const VERSION_SETTING = "lastVersion";
-  const CURRENT_VERSION = "2.0.0--1584005382178";
+  const CURRENT_VERSION = "2.0.1--1584006622991";
   const NEVER = "never";
   function checkVersion() {
       return __awaiter(this, void 0, void 0, function* () {
