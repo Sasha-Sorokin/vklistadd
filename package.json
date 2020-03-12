@@ -19,7 +19,7 @@
     "build:ts": "yarn clear && tsc && echo-cli 'TypeScript build complete'",
     "lint": "eslint src --ext ts --ext tsx; echo-cli 'Linting done'",
     "docs": "typedoc",
-    "preversion": "yarn lint && yarn build"
+    "preversion": "yarn lint && yarn build && git add dist"
   },
   "repository": {
     "type": "git",
