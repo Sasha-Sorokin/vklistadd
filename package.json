@@ -18,7 +18,8 @@
     "clear": "clear-folder dist && echo-cli 'Dist/ directory cleared'",
     "build:ts": "yarn clear && tsc && echo-cli 'TypeScript build complete'",
     "lint": "eslint src --ext ts --ext tsx; echo-cli 'Linting done'",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "preversion": "yarn lint && yarn build"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,9 @@
     "userscript",
     "vk"
   ],
+  "publishConfig": {
+    "message": "chore: версия %s"
+  },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.0.1",
     "@rollup/plugin-commonjs": "^11.0.2",
