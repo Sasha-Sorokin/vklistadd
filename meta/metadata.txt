@@ -9,7 +9,7 @@
 <% _.forEach(pkg.contributors, function (contributor) { %>
 @contributor <%= contributor.name %><%= contributor.email ? ` <${contributor.email}> ` : "" %><%= contributor.url ? ` ${contributor.url}` : "" %>
 <% }) %>
-@namespace <%= pkg.homepage %>
+@namespace __github__
 @homepage <%= pkg.homepage %>
 @supportURL <%= pkg.bugs.url %>
 @updateURL __github__/raw/master/vklistadd.user.js
