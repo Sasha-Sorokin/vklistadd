@@ -8,7 +8,7 @@
 // @author Sasha Sorokin https://github.com/Sasha-Sorokin
 // @license MIT
 //
-// @namespace https://github.com/Sasha-Sorokin/vklistadd#readme
+// @namespace https://github.com/Sasha-Sorokin/vklistadd
 // @homepage https://github.com/Sasha-Sorokin/vklistadd#readme
 // @supportURL https://github.com/Sasha-Sorokin/vklistadd/issues
 // @updateURL https://github.com/Sasha-Sorokin/vklistadd/raw/master/vklistadd.user.js
@@ -2568,7 +2568,7 @@
   }
 
   const VERSION_SETTING = "lastVersion";
-  const CURRENT_VERSION = "2.0.0--1583950857350";
+  const CURRENT_VERSION = "2.0.0--1584005382178";
   const NEVER = "never";
   function checkVersion() {
       return __awaiter(this, void 0, void 0, function* () {
