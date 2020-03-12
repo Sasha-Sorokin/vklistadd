@@ -30,7 +30,8 @@
     "vk"
   ],
   "publishConfig": {
-    "message": "chore: версия %s"
+    "message": "chore: версия %s",
+    "git-tag-version": false
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^3.0.1",
