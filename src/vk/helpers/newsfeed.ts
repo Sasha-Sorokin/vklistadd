@@ -12,15 +12,19 @@ const TOOLTIP_HIDE_TIME = 5000;
 
 /**
  * Перенаправляет пользователя на страницу новостей и инициализирует
- * диалог создания нового списка
+ * редактирования или создания нового списка
  *
+ * @param listId ID списка, `-1` для создания нового списка
  * @param context Объект, для которого требуется создать список
  * @param translation Объект с текущими переводами
+ * @param preSelect Должен ли элемент быть выбран заранее
  * @returns Успешность операции
  */
-export function createList(
+export function editList(
+	listId: number,
 	context: PartialContext,
 	translation: ITranslation,
+	preSelect: boolean = true,
 ) {
 	const { id, icon, name, link } = context;
 
@@ -71,7 +75,7 @@ export function createList(
 				]);
 			}
 
-			selected[target.id] = 1;
+			selected[target.id] = preSelect ? 1 : 0;
 
 			super(...args);
 
@@ -109,7 +113,7 @@ export function createList(
 		onDone() {
 			window.OList = FakeOList;
 
-			window.feed?.editList(-1);
+			window.feed?.editList(listId);
 		},
 	});
 

@@ -21,6 +21,12 @@ export interface IListsRenderProps {
 
 const GRAY_NOTICE = toClassName("grayNotice", { color: "#656565" });
 
+const LISTS_LIST_CLASS = toClassName("listsList", {
+	listStyle: "none",
+	padding: 0,
+	margin: 0,
+});
+
 /**
  * @returns Компонент, генерирующий флажки для каждого переданного списка
  */
@@ -33,5 +39,9 @@ export function ListsRender({ lists, disabled }: IListsRenderProps) {
 
 	const rows = lists.map((_) => <ListRow list={_} disabled={disabled} />);
 
-	return <div>{rows}</div>;
+	return (
+		<ul className={LISTS_LIST_CLASS}>
+			{rows}
+		</ul>
+	);
 }

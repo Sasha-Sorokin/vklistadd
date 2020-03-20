@@ -17,6 +17,10 @@ actionLabel:
     bookmark: "для закладки"
     other: "страницы"
 
+editListButton:
+  text: "Редактировать «{}»"
+  icon: "Иконка"
+
 followStatus:
   context:
     group:
