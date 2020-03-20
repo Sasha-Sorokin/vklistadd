@@ -1,6 +1,6 @@
 import { h } from "preact";
 import { toStyleCombiner } from "@utils/fashion";
-import { useState, useCallback, useEffect } from "preact/hooks";
+import { useCallback } from "preact/hooks";
 import { Checkbox, CheckboxChecked } from "@/assets";
 import { LOCK_COMBO } from "@common/css";
 
@@ -11,7 +11,7 @@ interface ICheckboxProps {
 	/**
 	 * Уникальный ID флажка
 	 */
-	id?: string;
+	id: string;
 
 	/**
 	 * Обработчик снятия/установки флажка
@@ -82,29 +82,14 @@ const S = toStyleCombiner({
 });
 
 /**
- * @returns "Уникальный" ID для флажка
- */
-function generateID() {
-	return `ch${Date.now()}`;
-}
-
-/**
  * @param props Свойства галочки
  * @returns Элемент галочки с текстом
  */
 export function CheckboxRow(props: ICheckboxProps) {
-	const { text, onChange } = props;
+	const { text, id, onChange } = props;
 
 	const isChecked = props.checked ?? false;
 	const isDisabled = props.disabled ?? false;
-
-	const [id, setID] = useState(props.id);
-
-	useEffect(() => {
-		if (id != null) return;
-
-		setID(generateID());
-	}, [id]);
 
 	const onClick = () => {
 		if (isDisabled) return;
