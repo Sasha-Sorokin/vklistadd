@@ -1,5 +1,5 @@
 import { elem, insertBefore } from "@utils/dom";
-import { getRoaming } from "@components/roaming/profileMenuItem";
+import { getRoaming } from "@components/roaming/ProfileMenuItem";
 import { setupInitInterceptors } from "@utils/interceptors";
 
 const PAGE_EXTRA_ACTIONS = ".page_extra_actions_wrap";

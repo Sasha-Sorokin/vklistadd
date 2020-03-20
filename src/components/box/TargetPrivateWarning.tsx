@@ -1,6 +1,6 @@
 import { useTarget, useTranslation } from "@utils/hooks";
 import { h } from "preact";
-import { ErrorBlock } from "@components/vk/errorBlock";
+import { ErrorBlock } from "@components/vk/ErrorBlock";
 import { SupportedModule } from "@vk/scrapers";
 import { c } from "@utils/fashion";
 import { MARGIN_RESET, ERROR_MULTILINE } from "@common/css";

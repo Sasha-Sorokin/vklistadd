@@ -1,7 +1,7 @@
 import { useState, useCallback, useContext } from "preact/hooks";
-import { BoxContext } from "@components/contexts/boxContext";
-import { TargetContext } from "@components/contexts/targetContext";
-import { TranslationContext } from "@components/contexts/translationContext";
+import { BoxContext } from "@components/contexts/BoxContext";
+import { TargetContext } from "@components/contexts/TargetContext";
+import { TranslationContext } from "@components/contexts/TranslationContext";
 
 /**
  * Хук для использования текущего объекта из контекста

@@ -1,11 +1,11 @@
 import { getWindow } from "@utils/window";
 import { getVKTranslation } from "@utils/i18n";
 import { render, h } from "preact";
-import { BoxContent } from "@components/box/boxContent";
-import { ErrorBoundary } from "@components/errorBoundary";
-import { BoxContext } from "@components/contexts/boxContext";
+import { BoxContent } from "@components/box/BoxContent";
+import { ErrorBoundary } from "@components/ErrorBoundary";
+import { BoxContext } from "@components/contexts/BoxContext";
 import { ITreating } from "@vk/scrapers";
-import { TranslationContext } from "@components/contexts/translationContext";
+import { TranslationContext } from "@components/contexts/TranslationContext";
 import { useMemo } from "preact/hooks";
 import { IBoxDetail } from "./types";
 import { initializeControls } from "./controls";

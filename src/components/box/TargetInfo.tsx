@@ -1,10 +1,10 @@
 import { h, Fragment } from "preact";
-import { InfoBlock } from "@components/vk/infoBlock";
-import { FollowText } from "@components/box/followText";
-import { Hint } from "@components/vk/hint";
+import { InfoBlock } from "@components/vk/InfoBlock";
+import { FollowText } from "@components/box/FollowText";
+import { Hint } from "@components/vk/Hint";
 import { toClassName } from "@utils/fashion";
 import { useTarget, useTranslation } from "@utils/hooks";
-import { NotificationsToggle } from "./notificationsToggle";
+import { NotificationsToggle } from "./NotificationsToggle";
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 const TOOLTIP_SHIFT = [-8, 10] as const;

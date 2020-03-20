@@ -1,7 +1,7 @@
 import { h, Fragment } from "preact";
 import { useTarget, useTranslation } from "@utils/hooks";
 import { useEffect } from "preact/hooks";
-import { ProgressIndicator, dotsSize } from "@components/vk/progressIndicator";
+import { ProgressIndicator, dotsSize } from "@components/vk/ProgressIndicator";
 import { c, toClassName } from "@utils/fashion";
 
 const INDICATOR_STYLES = toClassName("inline", {

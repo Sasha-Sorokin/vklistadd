@@ -4,7 +4,7 @@ import { log } from "@utils/debug";
 import { useErrorBoundary } from "preact/hooks";
 import { c } from "@utils/fashion";
 import { MARGIN_RESET, ERROR_MULTILINE } from "@common/css";
-import { ErrorBlock } from "./vk/errorBlock";
+import { ErrorBlock } from "./vk/ErrorBlock";
 
 const TAG = "!!";
 const LINK_PLACEHOLDER = `{${Math.random()}`;
