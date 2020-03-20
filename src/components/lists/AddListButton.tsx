@@ -2,7 +2,7 @@ import { usePreventedCallback } from "@utils/hooks";
 import { h } from "preact";
 import { getWindow } from "@utils/window";
 import { useRef, useContext, useCallback } from "preact/hooks";
-import { TranslationContext } from "@components/contexts/translationContext";
+import { TranslationContext } from "@components/contexts/TranslationContext";
 import { toStyleCombiner } from "@utils/fashion";
 import { LOCK_COMBO } from "@common/css";
 

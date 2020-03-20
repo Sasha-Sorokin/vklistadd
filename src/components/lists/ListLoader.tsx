@@ -1,9 +1,9 @@
 import { h, Fragment } from "preact";
 import { useEffect, useCallback } from "preact/hooks";
 import { getLists } from "@vk/api/lists";
-import { ProgressIndicator, dotsSize } from "@components/vk/progressIndicator";
-import { ErrorBlock } from "@components/vk/errorBlock";
-import { Separator } from "@components/vk/separator";
+import { ProgressIndicator, dotsSize } from "@components/vk/ProgressIndicator";
+import { ErrorBlock } from "@components/vk/ErrorBlock";
+import { Separator } from "@components/vk/Separator";
 import { createList } from "@vk/helpers/newsfeed";
 import { c } from "@utils/fashion";
 import { getWindow } from "@utils/window";
@@ -11,9 +11,9 @@ import { LabelColor } from "@/box/controlsLabel";
 import { MARGIN_RESET, ERROR_MULTILINE } from "@common/css";
 import { useBoxContexts, useTranslations } from "@utils/hooks";
 import { useLoaderReducer } from "./reducers/reducer";
-import { ListsRender } from "./listsRender";
-import { AddListButton } from "./addListButton";
-import { ActionLabel } from "./actionLabel";
+import { ListsRender } from "./ListsRender";
+import { AddListButton } from "./AddListButton";
+import { ActionLabel } from "./ActionLabel";
 import { targetChange, loadFailure, listsLoaded } from "./reducers/actions";
 import { LoadingState } from "./reducers/types";
 

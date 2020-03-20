@@ -2,7 +2,7 @@ import { h } from "preact";
 import { IList } from "@vk/api/lists";
 import { toClassName } from "@utils/fashion";
 import { useTranslation } from "@utils/hooks";
-import { ListRow } from "./listRow";
+import { ListRow } from "./ListRow";
 
 /**
  * Представляет собой опции для списка

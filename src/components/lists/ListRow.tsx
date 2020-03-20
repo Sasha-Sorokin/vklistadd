@@ -1,6 +1,6 @@
 import { h } from "preact";
 import { useCallback } from "preact/hooks";
-import { CheckboxRow } from "@components/vk/checkboxRow";
+import { CheckboxRow } from "@components/vk/CheckboxRow";
 import { IList } from "@vk/api/lists";
 import { useForceUpdate } from "@utils/hooks";
 

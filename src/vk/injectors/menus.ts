@@ -1,5 +1,5 @@
 import { elem, elems, asArray, insertBefore } from "@utils/dom";
-import { getReplicable } from "@components/replicable/actionsMenuItem";
+import { getReplicable } from "@components/replicable/ActionsMenuItem";
 import * as Interception from "@utils/interceptors";
 import { log } from "@utils/debug";
 import { getWindow } from "@utils/window";

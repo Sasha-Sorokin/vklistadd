@@ -1,11 +1,11 @@
 import { h } from "preact";
 import { useMemo, useContext } from "preact/hooks";
 import { getFullContext } from "@vk/scrapers";
-import { TargetContext } from "@components/contexts/targetContext";
-import { ListLoader } from "@components/lists/listLoader";
-import { BoxContext } from "@components/contexts/boxContext";
-import { TargetInfo } from "./targetInfo";
-import { TargetPrivateWarning } from "./targetPrivateWarning";
+import { TargetContext } from "@components/contexts/TargetContext";
+import { ListLoader } from "@components/lists/ListLoader";
+import { BoxContext } from "@components/contexts/BoxContext";
+import { TargetInfo } from "./TargetInfo";
+import { TargetPrivateWarning } from "./TargetPrivateWarning";
 
 /**
  * @returns Элемент содержимого бокса

@@ -1,6 +1,6 @@
 import { ERROR_MESSAGES, log } from "@utils/debug";
 import { createSwitch, lazyToggle } from "@utils/switch";
-import * as actionMenuButton from "@components/roaming/actionButton";
+import * as actionMenuButton from "@components/roaming/ActionButton";
 import { elem } from "@utils/dom";
 import { setupInitInterceptors } from "@utils/interceptors";
 
