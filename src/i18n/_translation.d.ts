@@ -95,6 +95,16 @@ declare interface ITranslation {
 	};
 
 	/**
+	 * Текст для блока информации о пользователе/сообществе
+	 */
+	infoBlock: {
+		/**
+		 * Альтернативный текст для аватарки
+		 */
+		avatarAlt: string;
+	};
+
+	/**
 	 * Текст подписки
 	 */
 	followStatus: {

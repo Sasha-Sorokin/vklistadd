@@ -57,6 +57,9 @@ lists:
 listCreation:
   highlightTooltip: "{} is here"
 
+infoBlock:
+  avatarAlt: "{}'s avatar"
+
 errorBoundary:
   text: "Unfortunately, due to a bug in our code, this window has failed to render :(\n\nPlease, try another browser and !!report to extension developer!! if that won't solve the problem."
 
