@@ -4,7 +4,7 @@ import { getLists } from "@vk/api/lists";
 import { ProgressIndicator, dotsSize } from "@components/vk/ProgressIndicator";
 import { ErrorBlock } from "@components/vk/ErrorBlock";
 import { Separator } from "@components/vk/Separator";
-import { createList } from "@vk/helpers/newsfeed";
+import { editList } from "@vk/helpers/newsfeed";
 import { c } from "@utils/fashion";
 import { getWindow } from "@utils/window";
 import { LabelColor } from "@/box/controlsLabel";
@@ -73,7 +73,7 @@ export function ListLoader({ disabled }: IListLoaderProps) {
 	const onAddList = useCallback(() => {
 		if (target == null) return;
 
-		const result = createList(target, translation);
+		const result = editList(-1, target, translation);
 
 		if (result) return;
 

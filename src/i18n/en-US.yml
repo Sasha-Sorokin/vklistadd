@@ -17,6 +17,10 @@ actionLabel:
     bookmark: "for this bookmark"
     other: "this page's"
 
+editListButton:
+  text: "Edit “{}”"
+  icon: "Icon"
+
 followStatus:
   context:
     group:

@@ -37,7 +37,7 @@ interface ICheckboxProps {
 const S = toStyleCombiner({
 	label: { cursor: "pointer" },
 
-	row: {
+	checkbox: {
 		marginBottom: "10px",
 		lineHeight: "15px",
 		width: "max-content",
@@ -120,7 +120,7 @@ export function CheckboxRow(props: ICheckboxProps) {
 	);
 
 	return (
-		<div onClick={onClick} className={S("row", "locked", isDisabled)}>
+		<div onClick={onClick} className={S("checkbox", "locked", isDisabled)}>
 			<input
 				id={id}
 				className="blind_label"

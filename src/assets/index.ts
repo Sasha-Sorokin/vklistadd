@@ -1,6 +1,7 @@
 import * as gearIcon from "./gear.svg";
 import * as checkbox from "./checkbox.svg";
 import * as checkboxChecked from "./checkbox_checked.svg";
+import * as editPen from "./edit_pen.svg";
 
 /**
  * @returns Объект ресурса
@@ -26,3 +27,4 @@ function makeAssetObject({ default: dataURL }: { default: string }) {
 export const GearIcon = makeAssetObject(gearIcon);
 export const Checkbox = makeAssetObject(checkbox);
 export const CheckboxChecked = makeAssetObject(checkboxChecked);
+export const EditPen = makeAssetObject(editPen);
