@@ -54,6 +54,9 @@ lists:
 listCreation:
   highlightTooltip: "{} здесь"
 
+infoBlock:
+  avatarAlt: "Аватарка {}"
+
 privateWarning:
   profile: "Это закрытый профиль. Вам необходимо добавить пользователя в друзья, чтобы его новости отображались в выбранных вами списках."
   group:

@@ -2,6 +2,7 @@ import { h, ComponentChild } from "preact";
 import { GENERIC_CAMERA_ICON } from "@common/consts";
 import { toStyleCombiner } from "@utils/fashion";
 import { CLEARFIX, POINTER_LOCKED } from "@common/css";
+import { useTranslation } from "@utils/hooks";
 
 /**
  * Представляет собой опции блока информации об объекте
@@ -59,8 +60,7 @@ const S = toStyleCombiner({
 		height: "42px",
 		borderRadius: "100%",
 		overflow: "hidden",
-		backgroundSize: "cover",
-		backgroundPosition: "50%",
+		objectFit: "cover",
 	},
 
 	infoText: {
@@ -83,13 +83,15 @@ const NO_CLICK = (e: MouseEvent) => {
  * @returns Блок информации о паблике, группе или пользователе
  */
 export function InfoBlock(props: IInfoBlockProps) {
-	const { displayName, avatarUrl, link, infoChildren } = props;
+	const translation = useTranslation("infoBlock");
 
-	const avatarStyle = {
-		backgroundImage: `url("${avatarUrl ?? GENERIC_CAMERA_ICON}")`,
-	};
+	const { displayName, link, infoChildren } = props;
 
 	const disabled = props.disabled ?? false;
+
+	const avatarUrl = props.avatarUrl ?? GENERIC_CAMERA_ICON;
+
+	const avatarAlt = translation.avatarAlt.replace("{}", displayName);
 
 	const onClick = disabled ? NO_CLICK : undefined;
 
@@ -97,9 +99,10 @@ export function InfoBlock(props: IInfoBlockProps) {
 		<div className={S("infoBlock", "clearfix")}>
 			<a className={S("leftFloat", "locked", disabled)}
 				href={link} onClick={onClick}>
-				<div
+				<img
 					className={S("targetAvatar")}
-					style={avatarStyle}
+					src={avatarUrl}
+					alt={avatarAlt}
 				/>
 			</a>
 			<div className={S("leftFloat", "targetInfo")}>
