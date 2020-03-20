@@ -55,6 +55,7 @@ export function ListRow({ list, disabled }: IListRowProps) {
 				text={list.name}
 				onChange={onChange}
 				disabled={disabled}
+				id={`list${list.id}`}
 			/>
 
 			<EditListButton list={list} />
