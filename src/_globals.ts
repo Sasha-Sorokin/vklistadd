@@ -621,7 +621,7 @@ declare global {
 		/**
 		 * Класс бокса
 		 */
-		MessageBox: new (options?: Partial<VK.IBoxOptions>)=> VK.MessageBox;
+		MessageBox: new (options?: Partial<VK.IBoxOptions>) => VK.MessageBox;
 
 		/**
 		 * Представляет собой компонент списков
@@ -632,7 +632,7 @@ declare global {
 			selected: VK.IOListSelections,
 			opts: unknown,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		)=> any;
+		) => any;
 
 		/**
 		 * Переводы ВКонтакте
