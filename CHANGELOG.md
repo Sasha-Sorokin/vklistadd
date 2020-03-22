@@ -8,6 +8,25 @@
 
 ## 2.0
 
+### 2.1.3
+
+*22 марта 2020 г.*
+
+* Добавили напротив каждого списка отображение кнопки для перехода к его
+  редактированию. Спасибо [pol newman с Greasyfork][greasy_feedback1] за идею.
+  ([#9][pr_9])
+* Исправили потенциальную утечку памяти из-за постоянно пересоздаваемых
+  подсказок (сами в шоке, такое возможно…) ([#14][pr_14])
+* Незначительные исправления доступности для пользователей, использующих
+  скринридеры ([#10][pr_10], [#12][pr_12])
+
+[greasy_feedback1]: https://greasyfork.org/en/forum/discussion/72673/
+[pr_9]: https://github.com/Sasha-Sorokin/vklistadd/pull/9
+[pr_14]: https://github.com/Sasha-Sorokin/vklistadd/pull/14
+[pr_10]: https://github.com/Sasha-Sorokin/vklistadd/pull/10
+[pr_12]: https://github.com/Sasha-Sorokin/vklistadd/pull/12
+[issue_11]: https://github.com/Sasha-Sorokin/vklistadd/issues/11
+
 ### 2.0.1
 
 *12 марта 2020 г.*

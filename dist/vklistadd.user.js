@@ -4,7 +4,7 @@
 // @name:ru VK Добавление в списки
 // @description Implements a darky button to add communities or users to feed lists without subscribing to them
 // @description:ru Реализует тёмную кнопку для добавления сообществ или пользователей в списки новостей без подписки на них
-// @version 2.0.1
+// @version 2.1.3
 // @author Sasha Sorokin https://github.com/Sasha-Sorokin
 // @license MIT
 //
@@ -55,6 +55,8 @@
         profile:"this user's",
         bookmark:"for this bookmark",
         other:"this page's" } },
+    editListButton:{ text:"Edit “{}”",
+      icon:"Icon" },
     followStatus:{ context:{ group:[ "You have not joined this group.",
           "You are a member of this group." ],
         "public":[ "You are not following page.",
@@ -73,6 +75,7 @@
     listLoader:{ loadFailed:"Unable to fetch your lists :(" },
     lists:{ empty:"You have no lists." },
     listCreation:{ highlightTooltip:"{} is here" },
+    infoBlock:{ avatarAlt:"{}'s avatar" },
     errorBoundary:{ text:"Unfortunately, due to a bug in our code, this window has failed to render :(\n\nPlease, try another browser and !!report to extension developer!! if that won't solve the problem." },
     notificationsStatus:[ "Notifications disabled.",
       "Notifications enabled." ],
@@ -82,12 +85,14 @@
   var actionButton = data.actionButton;
   var actionsMenuItem = data.actionsMenuItem;
   var actionLabel = data.actionLabel;
+  var editListButton = data.editListButton;
   var followStatus = data.followStatus;
   var errorMessages = data.errorMessages;
   var box = data.box;
   var listLoader = data.listLoader;
   var lists = data.lists;
   var listCreation = data.listCreation;
+  var infoBlock = data.infoBlock;
   var errorBoundary = data.errorBoundary;
   var notificationsStatus = data.notificationsStatus;
   var versionChecker = data.versionChecker;
@@ -99,12 +104,14 @@
     actionButton: actionButton,
     actionsMenuItem: actionsMenuItem,
     actionLabel: actionLabel,
+    editListButton: editListButton,
     followStatus: followStatus,
     errorMessages: errorMessages,
     box: box,
     listLoader: listLoader,
     lists: lists,
     listCreation: listCreation,
+    infoBlock: infoBlock,
     errorBoundary: errorBoundary,
     notificationsStatus: notificationsStatus,
     versionChecker: versionChecker
@@ -120,6 +127,8 @@
         profile:"пользователя",
         bookmark:"для закладки",
         other:"страницы" } },
+    editListButton:{ text:"Редактировать «{}»",
+      icon:"Иконка" },
     followStatus:{ context:{ group:[ "Вы не вступили в группу.",
           "Вы участник этой группы." ],
         "public":[ "Вы не подписаны на это сообщество.",
@@ -137,6 +146,7 @@
     listLoader:{ loadFailed:"Не удалось загрузить ваши списки :(" },
     lists:{ empty:"У вас нет списков новостей." },
     listCreation:{ highlightTooltip:"{} здесь" },
+    infoBlock:{ avatarAlt:"Аватарка {}" },
     privateWarning:{ profile:"Это закрытый профиль. Вам необходимо добавить пользователя в друзья, чтобы его новости отображались в выбранных вами списках.",
       group:[ "Это закрытая группа. Вам необходимо вступить в неё, чтобы её новости отображались в выбранных списках.",
         "Это закрытая группа. Вам необходимо оставаться участником, чтобы её новости отображались в выбранных списках." ] },
@@ -152,11 +162,13 @@
   var actionButton$1 = data$1.actionButton;
   var actionsMenuItem$1 = data$1.actionsMenuItem;
   var actionLabel$1 = data$1.actionLabel;
+  var editListButton$1 = data$1.editListButton;
   var followStatus$1 = data$1.followStatus;
   var errorMessages$1 = data$1.errorMessages;
   var listLoader$1 = data$1.listLoader;
   var lists$1 = data$1.lists;
   var listCreation$1 = data$1.listCreation;
+  var infoBlock$1 = data$1.infoBlock;
   var privateWarning = data$1.privateWarning;
   var box$1 = data$1.box;
   var errorBoundary$1 = data$1.errorBoundary;
@@ -170,11 +182,13 @@
     actionButton: actionButton$1,
     actionsMenuItem: actionsMenuItem$1,
     actionLabel: actionLabel$1,
+    editListButton: editListButton$1,
     followStatus: followStatus$1,
     errorMessages: errorMessages$1,
     listLoader: listLoader$1,
     lists: lists$1,
     listCreation: listCreation$1,
+    infoBlock: infoBlock$1,
     privateWarning: privateWarning,
     box: box$1,
     errorBoundary: errorBoundary$1,
@@ -281,9 +295,9 @@
       return $switch.currentValue;
   }
 
-  var n,u,i,t,o,r,f={},e=[],c=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord/i;function s(n,l){for(var u in l)n[u]=l[u];return n}function a(n){var l=n.parentNode;l&&l.removeChild(n);}function v(n,l,u){var i,t=arguments,o={};for(i in l)"key"!==i&&"ref"!==i&&(o[i]=l[i]);if(arguments.length>3)for(u=[u],i=3;i<arguments.length;i++)u.push(t[i]);if(null!=u&&(o.children=u),"function"==typeof n&&null!=n.defaultProps)for(i in n.defaultProps)void 0===o[i]&&(o[i]=n.defaultProps[i]);return h(n,o,l&&l.key,l&&l.ref)}function h(l,u,i,t){var o={type:l,props:u,key:i,ref:t,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,constructor:void 0};return n.vnode&&n.vnode(o),o}function p(){return {}}function d(n){return n.children}function y(n,l){this.props=n,this.context=l;}function m(n,l){if(null==l)return n.__?m(n.__,n.__.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?m(n):null}function w(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return w(n)}}function g(l){(!l.__d&&(l.__d=!0)&&1===u.push(l)||t!==n.debounceRendering)&&((t=n.debounceRendering)||i)(k);}function k(){var n,l,i,t,o,r,f;for(u.sort(function(n,l){return l.__v.__b-n.__v.__b});n=u.pop();)n.__d&&(i=void 0,t=void 0,r=(o=(l=n).__v).__e,(f=l.__P)&&(i=[],t=z(f,o,s({},o),l.__n,void 0!==f.ownerSVGElement,null,i,null==r?m(o):r),A(i,o),t!=r&&w(o)));}function _(n,l,u,i,t,o,r,c,s){var v,h,p,d,y,w,g,k=u&&u.__k||e,_=k.length;if(c==f&&(c=null!=o?o[0]:_?m(u,0):null),v=0,l.__k=b(l.__k,function(u){if(null!=u){if(u.__=l,u.__b=l.__b+1,null===(p=k[v])||p&&u.key==p.key&&u.type===p.type)k[v]=void 0;else for(h=0;h<_;h++){if((p=k[h])&&u.key==p.key&&u.type===p.type){k[h]=void 0;break}p=null;}if(d=z(n,u,p=p||f,i,t,o,r,c,s),(h=u.ref)&&p.ref!=h&&(g||(g=[]),p.ref&&g.push(p.ref,null,u),g.push(h,u.__c||d,u)),null!=d){var e;if(null==w&&(w=d),void 0!==u.__d)e=u.__d,u.__d=void 0;else if(o==p||d!=c||null==d.parentNode){n:if(null==c||c.parentNode!==n)n.appendChild(d),e=null;else {for(y=c,h=0;(y=y.nextSibling)&&h<_;h+=2)if(y==d)break n;n.insertBefore(d,c),e=c;}"option"==l.type&&(n.value="");}c=void 0!==e?e:d.nextSibling,"function"==typeof l.type&&(l.__d=c);}else c&&p.__e==c&&c.parentNode!=n&&(c=m(p));}return v++,u}),l.__e=w,null!=o&&"function"!=typeof l.type)for(v=o.length;v--;)null!=o[v]&&a(o[v]);for(v=_;v--;)null!=k[v]&&j(k[v],k[v]);if(g)for(v=0;v<g.length;v++)$(g[v],g[++v],g[++v]);}function b(n,l,u){if(null==u&&(u=[]),null==n||"boolean"==typeof n)l&&u.push(l(null));else if(Array.isArray(n))for(var i=0;i<n.length;i++)b(n[i],l,u);else u.push(l?l("string"==typeof n||"number"==typeof n?h(null,n,null,null):null!=n.__e||null!=n.__c?h(n.type,n.props,n.key,null):n):n);return u}function x(n,l,u,i,t){var o;for(o in u)o in l||C(n,o,null,u[o],i);for(o in l)t&&"function"!=typeof l[o]||"value"===o||"checked"===o||u[o]===l[o]||C(n,o,l[o],u[o],i);}function P(n,l,u){"-"===l[0]?n.setProperty(l,u):n[l]="number"==typeof u&&!1===c.test(l)?u+"px":null==u?"":u;}function C(n,l,u,i,t){var o,r,f,e,c;if(t?"className"===l&&(l="class"):"class"===l&&(l="className"),"key"===l||"children"===l);else if("style"===l)if(o=n.style,"string"==typeof u)o.cssText=u;else {if("string"==typeof i&&(o.cssText="",i=null),i)for(r in i)u&&r in u||P(o,r,"");if(u)for(f in u)i&&u[f]===i[f]||P(o,f,u[f]);}else "o"===l[0]&&"n"===l[1]?(e=l!==(l=l.replace(/Capture$/,"")),c=l.toLowerCase(),l=(c in n?c:l).slice(2),u?(i||n.addEventListener(l,N,e),(n.l||(n.l={}))[l]=u):n.removeEventListener(l,N,e)):"list"!==l&&"tagName"!==l&&"form"!==l&&"type"!==l&&"size"!==l&&!t&&l in n?n[l]=null==u?"":u:"function"!=typeof u&&"dangerouslySetInnerHTML"!==l&&(l!==(l=l.replace(/^xlink:?/,""))?null==u||!1===u?n.removeAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase()):n.setAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase(),u):null==u||!1===u&&!/^ar/.test(l)?n.removeAttribute(l):n.setAttribute(l,u));}function N(l){this.l[l.type](n.event?n.event(l):l);}function z(l,u,i,t,o,r,f,e,c){var a,v,h,p,m,w,g,k,b,x,P=u.type;if(void 0!==u.constructor)return null;(a=n.__b)&&a(u);try{n:if("function"==typeof P){if(k=u.props,b=(a=P.contextType)&&t[a.__c],x=a?b?b.props.value:a.__:t,i.__c?g=(v=u.__c=i.__c).__=v.__E:("prototype"in P&&P.prototype.render?u.__c=v=new P(k,x):(u.__c=v=new y(k,x),v.constructor=P,v.render=D),b&&b.sub(v),v.props=k,v.state||(v.state={}),v.context=x,v.__n=t,h=v.__d=!0,v.__h=[]),null==v.__s&&(v.__s=v.state),null!=P.getDerivedStateFromProps&&(v.__s==v.state&&(v.__s=s({},v.__s)),s(v.__s,P.getDerivedStateFromProps(k,v.__s))),p=v.props,m=v.state,h)null==P.getDerivedStateFromProps&&null!=v.componentWillMount&&v.componentWillMount(),null!=v.componentDidMount&&v.__h.push(v.componentDidMount);else {if(null==P.getDerivedStateFromProps&&k!==p&&null!=v.componentWillReceiveProps&&v.componentWillReceiveProps(k,x),!v.__e&&null!=v.shouldComponentUpdate&&!1===v.shouldComponentUpdate(k,v.__s,x)){for(v.props=k,v.state=v.__s,v.__d=!1,v.__v=u,u.__e=i.__e,u.__k=i.__k,v.__h.length&&f.push(v),a=0;a<u.__k.length;a++)u.__k[a]&&(u.__k[a].__=u);break n}null!=v.componentWillUpdate&&v.componentWillUpdate(k,v.__s,x),null!=v.componentDidUpdate&&v.__h.push(function(){v.componentDidUpdate(p,m,w);});}v.context=x,v.props=k,v.state=v.__s,(a=n.__r)&&a(u),v.__d=!1,v.__v=u,v.__P=l,a=v.render(v.props,v.state,v.context),u.__k=null!=a&&a.type==d&&null==a.key?a.props.children:Array.isArray(a)?a:[a],null!=v.getChildContext&&(t=s(s({},t),v.getChildContext())),h||null==v.getSnapshotBeforeUpdate||(w=v.getSnapshotBeforeUpdate(p,m)),_(l,u,i,t,o,r,f,e,c),v.base=u.__e,v.__h.length&&f.push(v),g&&(v.__E=v.__=null),v.__e=!1;}else u.__e=T(i.__e,u,i,t,o,r,f,c);(a=n.diffed)&&a(u);}catch(l){n.__e(l,u,i);}return u.__e}function A(l,u){n.__c&&n.__c(u,l),l.some(function(u){try{l=u.__h,u.__h=[],l.some(function(n){n.call(u);});}catch(l){n.__e(l,u.__v);}});}function T(n,l,u,i,t,o,r,c){var s,a,v,h,p,d=u.props,y=l.props;if(t="svg"===l.type||t,null!=o)for(s=0;s<o.length;s++)if(null!=(a=o[s])&&((null===l.type?3===a.nodeType:a.localName===l.type)||n==a)){n=a,o[s]=null;break}if(null==n){if(null===l.type)return document.createTextNode(y);n=t?document.createElementNS("http://www.w3.org/2000/svg",l.type):document.createElement(l.type,y.is&&{is:y.is}),o=null;}if(null===l.type)d!==y&&n.data!=y&&(n.data=y);else if(l!==u){if(null!=o&&(o=e.slice.call(n.childNodes)),v=(d=u.props||f).dangerouslySetInnerHTML,h=y.dangerouslySetInnerHTML,!c){if(d===f)for(d={},p=0;p<n.attributes.length;p++)d[n.attributes[p].name]=n.attributes[p].value;(h||v)&&(h&&v&&h.__html==v.__html||(n.innerHTML=h&&h.__html||""));}x(n,y,d,t,c),l.__k=l.props.children,h||_(n,l,u,i,"foreignObject"!==l.type&&t,o,r,f,c),c||("value"in y&&void 0!==y.value&&y.value!==n.value&&(n.value=null==y.value?"":y.value),"checked"in y&&void 0!==y.checked&&y.checked!==n.checked&&(n.checked=y.checked));}return n}function $(l,u,i){try{"function"==typeof l?l(u):l.current=u;}catch(l){n.__e(l,i);}}function j(l,u,i){var t,o,r;if(n.unmount&&n.unmount(l),(t=l.ref)&&(t.current&&t.current!==l.__e||$(t,null,u)),i||"function"==typeof l.type||(i=null!=(o=l.__e)),l.__e=l.__d=void 0,null!=(t=l.__c)){if(t.componentWillUnmount)try{t.componentWillUnmount();}catch(l){n.__e(l,u);}t.base=t.__P=null;}if(t=l.__k)for(r=0;r<t.length;r++)t[r]&&j(t[r],u,i);null!=o&&a(o);}function D(n,l,u){return this.constructor(n,u)}function E(l,u,i){var t,r,c;n.__&&n.__(l,u),r=(t=i===o)?null:i&&i.__k||u.__k,l=v(d,null,[l]),c=[],z(u,(t?u:i||u).__k=l,r||f,f,void 0!==u.ownerSVGElement,i&&!t?[i]:r?null:e.slice.call(u.childNodes),c,i||f,t),A(c,l);}function L(n){var l={},u={__c:"__cC"+r++,__:n,Consumer:function(n,l){return n.children(l)},Provider:function(n){var i,t=this;return this.getChildContext||(i=[],this.getChildContext=function(){return l[u.__c]=t,l},this.shouldComponentUpdate=function(l){n.value!==l.value&&i.some(function(n){n.context=l.value,g(n);});},this.sub=function(n){i.push(n);var l=n.componentWillUnmount;n.componentWillUnmount=function(){i.splice(i.indexOf(n),1),l&&l.call(n);};}),n.children}};return u.Consumer.contextType=u,u}n={__e:function(n,l){for(var u,i;l=l.__;)if((u=l.__c)&&!u.__)try{if(u.constructor&&null!=u.constructor.getDerivedStateFromError&&(i=!0,u.setState(u.constructor.getDerivedStateFromError(n))),null!=u.componentDidCatch&&(i=!0,u.componentDidCatch(n)),i)return g(u.__E=u)}catch(l){n=l;}throw n}},y.prototype.setState=function(n,l){var u;u=this.__s!==this.state?this.__s:this.__s=s({},this.state),"function"==typeof n&&(n=n(u,this.props)),n&&s(u,n),null!=n&&this.__v&&(l&&this.__h.push(l),g(this));},y.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),g(this));},y.prototype.render=d,u=[],i="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,o=f,r=0;
+  var n,u,i,t,o,r,f,e={},c=[],s=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord/i;function a(n,l){for(var u in l)n[u]=l[u];return n}function v(n){var l=n.parentNode;l&&l.removeChild(n);}function h(n,l,u){var i,t=arguments,o={};for(i in l)"key"!==i&&"ref"!==i&&(o[i]=l[i]);if(arguments.length>3)for(u=[u],i=3;i<arguments.length;i++)u.push(t[i]);if(null!=u&&(o.children=u),"function"==typeof n&&null!=n.defaultProps)for(i in n.defaultProps)void 0===o[i]&&(o[i]=n.defaultProps[i]);return p(n,o,l&&l.key,l&&l.ref)}function p(l,u,i,t){var o={type:l,props:u,key:i,ref:t,__k:null,__:null,__b:0,__e:null,__d:void 0,__c:null,constructor:void 0};return n.vnode&&n.vnode(o),o}function d(n){return n.children}function m(n,l){this.props=n,this.context=l;}function w(n,l){if(null==l)return n.__?w(n.__,n.__.__k.indexOf(n)+1):null;for(var u;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e)return u.__e;return "function"==typeof n.type?w(n):null}function g(n){var l,u;if(null!=(n=n.__)&&null!=n.__c){for(n.__e=n.__c.base=null,l=0;l<n.__k.length;l++)if(null!=(u=n.__k[l])&&null!=u.__e){n.__e=n.__c.base=u.__e;break}return g(n)}}function k(l){(!l.__d&&(l.__d=!0)&&u.push(l)&&!i++||o!==n.debounceRendering)&&((o=n.debounceRendering)||t)(_);}function _(){for(var n;i=u.length;)n=u.sort(function(n,l){return n.__v.__b-l.__v.__b}),u=[],n.some(function(n){var l,u,i,t,o,r;n.__d&&(o=(t=(l=n).__v).__e,(r=l.__P)&&(u=[],i=A(r,t,a({},t),l.__n,void 0!==r.ownerSVGElement,null,u,null==o?w(t):o),T(u,t),i!=o&&g(t)));});}function b(n,l,u,i,t,o,r,f,s){var a,h,p,y,d,m,g,k=u&&u.__k||c,_=k.length;if(f==e&&(f=null!=o?o[0]:_?w(u,0):null),a=0,l.__k=x(l.__k,function(u){if(null!=u){if(u.__=l,u.__b=l.__b+1,null===(p=k[a])||p&&u.key==p.key&&u.type===p.type)k[a]=void 0;else for(h=0;h<_;h++){if((p=k[h])&&u.key==p.key&&u.type===p.type){k[h]=void 0;break}p=null;}if(y=A(n,u,p=p||e,i,t,o,r,f,s),(h=u.ref)&&p.ref!=h&&(g||(g=[]),p.ref&&g.push(p.ref,null,u),g.push(h,u.__c||y,u)),null!=y){var c;if(null==m&&(m=y),void 0!==u.__d)c=u.__d,u.__d=void 0;else if(o==p||y!=f||null==y.parentNode){n:if(null==f||f.parentNode!==n)n.appendChild(y),c=null;else {for(d=f,h=0;(d=d.nextSibling)&&h<_;h+=2)if(d==y)break n;n.insertBefore(y,f),c=f;}"option"==l.type&&(n.value="");}f=void 0!==c?c:y.nextSibling,"function"==typeof l.type&&(l.__d=f);}else f&&p.__e==f&&f.parentNode!=n&&(f=w(p));}return a++,u}),l.__e=m,null!=o&&"function"!=typeof l.type)for(a=o.length;a--;)null!=o[a]&&v(o[a]);for(a=_;a--;)null!=k[a]&&D(k[a],k[a]);if(g)for(a=0;a<g.length;a++)j(g[a],g[++a],g[++a]);}function x(n,l,u){if(null==u&&(u=[]),null==n||"boolean"==typeof n)l&&u.push(l(null));else if(Array.isArray(n))for(var i=0;i<n.length;i++)x(n[i],l,u);else u.push(l?l("string"==typeof n||"number"==typeof n?p(null,n,null,null):null!=n.__e||null!=n.__c?p(n.type,n.props,n.key,null):n):n);return u}function P(n,l,u,i,t){var o;for(o in u)o in l||N(n,o,null,u[o],i);for(o in l)t&&"function"!=typeof l[o]||"value"===o||"checked"===o||u[o]===l[o]||N(n,o,l[o],u[o],i);}function C(n,l,u){"-"===l[0]?n.setProperty(l,u):n[l]="number"==typeof u&&!1===s.test(l)?u+"px":null==u?"":u;}function N(n,l,u,i,t){var o,r,f,e,c;if(t?"className"===l&&(l="class"):"class"===l&&(l="className"),"key"===l||"children"===l);else if("style"===l)if(o=n.style,"string"==typeof u)o.cssText=u;else {if("string"==typeof i&&(o.cssText="",i=null),i)for(r in i)u&&r in u||C(o,r,"");if(u)for(f in u)i&&u[f]===i[f]||C(o,f,u[f]);}else "o"===l[0]&&"n"===l[1]?(e=l!==(l=l.replace(/Capture$/,"")),c=l.toLowerCase(),l=(c in n?c:l).slice(2),u?(i||n.addEventListener(l,z,e),(n.l||(n.l={}))[l]=u):n.removeEventListener(l,z,e)):"list"!==l&&"tagName"!==l&&"form"!==l&&"type"!==l&&"size"!==l&&!t&&l in n?n[l]=null==u?"":u:"function"!=typeof u&&"dangerouslySetInnerHTML"!==l&&(l!==(l=l.replace(/^xlink:?/,""))?null==u||!1===u?n.removeAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase()):n.setAttributeNS("http://www.w3.org/1999/xlink",l.toLowerCase(),u):null==u||!1===u&&!/^ar/.test(l)?n.removeAttribute(l):n.setAttribute(l,u));}function z(l){this.l[l.type](n.event?n.event(l):l);}function A(l,u,i,t,o,r,f,e,c){var s,v,h,p,y,w,g,k,_,x,P=u.type;if(void 0!==u.constructor)return null;(s=n.__b)&&s(u);try{n:if("function"==typeof P){if(k=u.props,_=(s=P.contextType)&&t[s.__c],x=s?_?_.props.value:s.__:t,i.__c?g=(v=u.__c=i.__c).__=v.__E:("prototype"in P&&P.prototype.render?u.__c=v=new P(k,x):(u.__c=v=new m(k,x),v.constructor=P,v.render=E),_&&_.sub(v),v.props=k,v.state||(v.state={}),v.context=x,v.__n=t,h=v.__d=!0,v.__h=[]),null==v.__s&&(v.__s=v.state),null!=P.getDerivedStateFromProps&&(v.__s==v.state&&(v.__s=a({},v.__s)),a(v.__s,P.getDerivedStateFromProps(k,v.__s))),p=v.props,y=v.state,h)null==P.getDerivedStateFromProps&&null!=v.componentWillMount&&v.componentWillMount(),null!=v.componentDidMount&&v.__h.push(v.componentDidMount);else {if(null==P.getDerivedStateFromProps&&k!==p&&null!=v.componentWillReceiveProps&&v.componentWillReceiveProps(k,x),!v.__e&&null!=v.shouldComponentUpdate&&!1===v.shouldComponentUpdate(k,v.__s,x)){for(v.props=k,v.state=v.__s,v.__d=!1,v.__v=u,u.__e=i.__e,u.__k=i.__k,v.__h.length&&f.push(v),s=0;s<u.__k.length;s++)u.__k[s]&&(u.__k[s].__=u);break n}null!=v.componentWillUpdate&&v.componentWillUpdate(k,v.__s,x),null!=v.componentDidUpdate&&v.__h.push(function(){v.componentDidUpdate(p,y,w);});}v.context=x,v.props=k,v.state=v.__s,(s=n.__r)&&s(u),v.__d=!1,v.__v=u,v.__P=l,s=v.render(v.props,v.state,v.context),u.__k=null!=s&&s.type==d&&null==s.key?s.props.children:Array.isArray(s)?s:[s],null!=v.getChildContext&&(t=a(a({},t),v.getChildContext())),h||null==v.getSnapshotBeforeUpdate||(w=v.getSnapshotBeforeUpdate(p,y)),b(l,u,i,t,o,r,f,e,c),v.base=u.__e,v.__h.length&&f.push(v),g&&(v.__E=v.__=null),v.__e=!1;}else u.__e=$(i.__e,u,i,t,o,r,f,c);(s=n.diffed)&&s(u);}catch(l){n.__e(l,u,i);}return u.__e}function T(l,u){n.__c&&n.__c(u,l),l.some(function(u){try{l=u.__h,u.__h=[],l.some(function(n){n.call(u);});}catch(l){n.__e(l,u.__v);}});}function $(n,l,u,i,t,o,r,f){var s,a,v,h,p,y=u.props,d=l.props;if(t="svg"===l.type||t,null!=o)for(s=0;s<o.length;s++)if(null!=(a=o[s])&&((null===l.type?3===a.nodeType:a.localName===l.type)||n==a)){n=a,o[s]=null;break}if(null==n){if(null===l.type)return document.createTextNode(d);n=t?document.createElementNS("http://www.w3.org/2000/svg",l.type):document.createElement(l.type,d.is&&{is:d.is}),o=null;}if(null===l.type)y!==d&&n.data!=d&&(n.data=d);else if(l!==u){if(null!=o&&(o=c.slice.call(n.childNodes)),v=(y=u.props||e).dangerouslySetInnerHTML,h=d.dangerouslySetInnerHTML,!f){if(y===e)for(y={},p=0;p<n.attributes.length;p++)y[n.attributes[p].name]=n.attributes[p].value;(h||v)&&(h&&v&&h.__html==v.__html||(n.innerHTML=h&&h.__html||""));}P(n,d,y,t,f),l.__k=l.props.children,h||b(n,l,u,i,"foreignObject"!==l.type&&t,o,r,e,f),f||("value"in d&&void 0!==d.value&&d.value!==n.value&&(n.value=null==d.value?"":d.value),"checked"in d&&void 0!==d.checked&&d.checked!==n.checked&&(n.checked=d.checked));}return n}function j(l,u,i){try{"function"==typeof l?l(u):l.current=u;}catch(l){n.__e(l,i);}}function D(l,u,i){var t,o,r;if(n.unmount&&n.unmount(l),(t=l.ref)&&(t.current&&t.current!==l.__e||j(t,null,u)),i||"function"==typeof l.type||(i=null!=(o=l.__e)),l.__e=l.__d=void 0,null!=(t=l.__c)){if(t.componentWillUnmount)try{t.componentWillUnmount();}catch(l){n.__e(l,u);}t.base=t.__P=null;}if(t=l.__k)for(r=0;r<t.length;r++)t[r]&&D(t[r],u,i);null!=o&&v(o);}function E(n,l,u){return this.constructor(n,u)}function H(l,u,i){var t,o,f;n.__&&n.__(l,u),o=(t=i===r)?null:i&&i.__k||u.__k,l=h(d,null,[l]),f=[],A(u,(t?u:i||u).__k=l,o||e,e,void 0!==u.ownerSVGElement,i&&!t?[i]:o?null:c.slice.call(u.childNodes),f,i||e,t),T(f,l);}function M(n){var l={},u={__c:"__cC"+f++,__:n,Consumer:function(n,l){return n.children(l)},Provider:function(n){var i,t=this;return this.getChildContext||(i=[],this.getChildContext=function(){return l[u.__c]=t,l},this.shouldComponentUpdate=function(l){n.value!==l.value&&i.some(function(n){n.context=l.value,k(n);});},this.sub=function(n){i.push(n);var l=n.componentWillUnmount;n.componentWillUnmount=function(){i.splice(i.indexOf(n),1),l&&l.call(n);};}),n.children}};return u.Consumer.contextType=u,u}n={__e:function(n,l){for(var u,i;l=l.__;)if((u=l.__c)&&!u.__)try{if(u.constructor&&null!=u.constructor.getDerivedStateFromError&&(i=!0,u.setState(u.constructor.getDerivedStateFromError(n))),null!=u.componentDidCatch&&(i=!0,u.componentDidCatch(n)),i)return k(u.__E=u)}catch(l){n=l;}throw n}},m.prototype.setState=function(n,l){var u;u=this.__s!==this.state?this.__s:this.__s=a({},this.state),"function"==typeof n&&(n=n(u,this.props)),n&&a(u,n),null!=n&&this.__v&&(l&&this.__h.push(l),k(this));},m.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),k(this));},m.prototype.render=d,u=[],i=0,t="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,r=e,f=0;
 
-  var t$1,r$1,u$1,i$1=[],o$1=n.__r,f$1=n.diffed,c$1=n.__c,e$1=n.unmount;function a$1(t){n.__h&&n.__h(r$1);var u=r$1.__H||(r$1.__H={__:[],__h:[]});return t>=u.__.length&&u.__.push({}),u.__[t]}function v$1(n){return m$1(x$1,n)}function m$1(n,u,i){var o=a$1(t$1++);return o.__c||(o.__c=r$1,o.__=[i?i(u):x$1(void 0,u),function(t){var r=n(o.__[0],t);o.__[0]!==r&&(o.__[0]=r,o.__c.setState({}));}]),o.__}function p$1(n,u){var i=a$1(t$1++);q(i.__H,u)&&(i.__=n,i.__H=u,r$1.__H.__h.push(i));}function y$1(n){return s$1(function(){return {current:n}},[])}function s$1(n,r){var u=a$1(t$1++);return q(u.__H,r)?(u.__H=r,u.__h=n,u.__=n()):u.__}function h$1(n,t){return s$1(function(){return n},t)}function T$1(n){var u=r$1.context[n.__c];if(!u)return n.__;var i=a$1(t$1++);return null==i.__&&(i.__=!0,u.sub(r$1)),u.props.value}function A$1(n){var u=a$1(t$1++),i=v$1();return u.__=n,r$1.componentDidCatch||(r$1.componentDidCatch=function(n){u.__&&u.__(n),i[1](n);}),[i[0],function(){i[1](void 0);}]}function F(){i$1.some(function(t){if(t.__P)try{t.__H.__h.forEach(_$1),t.__H.__h.forEach(g$1),t.__H.__h=[];}catch(r){return n.__e(r,t.__v),!0}}),i$1=[];}function _$1(n){n.t&&n.t();}function g$1(n){var t=n.__();"function"==typeof t&&(n.t=t);}function q(n,t){return !n||t.some(function(t,r){return t!==n[r]})}function x$1(n,t){return "function"==typeof t?t(n):t}n.__r=function(n){o$1&&o$1(n),t$1=0,(r$1=n.__c).__H&&(r$1.__H.__h.forEach(_$1),r$1.__H.__h.forEach(g$1),r$1.__H.__h=[]);},n.diffed=function(t){f$1&&f$1(t);var r=t.__c;if(r){var o=r.__H;o&&o.__h.length&&(1!==i$1.push(r)&&u$1===n.requestAnimationFrame||((u$1=n.requestAnimationFrame)||function(n){var t,r=function(){clearTimeout(u),unsafeWindow.cancelAnimationFrame.bind(unsafeWindow)(t),setTimeout(n);},u=setTimeout(r,100);"undefined"!=typeof window&&(t=requestAnimationFrame(r));})(F));}},n.__c=function(t,r){r.some(function(t){try{t.__h.forEach(_$1),t.__h=t.__h.filter(function(n){return !n.__||g$1(n)});}catch(u){r.some(function(n){n.__h&&(n.__h=[]);}),r=[],n.__e(u,t.__v);}}),c$1&&c$1(t,r);},n.unmount=function(t){e$1&&e$1(t);var r=t.__c;if(r){var u=r.__H;if(u)try{u.__.forEach(function(n){return n.t&&n.t()});}catch(t){n.__e(t,r.__v);}}};
+  var t$1,r$1,u$1,i$1=[],o$1=n.__r,f$1=n.diffed,c$1=n.__c,e$1=n.unmount;function a$1(t){n.__h&&n.__h(r$1);var u=r$1.__H||(r$1.__H={__:[],__h:[]});return t>=u.__.length&&u.__.push({}),u.__[t]}function v$1(n){return m$1(x$1,n)}function m$1(n,u,i){var o=a$1(t$1++);return o.__c||(o.__c=r$1,o.__=[i?i(u):x$1(void 0,u),function(t){var r=n(o.__[0],t);o.__[0]!==r&&(o.__[0]=r,o.__c.setState({}));}]),o.__}function p$1(n,u){var i=a$1(t$1++);q(i.__H,u)&&(i.__=n,i.__H=u,r$1.__H.__h.push(i));}function y(n){return s$1(function(){return {current:n}},[])}function s$1(n,r){var u=a$1(t$1++);return q(u.__H,r)?(u.__H=r,u.__h=n,u.__=n()):u.__}function h$1(n,t){return s$1(function(){return n},t)}function T$1(n){var u=r$1.context[n.__c];if(!u)return n.__;var i=a$1(t$1++);return null==i.__&&(i.__=!0,u.sub(r$1)),u.props.value}function A$1(n){var u=a$1(t$1++),i=v$1();return u.__=n,r$1.componentDidCatch||(r$1.componentDidCatch=function(n){u.__&&u.__(n),i[1](n);}),[i[0],function(){i[1](void 0);}]}function F(){i$1.some(function(t){if(t.__P)try{t.__H.__h.forEach(_$1),t.__H.__h.forEach(g$1),t.__H.__h=[];}catch(r){return n.__e(r,t.__v),!0}}),i$1=[];}function _$1(n){n.t&&n.t();}function g$1(n){var t=n.__();"function"==typeof t&&(n.t=t);}function q(n,t){return !n||t.some(function(t,r){return t!==n[r]})}function x$1(n,t){return "function"==typeof t?t(n):t}n.__r=function(n){o$1&&o$1(n),t$1=0,(r$1=n.__c).__H&&(r$1.__H.__h.forEach(_$1),r$1.__H.__h.forEach(g$1),r$1.__H.__h=[]);},n.diffed=function(t){f$1&&f$1(t);var r=t.__c;if(r){var o=r.__H;o&&o.__h.length&&(1!==i$1.push(r)&&u$1===n.requestAnimationFrame||((u$1=n.requestAnimationFrame)||function(n){var t,r=function(){clearTimeout(u),unsafeWindow.cancelAnimationFrame.bind(unsafeWindow)(t),setTimeout(n);},u=setTimeout(r,100);"undefined"!=typeof window&&(t=requestAnimationFrame(r));})(F));}},n.__c=function(t,r){r.some(function(t){try{t.__h.forEach(_$1),t.__h=t.__h.filter(function(n){return !n.__||g$1(n)});}catch(u){r.some(function(n){n.__h&&(n.__h=[]);}),r=[],n.__e(u,t.__v);}}),c$1&&c$1(t,r);},n.unmount=function(t){e$1&&e$1(t);var r=t.__c;if(r){var u=r.__H;if(u)try{u.__.forEach(function(n){return n.t&&n.t()});}catch(t){n.__e(t,r.__v);}}};
 
   const { slice } = Array.prototype;
   function elementToRender(component, props) {
@@ -313,7 +327,7 @@
               for (const node of currentNodes)
                   fragment.appendChild(node);
           }
-          E(elementToRender(component, props), fragment);
+          H(elementToRender(component, props), fragment);
           cloneReferences(fragment, currentNodes);
           insertFragement(insertFunctionOrParent, fragment);
       };
@@ -321,7 +335,7 @@
   function asReplicable(component) {
       return function replicateAndMount(insertFunctionOrParent, props) {
           const fragment = document.createDocumentFragment();
-          E(elementToRender(component, props), fragment);
+          H(elementToRender(component, props), fragment);
           insertFragement(insertFunctionOrParent, fragment);
       };
   }
@@ -644,6 +658,13 @@
     'default': img$2
   });
 
+  const img$3 = "data:image/svg+xml,%3csvg height='24' viewBox='32 126 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3e%3cg fill='none'%3e%3cpath d='m32 126h24v24h-24z'/%3e%3cpath d='m39 141 2 2-.5.5-2.2.4c-.2.1-.3 0-.2-.2l.4-2.2zm1-1 7.7-7.7c.4-.4 1-.4 1.4 0l.6.6c.4.4.4 1 0 1.4l-7.7 7.7z' fill='%23828a99'/%3e%3c/g%3e%3c/svg%3e";
+
+  var editPen = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    'default': img$3
+  });
+
   function makeAssetObject({ default: dataURL }) {
       return {
           get dataURL() {
@@ -657,6 +678,7 @@
   const GearIcon = makeAssetObject(gearIcon);
   const Checkbox = makeAssetObject(checkbox);
   const CheckboxChecked = makeAssetObject(checkboxChecked);
+  const EditPen = makeAssetObject(editPen);
 
   function elem(selectors, scope) {
       return (scope !== null && scope !== void 0 ? scope : getWindow().document).querySelector(selectors);
@@ -743,11 +765,11 @@
       return observation;
   }
 
-  const BoxContext = L(null);
+  const TargetContext = M(undefined);
 
-  const TargetContext = L(undefined);
+  const BoxContext = M(null);
 
-  const TranslationContext = L(getNavigatorTranslations());
+  const TranslationContext = M(getNavigatorTranslations());
 
   function useTarget() {
       return T$1(TargetContext);
@@ -767,6 +789,7 @@
       const translation = useTranslations();
       return translation[tree];
   }
+
   function useForceUpdate() {
       const [, setTick] = v$1(0);
       return h$1(() => {
@@ -779,6 +802,33 @@
           callback === null || callback === void 0 ? void 0 : callback(event);
           return false;
       }, [callback]);
+  }
+
+  function useTooltip(opts) {
+      const [tooltipRef] = v$1({});
+      const destroyTooltip = h$1(() => {
+          var _a;
+          (_a = tooltipRef.current) === null || _a === void 0 ? void 0 : _a.destroy();
+      }, [tooltipRef]);
+      const setTooltip = h$1((tt) => {
+          destroyTooltip();
+          tooltipRef.current = tt;
+      }, [destroyTooltip, tooltipRef]);
+      p$1(() => destroyTooltip, [destroyTooltip]);
+      const tooltipOptions = s$1(() => (Object.assign(Object.assign({}, opts), { init: (opts === null || opts === void 0 ? void 0 : opts.init) != null
+              ? (tt) => {
+                  var _a;
+                  (_a = opts === null || opts === void 0 ? void 0 : opts.init) === null || _a === void 0 ? void 0 : _a.call(opts, tt);
+                  setTooltip(tt);
+              }
+              : setTooltip })), [opts, setTooltip]);
+      return h$1((e) => {
+          getWindow().showTooltip(e.currentTarget, tooltipOptions);
+      }, [tooltipOptions]);
+  }
+  function useTitle(titleContents, shift, opts) {
+      const $opts = s$1(() => (Object.assign({ text: titleContents, black: true, shift }, opts)), [opts, shift, titleContents]);
+      return useTooltip($opts);
   }
 
   function findWithCallback(elements, handlerName, search) {
@@ -1411,7 +1461,7 @@
   }
   function ProgressIndicator(props) {
       const { centered, className, style } = props;
-      const progressHolder = y$1();
+      const progressHolder = y();
       const [isMounted, setMounted] = v$1(false);
       p$1(() => {
           const holder = progressHolder.current;
@@ -1420,12 +1470,12 @@
           getWindow().showProgress(holder);
           setMounted(true);
       }, [progressHolder, isMounted]);
-      return (v("div", { ref: progressHolder, className: c$2(className, CENTERED_CLASS, centered !== null && centered !== void 0 ? centered : false), style: style }));
+      return (h("div", { ref: progressHolder, className: c$2(className, CENTERED_CLASS, centered !== null && centered !== void 0 ? centered : false), style: style }));
   }
 
   function ErrorBlock(props) {
       const className = c$2("error", props.className);
-      return (v("div", Object.assign({}, props, { className: className })));
+      return (h("div", Object.assign({}, props, { className: className })));
   }
 
   const STYLE = toStyleCombiner({
@@ -1436,14 +1486,14 @@
       separator: "top_profile_sep",
   });
   function Separator({ noMargin }) {
-      return (v("div", { className: STYLE("separator", "noMargin", noMargin !== null && noMargin !== void 0 ? noMargin : false) }));
+      return (h("div", { className: STYLE("separator", "noMargin", noMargin !== null && noMargin !== void 0 ? noMargin : false) }));
   }
 
   const ITEM_HIGHLIGHT = toClassName("olistHighlight", {
       backgroundColor: "#e1e5eb",
   });
   const TOOLTIP_HIDE_TIME = 5000;
-  function createList(context, translation) {
+  function editList(listId, context, translation, preSelect = true) {
       const { id, icon, name, link } = context;
       if (id == null || icon == null || name == null || link == null) {
           log("warn", "[createList] Not sufficient data", {
@@ -1474,7 +1524,7 @@
                       0,
                   ]);
               }
-              selected[target.id] = 1;
+              selected[target.id] = preSelect ? 1 : 0;
               super(...args);
               const itemElem = elem(`#olist_item_wrap${target.id}`);
               if (itemElem == null)
@@ -1495,7 +1545,7 @@
           onDone() {
               var _a;
               window.OList = FakeOList;
-              (_a = window.feed) === null || _a === void 0 ? void 0 : _a.editList(-1);
+              (_a = window.feed) === null || _a === void 0 ? void 0 : _a.editList(listId);
           },
       });
       return true;
@@ -1585,7 +1635,7 @@
 
   const S = toStyleCombiner({
       label: { cursor: "pointer" },
-      row: {
+      checkbox: {
           marginBottom: "10px",
           lineHeight: "15px",
           width: "max-content",
@@ -1623,20 +1673,11 @@
   }, {
       locked: LOCK_COMBO,
   });
-  function generateID() {
-      return `ch${Date.now()}`;
-  }
   function CheckboxRow(props) {
       var _a, _b;
-      const { text, onChange } = props;
+      const { text, id, onChange } = props;
       const isChecked = (_a = props.checked) !== null && _a !== void 0 ? _a : false;
       const isDisabled = (_b = props.disabled) !== null && _b !== void 0 ? _b : false;
-      const [id, setID] = v$1(props.id);
-      p$1(() => {
-          if (id != null)
-              return;
-          setID(generateID());
-      }, [id]);
       const onClick = () => {
           if (isDisabled)
               return;
@@ -1644,11 +1685,45 @@
           onChange === null || onChange === void 0 ? void 0 : onChange(newValue);
       };
       const onLabelClick = h$1((e) => e.preventDefault(), []);
-      return (v("div", { onClick: onClick, className: S("row", "locked", isDisabled) },
-          v("input", { id: id, className: "blind_label", type: "checkbox", checked: isChecked, disabled: isDisabled }),
-          v("label", { htmlFor: id, className: S("label"), onClick: onLabelClick, children: text })));
+      return (h("div", { onClick: onClick, className: S("checkbox", "locked", isDisabled) },
+          h("input", { id: id, className: "blind_label", type: "checkbox", checked: isChecked, disabled: isDisabled }),
+          h("label", { htmlFor: id, className: S("label"), onClick: onLabelClick, children: text })));
   }
 
+  const EDIT_BUTTON_CLASS = toClassName("editListButton", {
+      border: 0,
+      padding: 0,
+      margin: 0,
+      background: "none",
+      cursor: "pointer",
+      opacity: ".3",
+      transition: "opacity .05s ease",
+      height: "15px",
+      "&:hover": { opacity: 1 },
+      "& img": { height: "19px" },
+  });
+  function EditListButton({ list }) {
+      const translation = useTranslations();
+      const { text, icon } = translation.editListButton;
+      const target = useTarget();
+      const label = s$1(() => text.replace("{}", list.name), [text, list]);
+      const showTooltip = useTitle(label);
+      const onClick = h$1(() => {
+          if (target == null)
+              return;
+          editList(list.id, target, translation, list.isSelected());
+      }, [list, target, translation]);
+      return (h("button", { "aria-label": label, className: EDIT_BUTTON_CLASS, onClick: onClick, onMouseOver: showTooltip, children: h("img", { src: EditPen.dataURL, alt: icon }) }));
+  }
+
+  const LIST_ROW_CLASS = toClassName("listRow", {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "start",
+      [`&:hover .${EDIT_BUTTON_CLASS}`]: {
+          opacity: 1,
+      },
+  });
   function ListRow({ list, disabled }) {
       const listSelected = list.isSelected();
       const update = useForceUpdate();
@@ -1656,17 +1731,24 @@
           list.toggle(newValue);
           update();
       }, [list, update]);
-      return (v(CheckboxRow, { checked: listSelected, text: list.name, onChange: onChange, disabled: disabled }));
+      return (h("li", { className: LIST_ROW_CLASS },
+          h(CheckboxRow, { checked: listSelected, text: list.name, onChange: onChange, disabled: disabled, id: `list${list.id}` }),
+          h(EditListButton, { list: list })));
   }
 
   const GRAY_NOTICE = toClassName("grayNotice", { color: "#656565" });
+  const LISTS_LIST_CLASS = toClassName("listsList", {
+      listStyle: "none",
+      padding: 0,
+      margin: 0,
+  });
   function ListsRender({ lists, disabled }) {
       const { empty } = useTranslation("lists");
       if (lists.length === 0) {
-          return v("div", { className: GRAY_NOTICE }, empty);
+          return h("div", { className: GRAY_NOTICE }, empty);
       }
-      const rows = lists.map((_) => v(ListRow, { list: _, disabled: disabled }));
-      return v("div", null, rows);
+      const rows = lists.map((_) => h(ListRow, { list: _, disabled: disabled }));
+      return (h("ul", { className: LISTS_LIST_CLASS }, rows));
   }
 
   const PLUS_ICON = "/images/icons/filter_add.png";
@@ -1690,19 +1772,15 @@
       locked: LOCK_COMBO,
   });
   const TOOLTIP_OFFSETS = [-10, 8];
+  const CENTER_TOOLTIP = { center: true };
   function AddListButton(_a) {
       var _b;
       var { onClick } = _a, props = __rest(_a, ["onClick"]);
-      const button = y$1();
       const disabled = (_b = props.disabled) !== null && _b !== void 0 ? _b : false;
       const onLinkClick = usePreventedCallback(disabled ? null : onClick);
       const { addListButton: translation } = T$1(TranslationContext);
-      const showTooltip = h$1(() => {
-          if (button.current == null)
-              return;
-          getWindow().showTitle(button.current, translation.tooltip, TOOLTIP_OFFSETS, { center: true });
-      }, [translation.tooltip]);
-      return (v("a", { onClick: onLinkClick, onMouseOver: showTooltip, ref: button, className: STYLE$1("button", "locked", disabled), children: translation.text }));
+      const showTooltip = useTitle(translation.tooltip, TOOLTIP_OFFSETS, CENTER_TOOLTIP);
+      return (h("a", { onClick: onLinkClick, onMouseOver: showTooltip, className: STYLE$1("button", "locked", disabled), children: translation.text }));
   }
 
   function ActionLabel() {
@@ -1733,7 +1811,7 @@
       })());
       if (text == null)
           return null;
-      return v("div", { className: DEFAULT_MARGIN }, text);
+      return h("div", { className: DEFAULT_MARGIN }, text);
   }
 
   const PROGRESS_INDICATOR_SIZE = 6;
@@ -1768,7 +1846,7 @@
       const onAddList = h$1(() => {
           if (target == null)
               return;
-          const result = createList(target, translation);
+          const result = editList(-1, target, translation);
           if (result)
               return;
           detail.displayLabel(getWindow().lang.global_error_occured, "red");
@@ -1779,15 +1857,15 @@
       if (lists == null) {
           if (loadingStatus === "failed") {
               const { loadFailed } = translation.listLoader;
-              return (v(ErrorBlock, { className: c$2(MARGIN_RESET, ERROR_MULTILINE), children: loadFailed }));
+              return (h(ErrorBlock, { className: c$2(MARGIN_RESET, ERROR_MULTILINE), children: loadFailed }));
           }
-          return (v(ProgressIndicator, { centered: true, className: dotsSize(PROGRESS_INDICATOR_SIZE), style: "padding: 10px 0;" }));
+          return (h(ProgressIndicator, { centered: true, className: dotsSize(PROGRESS_INDICATOR_SIZE), style: "padding: 10px 0;" }));
       }
-      return (v(d, null,
-          v(ActionLabel, null),
-          v(ListsRender, { disabled: disabled, lists: lists.lists }),
-          v(Separator, { noMargin: true }),
-          v(AddListButton, { disabled: disabled, onClick: onAddList })));
+      return (h(d, null,
+          h(ActionLabel, null),
+          h(ListsRender, { disabled: disabled, lists: lists.lists }),
+          h(Separator, { noMargin: true }),
+          h(AddListButton, { disabled: disabled, onClick: onAddList })));
   }
 
   const GENERIC_CAMERA_ICON = "https://vk.com/images/camera_50.png?ava=1";
@@ -1814,8 +1892,7 @@
           height: "42px",
           borderRadius: "100%",
           overflow: "hidden",
-          backgroundSize: "cover",
-          backgroundPosition: "50%",
+          objectFit: "cover",
       },
       infoText: {
           maxHeight: "48px",
@@ -1830,20 +1907,20 @@
       return false;
   };
   function InfoBlock(props) {
-      var _a;
-      const { displayName, avatarUrl, link, infoChildren } = props;
-      const avatarStyle = {
-          backgroundImage: `url("${avatarUrl !== null && avatarUrl !== void 0 ? avatarUrl : GENERIC_CAMERA_ICON}")`,
-      };
+      var _a, _b;
+      const translation = useTranslation("infoBlock");
+      const { displayName, link, infoChildren } = props;
       const disabled = (_a = props.disabled) !== null && _a !== void 0 ? _a : false;
+      const avatarUrl = (_b = props.avatarUrl) !== null && _b !== void 0 ? _b : GENERIC_CAMERA_ICON;
+      const avatarAlt = translation.avatarAlt.replace("{}", displayName);
       const onClick = disabled ? NO_CLICK : undefined;
-      return (v("div", { className: S$1("infoBlock", "clearfix") },
-          v("a", { className: S$1("leftFloat", "locked", disabled), href: link, onClick: onClick },
-              v("div", { className: S$1("targetAvatar"), style: avatarStyle })),
-          v("div", { className: S$1("leftFloat", "targetInfo") },
-              v("div", { className: S$1("targetName") },
-                  v("a", { href: link, onClick: onClick }, displayName)),
-              v("div", { className: S$1("leftFloat", "infoText") }, infoChildren))));
+      return (h("div", { className: S$1("infoBlock", "clearfix") },
+          h("a", { className: S$1("leftFloat", "locked", disabled), href: link, onClick: onClick },
+              h("img", { className: S$1("targetAvatar"), src: avatarUrl, alt: avatarAlt })),
+          h("div", { className: S$1("leftFloat", "targetInfo") },
+              h("div", { className: S$1("targetName") },
+                  h("a", { href: link, onClick: onClick }, displayName)),
+              h("div", { className: S$1("leftFloat", "infoText") }, infoChildren))));
   }
 
   function FollowText() {
@@ -1851,12 +1928,12 @@
       const [detail, target] = useBoxContexts();
       const translation = useTranslation("followStatus");
       if (detail == null || target == null)
-          return v(d, null);
+          return h(d, null);
       const { invoker } = detail;
       const context = detail.context;
       const { isFollowed, isOwn } = target;
       if (isOwn != null && isOwn) {
-          return v(d, null, translation.context.own);
+          return h(d, null, translation.context.own);
       }
       const select = isFollowed == null
           ? null
@@ -1880,20 +1957,15 @@
                   default: return null;
               }
           })()) === null || _a === void 0 ? void 0 : _a[select] : translation.unknown;
-      return v(d, null, text);
+      return h(d, null, text);
   }
 
   const HINT_TOOLTIP_SHIFT = [22, 10];
   const HINT_TOOLTIP_SLIDE = 10;
   function Hint({ style, className, hintOptions, text }) {
-      const hintRef = p();
-      const showTooltip = h$1(() => {
-          const { current } = hintRef;
-          if (current == null)
-              return;
-          getWindow().showTooltip(current, Object.assign({ text, dir: "auto", center: true, className, shift: HINT_TOOLTIP_SHIFT, slide: HINT_TOOLTIP_SLIDE }, hintOptions));
-      }, [hintOptions, className, hintRef, text]);
-      return (v("span", { className: "hint_icon", style: style, ref: hintRef, onMouseOver: showTooltip }));
+      const tooltipOptions = s$1(() => (Object.assign({ text, dir: "auto", center: true, className, shift: HINT_TOOLTIP_SHIFT, slide: HINT_TOOLTIP_SLIDE }, hintOptions)), [className, hintOptions, text]);
+      const showTooltip = useTooltip(tooltipOptions);
+      return (h("span", { className: "hint_icon", style: style, onMouseOver: showTooltip }));
   }
 
   const INDICATOR_STYLES = toClassName("inline", {
@@ -1916,10 +1988,10 @@
           return null;
       const { isToggling, toggle } = notifications;
       const progressIndicator = isToggling
-          ? v(d, null,
-              v(ProgressIndicator, { className: INDICATOR }))
+          ? h(d, null,
+              h(ProgressIndicator, { className: INDICATOR }))
           : null;
-      return (v("a", { onClick: toggle },
+      return (h("a", { onClick: toggle },
           translation[Number(notifications.isToggled)],
           progressIndicator));
   }
@@ -1928,7 +2000,7 @@
   const TOOLTIP_CLASS = toClassName("tooltip", { width: "250px" });
   function FollowHint() {
       const { hint } = useTranslation("followStatus");
-      return (v(Hint, { text: hint, className: TOOLTIP_CLASS, hintOptions: {
+      return (h(Hint, { text: hint, className: TOOLTIP_CLASS, hintOptions: {
               shift: TOOLTIP_SHIFT,
               center: true,
           }, style: {
@@ -1936,11 +2008,11 @@
           } }));
   }
   function InfoFragment() {
-      const notificationsToggle = v(NotificationsToggle, null);
-      return (v(d, null,
-          v(FollowText, null),
-          v(FollowHint, null),
-          notificationsToggle != null ? v("br", null) : "",
+      const notificationsToggle = h(NotificationsToggle, null);
+      return (h(d, null,
+          h(FollowText, null),
+          h(FollowHint, null),
+          notificationsToggle != null ? h("br", null) : "",
           notificationsToggle));
   }
   function TargetInfo() {
@@ -1948,7 +2020,7 @@
       const target = useTarget();
       if (target == null)
           return null;
-      return (v(InfoBlock, { avatarUrl: target.icon, displayName: (_a = target.name) !== null && _a !== void 0 ? _a : "", infoChildren: v(InfoFragment, null), link: (_b = target.link) !== null && _b !== void 0 ? _b : "" }));
+      return (h(InfoBlock, { avatarUrl: target.icon, displayName: (_a = target.name) !== null && _a !== void 0 ? _a : "", infoChildren: h(InfoFragment, null), link: (_b = target.link) !== null && _b !== void 0 ? _b : "" }));
   }
 
   function TargetPrivateWarning() {
@@ -1972,16 +2044,16 @@
       })();
       if (text == null)
           return null;
-      return (v(ErrorBlock, { className: c$2(MARGIN_RESET, ERROR_MULTILINE), style: { marginTop: "10px" }, children: text }));
+      return (h(ErrorBlock, { className: c$2(MARGIN_RESET, ERROR_MULTILINE), style: { marginTop: "10px" }, children: text }));
   }
 
   function BoxContent() {
       const { context, invoker } = T$1(BoxContext);
       const target = s$1(() => getFullContext(invoker), [context, invoker]);
-      return (v(TargetContext.Provider, { value: target },
-          v(TargetInfo, null),
-          v(ListLoader, null),
-          v(TargetPrivateWarning, null)));
+      return (h(TargetContext.Provider, { value: target },
+          h(TargetInfo, null),
+          h(ListLoader, null),
+          h(TargetPrivateWarning, null)));
   }
 
   const TAG = "!!";
@@ -1991,7 +2063,7 @@
       {
           const lPos = text.indexOf(TAG) + TAG.length;
           const linkText = text.slice(lPos, text.indexOf(TAG, lPos));
-          link = v("a", { href: "__report_link__", target: "_blank", rel: "noreferrer", children: linkText });
+          link = h("a", { href: "__report_link__", target: "_blank", rel: "noreferrer", children: linkText });
           text = text.replace(`${TAG}${linkText}${TAG}`, LINK_PLACEHOLDER);
       }
       const chunks = text.split("\n");
@@ -2001,7 +2073,7 @@
           if (first)
               first = false;
           else
-              result.push(v("br", null));
+              result.push(h("br", null));
           if (chunk === "")
               continue;
           if (chunk.includes(LINK_PLACEHOLDER)) {
@@ -2009,7 +2081,7 @@
               result.push(before, link, after);
               continue;
           }
-          result.push(v("label", null, chunk));
+          result.push(h("label", null, chunk));
       }
       return result;
   }
@@ -2019,9 +2091,9 @@
       }));
       const { errorBoundary: { text } } = getVKTranslation();
       if (error != null) {
-          return (v(ErrorBlock, { className: c$2(MARGIN_RESET, ERROR_MULTILINE), children: wrapText(text) }));
+          return (h(ErrorBlock, { className: c$2(MARGIN_RESET, ERROR_MULTILINE), children: wrapText(text) }));
       }
-      return v(d, null, children);
+      return h(d, null, children);
   }
 
   function hasFlag(flags, flag) {
@@ -2189,17 +2261,17 @@
   let contentWrap;
   function Box({ detail }) {
       const translation = s$1(getVKTranslation, []);
-      return (v(ErrorBoundary, null,
-          v(TranslationContext.Provider, { value: translation },
-              v(BoxContext.Provider, { value: detail },
-                  v(BoxContent, null)))));
+      return (h(ErrorBoundary, null,
+          h(TranslationContext.Provider, { value: translation },
+              h(BoxContext.Provider, { value: detail },
+                  h(BoxContent, null)))));
   }
   function addContentWrap(box, detail) {
       if (contentWrap == null) {
           contentWrap = document.createElement("div");
       }
       box.content(contentWrap);
-      E(v(Box, { detail: detail }), contentWrap);
+      H(h(Box, { detail: detail }), contentWrap);
   }
   let currentBox;
   function getBox() {
@@ -2267,12 +2339,12 @@
   const CLASS_NAME = STYLE$2("vkActionMenuItem", "actionMenuItem");
   function ActionButton() {
       const onClick = h$1(() => showBox(undefined), []);
-      return (v("button", { className: CLASS_NAME, onClick: onClick }, getVKTranslation().actionButton.text));
+      return (h("button", { className: CLASS_NAME, onClick: onClick }, getVKTranslation().actionButton.text));
   }
   let mountFunction;
   function getRoaming() {
       if (mountFunction == null) {
-          mountFunction = asRoaming(() => v(ActionButton, null));
+          mountFunction = asRoaming(() => h(ActionButton, null));
       }
       return mountFunction;
   }
@@ -2412,10 +2484,10 @@
   function ProfileMenuItem() {
       const { actionButton: translation } = getVKTranslation();
       const onClick = h$1(() => showBox(undefined), []);
-      return (v("a", { className: "page_actions_item", tabIndex: 0, role: "link", children: translation.text, onClick: onClick }));
+      return (h("a", { className: "page_actions_item", tabIndex: 0, role: "link", children: translation.text, onClick: onClick }));
   }
   function getRoaming$1() {
-      return asRoaming(v(ProfileMenuItem, null));
+      return asRoaming(h(ProfileMenuItem, null));
   }
 
   const PAGE_EXTRA_ACTIONS = ".page_extra_actions_wrap";
@@ -2438,12 +2510,12 @@
   function ActionsMenuItem({ invoker }) {
       const onClick = h$1(() => showBox(invoker), [invoker]);
       const { actionsMenuItem: translation } = getVKTranslation();
-      return (v("a", { className: "ui_actions_menu_item", role: "link", tabIndex: 0, onClick: onClick, children: translation.text }));
+      return (h("a", { className: "ui_actions_menu_item", role: "link", tabIndex: 0, onClick: onClick, children: translation.text }));
   }
   let mountFunction$1;
   function getReplicable() {
       if (mountFunction$1 == null) {
-          mountFunction$1 = asReplicable((props) => v(ActionsMenuItem, Object.assign({}, props)));
+          mountFunction$1 = asReplicable((props) => h(ActionsMenuItem, Object.assign({}, props)));
       }
       return mountFunction$1;
   }
@@ -2568,7 +2640,7 @@
   }
 
   const VERSION_SETTING = "lastVersion";
-  const CURRENT_VERSION = "2.0.1--1584006622991";
+  const CURRENT_VERSION = "2.1.3--1584898725807";
   const NEVER = "never";
   function checkVersion() {
       return __awaiter(this, void 0, void 0, function* () {
