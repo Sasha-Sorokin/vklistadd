@@ -1,6 +1,6 @@
-import { useState, useCallback, useContext } from "preact/hooks";
-import { BoxContext } from "@components/contexts/BoxContext";
+import { useContext } from "preact/hooks";
 import { TargetContext } from "@components/contexts/TargetContext";
+import { BoxContext } from "@components/contexts/BoxContext";
 import { TranslationContext } from "@components/contexts/TranslationContext";
 
 /**
@@ -52,34 +52,4 @@ export function useTranslation<Key extends keyof ITranslation>(tree: Key) {
 	const translation = useTranslations();
 
 	return translation[tree];
-}
-
-/**
- * @returns Функция для принудительного обновления компонента
- */
-export function useForceUpdate() {
-	const [, setTick] = useState(0);
-
-	return useCallback(() => {
-		setTick((tick) => tick + 1);
-	}, []);
-}
-
-/**
- * Хук для использования обработчика события и автоматической отмены
- * действия по умолчанию для элемента
- *
- * @param callback Обработчик события
- * @returns Обработчик, который можно использовать для событий
- */
-export function usePreventedCallback<E extends Event>(
-	callback?: ((event: E) => void) | null,
-) {
-	return useCallback((event: E) => {
-		event.preventDefault();
-
-		callback?.(event);
-
-		return false;
-	}, [callback]);
 }
