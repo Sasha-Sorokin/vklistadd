@@ -1,7 +1,6 @@
-import { h, createRef } from "preact";
-import { useCallback } from "preact/hooks";
-import { getWindow } from "@utils/window";
-// import { TooltipParent } from "@common/types";
+import { h } from "preact";
+import { useMemo } from "preact/hooks";
+import { useTooltip } from "@utils/hooks";
 
 /**
  * Представляет собой опции элемента подсказки
@@ -37,29 +36,22 @@ const HINT_TOOLTIP_SLIDE = 10;
  * @returns Элемент подсказки
  */
 export function Hint({ style, className, hintOptions, text }: IHintProps) {
-	const hintRef = createRef<HTMLSpanElement>();
+	const tooltipOptions = useMemo(() => ({
+		text,
+		dir: VK.TooltipDirection.Auto,
+		center: true,
+		className,
+		shift: HINT_TOOLTIP_SHIFT,
+		slide: HINT_TOOLTIP_SLIDE,
+		...hintOptions,
+	}), [className, hintOptions, text]);
 
-	const showTooltip = useCallback(() => {
-		const { current } = hintRef;
-
-		if (current == null) return;
-
-		getWindow().showTooltip(current, {
-			text,
-			dir: VK.TooltipDirection.Auto,
-			center: true,
-			className,
-			shift: HINT_TOOLTIP_SHIFT,
-			slide: HINT_TOOLTIP_SLIDE,
-			...hintOptions,
-		});
-	}, [hintOptions, className, hintRef, text]);
+	const showTooltip = useTooltip(tooltipOptions);
 
 	return (
 		<span
 			className="hint_icon"
 			style={style}
-			ref={hintRef}
 			onMouseOver={showTooltip}
 		/>
 	);
