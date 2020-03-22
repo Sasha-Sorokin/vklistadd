@@ -698,7 +698,7 @@ declare global {
 		showTitle<Elem extends Element>(
 			element: Elem,
 			text: string,
-			offsets?: (readonly [number, number | undefined]),
+			offsets?: VK.TooltipShift,
 			opts?: Partial<VK.ITooltipOptions<Elem>>,
 		): void;
 

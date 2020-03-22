@@ -1,7 +1,6 @@
-import { usePreventedCallback } from "@utils/hooks";
+import { usePreventedCallback, useTitle } from "@utils/hooks";
 import { h } from "preact";
-import { getWindow } from "@utils/window";
-import { useRef, useContext, useCallback } from "preact/hooks";
+import { useContext } from "preact/hooks";
 import { TranslationContext } from "@components/contexts/TranslationContext";
 import { toStyleCombiner } from "@utils/fashion";
 import { LOCK_COMBO } from "@common/css";
@@ -32,6 +31,8 @@ const STYLE = toStyleCombiner({
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 const TOOLTIP_OFFSETS = [-10, 8] as const;
 
+const CENTER_TOOLTIP = { center: true };
+
 /**
  * Представляет собой свойства ссылки
  */
@@ -52,30 +53,22 @@ export interface IAddListButtonProps {
  * @returns Ссылка на добавление нового списка
  */
 export function AddListButton({ onClick, ...props }: IAddListButtonProps) {
-	const button = useRef<HTMLAnchorElement>();
-
 	const disabled = props.disabled ?? false;
 
 	const onLinkClick = usePreventedCallback(disabled ? null : onClick);
 
 	const { addListButton: translation } = useContext(TranslationContext);
 
-	const showTooltip = useCallback(() => {
-		if (button.current == null) return;
-
-		getWindow().showTitle(
-			button.current,
-			translation.tooltip,
-			TOOLTIP_OFFSETS,
-			{ center: true },
-		);
-	}, [translation.tooltip]);
+	const showTooltip = useTitle(
+		translation.tooltip,
+		TOOLTIP_OFFSETS,
+		CENTER_TOOLTIP,
+	);
 
 	return (
 		<a
 			onClick={onLinkClick}
 			onMouseOver={showTooltip}
-			ref={button}
 			className={STYLE("button", "locked", disabled)}
 			children={translation.text}
 		/>
