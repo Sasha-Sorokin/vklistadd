@@ -27,7 +27,7 @@ export const EDIT_BUTTON_CLASS = toClassName("editListButton", {
 	transition: "opacity .05s ease",
 	height: "15px",
 
-	"&:hover": { opacity: 1 },
+	"&:hover, &:focus": { opacity: 1 },
 
 	"& img": { height: "19px" },
 });
@@ -49,11 +49,11 @@ export function EditListButton({ list }: IEditListButtonProps) {
 
 	return (
 		<Title text={label}>
-		<button
-			className={EDIT_BUTTON_CLASS}
-			onClick={onClick}
-			children={<img src={EditPen.dataURL} alt={icon} />}
-		/>
+			<button
+				className={EDIT_BUTTON_CLASS}
+				onClick={onClick}
+				children={<img src={EditPen.dataURL} alt={icon} />}
+			/>
 		</Title>
 	);
 }
