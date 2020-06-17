@@ -92,6 +92,49 @@ export function childrenOf<E extends Element>(element?: Element | null) {
 		: asArray<E>(element.childNodes as NodeListOf<E>);
 }
 
+export type ParentMatchFunction = (e: HTMLElement) => boolean;
+
+/**
+ * Взбирается по дереву элементов начиная с `element` и возвращает первый
+ * родительский элемент, который удовлетворяет `search`
+ *
+ * @param element Дочерний элемент, с которого начинается поиск
+ * @param search Поиск: CSS селектор или функция, которой передаётся элемент
+ *
+ * @returns Первый родительский элемент, удовлетворяющий `search`, либо `null`
+ */
+export function findMatchingParent<E extends HTMLElement>(
+	element: HTMLElement,
+	search: string | ParentMatchFunction,
+): E | null {
+	let currentParent: HTMLElement | null = element;
+
+	// eslint-disable-next-line no-return-assign
+	const nextParent = () => {
+		currentParent = currentParent?.parentElement ?? null;
+
+		return currentParent;
+	};
+
+	const shallExec = typeof search === "function";
+
+	while (nextParent() != null) {
+		if (shallExec) {
+			if ((search as ParentMatchFunction)(currentParent)) {
+				return currentParent as E;
+			}
+
+			continue;
+		}
+
+		if (currentParent.matches(search as string)) {
+			return currentParent as E;
+		}
+	}
+
+	return null;
+}
+
 type Callback = (mutations: MutationRecord[]) => void;
 
 /**

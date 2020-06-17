@@ -6,6 +6,7 @@ import { log } from "@utils/debug";
 import { createSwitch, valueOf } from "@utils/switch";
 import { SaveCallback } from "./types";
 import { showControlsLabel, LabelColor } from "./controlsLabel";
+import { initializeShortcuts } from "./shortcuts";
 
 /**
  * @param lists Сохраняемый объект списков
@@ -88,6 +89,12 @@ export function initializeControls(box: VK.MessageBox) {
 		showControlsLabel(box, savedText, LabelColor.Gray);
 	};
 
+	const saveHandler = async (e: MouseEvent | KeyboardEvent) => {
+		await saveLists(!e.shiftKey);
+	};
+
+	// #region Манипуляция боксом
+
 	box.setOptions({
 		onHideAttempt() {
 			if (valueOf(isSaving)) {
@@ -107,7 +114,7 @@ export function initializeControls(box: VK.MessageBox) {
 	saveButton = box.addButton(
 		lang.box_save,
 		// eslint-disable-next-line @typescript-eslint/promise-function-async
-		(_, e) => saveLists(!e.shiftKey),
+		(_, e) => saveHandler(e),
 		VK.BoxButtonType.Primary,
 		true,
 	);
@@ -120,6 +127,12 @@ export function initializeControls(box: VK.MessageBox) {
 		VK.BoxButtonType.Secondary,
 		true,
 	);
+
+	initializeShortcuts(box, {
+		onSave: saveHandler,
+	});
+
+	// #endregion
 
 	const setLists = ($lists: ILists | null) => {
 		if ($lists != null) lists = $lists;
