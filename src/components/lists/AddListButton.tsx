@@ -67,10 +67,10 @@ export function AddListButton({ onClick, ...props }: IAddListButtonProps) {
 			opts={CENTER_TOOLTIP}
 		>
 			<LinkButton
-			onClick={onLinkClick}
-			className={STYLE("button", "locked", disabled)}
-			children={translation.text}
-		/>
+				onClick={onLinkClick}
+				className={STYLE("button", "locked", disabled)}
+				children={translation.text}
+			/>
 		</Title>
 	);
 }
