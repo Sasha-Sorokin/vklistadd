@@ -1,9 +1,11 @@
-import { usePreventedCallback, useTitle } from "@utils/hooks";
+import { usePreventedCallback } from "@utils/hooks";
 import { h } from "preact";
 import { useContext } from "preact/hooks";
 import { TranslationContext } from "@components/contexts/TranslationContext";
 import { toStyleCombiner } from "@utils/fashion";
 import { LOCK_COMBO } from "@common/css";
+import { Title } from "@components/vk/Tooltip";
+import { LinkButton } from "@components/vk/LinkButton";
 
 const PLUS_ICON = "/images/icons/filter_add.png";
 
@@ -58,19 +60,17 @@ export function AddListButton({ onClick, ...props }: IAddListButtonProps) {
 	const onLinkClick = usePreventedCallback(disabled ? null : onClick);
 
 	const { addListButton: translation } = useContext(TranslationContext);
-
-	const showTooltip = useTitle(
-		translation.tooltip,
-		TOOLTIP_OFFSETS,
-		CENTER_TOOLTIP,
-	);
-
 	return (
-		<a
+		<Title
+			text={translation.tooltip}
+			shift={TOOLTIP_OFFSETS}
+			opts={CENTER_TOOLTIP}
+		>
+			<LinkButton
 			onClick={onLinkClick}
-			onMouseOver={showTooltip}
 			className={STYLE("button", "locked", disabled)}
 			children={translation.text}
 		/>
+		</Title>
 	);
 }

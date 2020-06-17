@@ -1,10 +1,11 @@
 import { h } from "preact";
-import { useTarget, useTranslations, useTitle } from "@utils/hooks";
+import { useTarget, useTranslations } from "@utils/hooks";
 import { toClassName } from "@utils/fashion";
 import { EditPen } from "@/assets";
 import { useCallback, useMemo } from "preact/hooks";
 import { editList } from "@vk/helpers/newsfeed";
 import { IList } from "@vk/api/lists";
+import { Title } from "@components/vk/Tooltip";
 
 /**
  * Свойства кнопки редактирования списка
@@ -39,7 +40,6 @@ export function EditListButton({ list }: IEditListButtonProps) {
 	const { text, icon } = translation.editListButton;
 	const target = useTarget();
 	const label = useMemo(() => text.replace("{}", list.name), [text, list]);
-	const showTooltip = useTitle(label);
 
 	const onClick = useCallback(() => {
 		if (target == null) return;
@@ -48,12 +48,12 @@ export function EditListButton({ list }: IEditListButtonProps) {
 	}, [list, target, translation]);
 
 	return (
+		<Title text={label}>
 		<button
-			aria-label={label}
 			className={EDIT_BUTTON_CLASS}
 			onClick={onClick}
-			onMouseOver={showTooltip}
 			children={<img src={EditPen.dataURL} alt={icon} />}
 		/>
+		</Title>
 	);
 }
