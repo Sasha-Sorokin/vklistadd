@@ -71,6 +71,7 @@
     "debounce": "^1.2.0",
     "preact": "^10.3.4",
     "preact-i18n": "^1.4.1",
-    "simplestyle-js": "^1.0.3"
+    "simplestyle-js": "^1.0.3",
+    "uid": "^1.0.0"
   }
 }
