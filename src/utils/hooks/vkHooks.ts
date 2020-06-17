@@ -31,7 +31,7 @@ interface ITooltipLike {
  *
  * @returns Функция-обработчик события `onMouseOver`
  */
-export function useTooltip(opts?: Partial<VK.ITooltipOptions<Element>>) {
+export function $useTooltip(opts?: Partial<VK.ITooltipOptions<Element>>) {
 	const [tooltipRef] = useState<{ current?: ITooltipLike }>({});
 
 	const destroyTooltip = useCallback(() => {
@@ -86,7 +86,7 @@ export function useTooltip(opts?: Partial<VK.ITooltipOptions<Element>>) {
  *
  * @returns Фукнция-обработчик события `onMouseOver`
  */
-export function useTitle(
+export function $useTitle(
 	titleContents: string,
 	shift?: VK.TooltipShift,
 	opts?: Partial<VK.ITooltipOptions<Element>>,
@@ -105,5 +105,5 @@ export function useTitle(
 		...opts,
 	}), [opts, shift, titleContents]);
 
-	return useTooltip($opts);
+	return $useTooltip($opts);
 }
