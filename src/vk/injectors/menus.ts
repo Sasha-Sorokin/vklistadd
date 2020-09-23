@@ -57,7 +57,7 @@ function injectActionsMenuItem(invoker: ITreating) {
 		return;
 	}
 
-	const disposition = getMenuDisposition(menu, TreatingKind.GroupRow);
+	const disposition = getMenuDisposition(menu, invoker.kind);
 
 	if (disposition == null) {
 		log(
