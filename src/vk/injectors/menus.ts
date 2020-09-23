@@ -19,6 +19,7 @@ const MOUNT_MENU_ITEM = getReplicable();
  */
 function getMenuDisposition(menu: HTMLDivElement, kind: TreatingKind) {
 	switch (kind) {
+		case TreatingKind.FriendRow:
 		case TreatingKind.Bookmark:
 		case TreatingKind.GroupRow: {
 			const separator = elem(".ui_actions_menu_sep", menu);
