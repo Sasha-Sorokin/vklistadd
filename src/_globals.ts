@@ -570,6 +570,14 @@ declare global {
 			 * нового
 			 */
 			editList(listId: number): void;
+
+			/**
+			 * Вызывается для каждого загруженного в ленте поста
+			 *
+			 * @param post Загруженный пост
+			 * @param unk Неизвестная переменная
+			 */
+			onPostLoaded(post: HTMLDivElement, unk: boolean): void;
 		}
 	}
 

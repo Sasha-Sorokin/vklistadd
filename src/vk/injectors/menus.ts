@@ -4,6 +4,8 @@ import * as Interception from "@utils/interceptors";
 import { log } from "@utils/debug";
 import { getWindow } from "@utils/window";
 import { TreatingKind, SupportedModule, ITreating } from "@vk/scrapers";
+import { wrapFunction } from "@utils/wrappers";
+import debounce from "debounce";
 
 const MOUNT_MENU_ITEM = getReplicable();
 
@@ -185,10 +187,110 @@ function mountRowsListMenuItems(kind: TreatingKind) {
 	}
 }
 
+// /**
+//  * Проверяет, если переданный объект является постом
+//  *
+//  * @param item Элемент, который необходимо проверить
+//  * @returns Является ли переданный элемент постом
+//  */
+// function isFeedPost(item: HTMLDivElement | null) {
+// 	return item?.classList.contains("post") ?? false;
+// }
+
+// /**
+//  * Проверяет, если переданный объект является репостом
+//  *
+//  * @param item Элемент, который необходимо проверить
+//  * @returns Является ли переданный объект репостом
+//  */
+// function isFeedRepost(item: HTMLDivElement | null) {
+// 	return item?.matches("[class^='feed_repost']") ?? false;
+// }
+
+
+// /**
+//  * Обработчик события загрузки нового поста в ленте
+//  *
+//  * @param postRow Загруженный пост
+//  */
+// function onPostLoaded(postRow: HTMLDivElement) {
+// 	let post = postRow.firstElementChild as HTMLDivElement | null;
+
+// 	if (!isFeedPost(post)) {
+// 		if (!isFeedRepost(post)) return;
+
+// 		const repost = post?.firstElementChild as HTMLDivElement | null;
+
+// 		if (!isFeedPost(repost)) return;
+
+// 		post = repost;
+// 	}
+
+// 	injectActionsMenuItem({
+// 		element: post!,
+// 		kind: TreatingKind.FeedRow,
+// 	});
+// }
+
+
+// Этот способ куда более эффективный, так как onPostLoaded вызывается
+// не для всех постов, да и не всегда загруженные посты имеют одинаковый
+// формат, из-за чего приходится много гадать поэтому просто пробегаемся
+// по всем постам и проверяем, какие из них отсутствуют в наборе
+
+const handledPosts = new WeakSet<HTMLDivElement>();
+
+const HANDLE_DEBOUNCE = 50; // ms
+
+/**
+ * Обработчик события загрузки нового поста в ленте
+ */
+function onFeedRefresh() {
+	const posts = elems<HTMLDivElement>(".feed_row .post");
+
+	for (const post of asArray(posts)) {
+		if (handledPosts.has(post)) continue;
+
+		injectActionsMenuItem({
+			element: post,
+			kind: TreatingKind.FeedRow,
+		});
+
+		handledPosts.add(post);
+	}
+}
+
+/**
+ * Добавляет обёртку для обработчика события загрузки постов в ленте
+ */
+function addFeedRefreshHandler() {
+	const feedModule = getWindow().feed;
+
+	if (feedModule == null) return;
+
+	type Handler = VK.IFeedModule["onPostLoaded"];
+
+	let originalHandler = Reflect.get(feedModule, "onPostLoaded") as Handler;
+
+	if (originalHandler == null) return;
+
+	originalHandler = originalHandler.bind(feedModule);
+
+	Reflect.set(
+		feedModule,
+		"onPostLoaded",
+		wrapFunction(originalHandler, {
+			preCallback: (post) => post,
+			postCallback: debounce(onFeedRefresh, HANDLE_DEBOUNCE),
+		}),
+	);
+}
+
 const INTERCEPTORS: Interception.InterceptorsCollection = [
 	["GroupsList", () => mountRowsListMenuItems(TreatingKind.GroupRow)],
 	["Bookmarks", mountBookmarksListMenuItems],
 	["Friends", () => mountRowsListMenuItems(TreatingKind.FriendRow)],
+	["feed", addFeedRefreshHandler],
 ];
 
 /**

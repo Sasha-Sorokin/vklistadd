@@ -50,6 +50,16 @@ export function getID(treating: ITreating): number | null {
 			return id != null ? +id : null;
 		}
 
+		case TreatingKind.FeedRow: {
+			const authorElem = elem<HTMLAnchorElement>("a.author", element);
+
+			if (authorElem == null) return null;
+
+			const { fromId } = authorElem.dataset;
+
+			return fromId != null ? +fromId : null;
+		}
+
 		default: return null;
 	}
 }
@@ -80,6 +90,15 @@ export function getLink(treating: ITreating): string | null {
 		case TreatingKind.Bookmark: {
 			const link = elem<HTMLAnchorElement>(
 				".bookmark_page_item__name > a",
+				element,
+			);
+
+			return link?.href ?? null;
+		}
+
+		case TreatingKind.FeedRow: {
+			const link = elem<HTMLAnchorElement>(
+				"a.author",
 				element,
 			);
 
@@ -124,6 +143,15 @@ export function getIcon(treating: ITreating): string | null {
 			return url != null ? unwrapCSSValue(url) : null;
 		}
 
+		case TreatingKind.FeedRow: {
+			const icon = elem<HTMLImageElement>(
+				".post_image > img.post_img",
+				element,
+			);
+
+			return icon?.src ?? null;
+		}
+
 		default: return null;
 	}
 }
@@ -163,6 +191,15 @@ export function getName(treating: ITreating): string | null {
 			return link?.textContent ?? null;
 		}
 
+		case TreatingKind.FeedRow: {
+			const link = elem<HTMLAnchorElement>(
+				"a.author",
+				element,
+			);
+
+			return link?.textContent ?? null;
+		}
+
 		default: return null;
 	}
 }
@@ -174,7 +211,16 @@ export function getName(treating: ITreating): string | null {
 export function getType(
 	treating: ITreating,
 ): SupportedModule | null {
-	return treating.subType ?? null;
+	if (treating.subType != null) return treating.subType;
+
+	// Можно предположить из ID, все минусовые ID принадлежат группам
+	const id = getID(treating);
+
+	if (id == null) return null;
+
+	return id < 0
+		? SupportedModule.Public
+		: SupportedModule.Profile;
 }
 
 type OptionalHook = NotificationsTogglerHook | null;
@@ -210,6 +256,28 @@ export function getNotificationsToggler(treating: ITreating): OptionalHook {
 				hook = createTogglerHook(
 					menuItem,
 					() => menuItem.dataset.value === "1",
+					() => menuItem.click(),
+				);
+			}
+		} break;
+
+		case TreatingKind.FeedRow: {
+			const children = childrenOf<HTMLElement>(
+				elem(".ui_action_menu", element),
+			);
+
+			if (children == null) break;
+
+			const menuItem = findWithCallback(
+				children,
+				"onclick",
+				"Feed.toggleSubscription",
+			);
+
+			if (menuItem != null) {
+				hook = createTogglerHook(
+					menuItem,
+					() => menuItem.dataset.act === "1",
 					() => menuItem.click(),
 				);
 			}
