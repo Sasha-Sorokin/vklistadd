@@ -4,7 +4,7 @@ import * as Interception from "@utils/interceptors";
 import { log } from "@utils/debug";
 import { getWindow } from "@utils/window";
 import { TreatingKind, SupportedModule, ITreating } from "@vk/scrapers";
-import { wrapFunction } from "@utils/wrappers";
+import { getBound, wrapFunction } from "@utils/wrappers";
 import debounce from "debounce";
 
 const MOUNT_MENU_ITEM = getReplicable();
@@ -269,21 +269,13 @@ function addFeedRefreshHandler() {
 
 	if (feedModule == null) return;
 
-	type Handler = VK.IFeedModule["onPostLoaded"];
-
-	let originalHandler = Reflect.get(feedModule, "onPostLoaded") as Handler;
-
-	if (originalHandler == null) return;
-
-	originalHandler = originalHandler.bind(feedModule);
-
 	Reflect.set(
 		feedModule,
 		"onPostLoaded",
-		wrapFunction(originalHandler, {
-			preCallback: (post) => post,
-			postCallback: debounce(onFeedRefresh, HANDLE_DEBOUNCE),
-		}),
+		wrapFunction(
+			getBound(feedModule, "onPostLoaded"),
+			debounce(onFeedRefresh, HANDLE_DEBOUNCE),
+		),
 	);
 }
 
