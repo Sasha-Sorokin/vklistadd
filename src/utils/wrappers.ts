@@ -1,7 +1,7 @@
 import { ERROR_MESSAGES, log } from "@utils/debug";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-type PropertyChangedCallback<T> = (newValue: T) => void;
+type PropertyChangedCallback<ValueType> = (newValue: ValueType) => void;
 type DescriptorOmit = "value" | "get" | "set" | "writable";
 type DescriptorDefaults = Omit<PropertyDescriptor, DescriptorOmit>;
 
@@ -14,10 +14,10 @@ type DescriptorDefaults = Omit<PropertyDescriptor, DescriptorOmit>;
  * @param callback Обработчик, вызываемый при изменении значения
  * @param descriptor Конфигурация дескриптора
  */
-export function wrapProperty<T extends object, K extends keyof T>(
-	obj: T,
-	property: K,
-	callback: PropertyChangedCallback<T[K]>,
+export function wrapProperty<Obj extends object, Key extends keyof Obj>(
+	obj: Obj,
+	property: Key,
+	callback: PropertyChangedCallback<Obj[Key]>,
 	descriptor?: DescriptorDefaults,
 ) {
 	let realValue = obj[property];
@@ -25,7 +25,7 @@ export function wrapProperty<T extends object, K extends keyof T>(
 	Object.defineProperty(obj, property, {
 		...descriptor,
 		get: () => realValue,
-		set(newValue: T[K]) {
+		set(newValue: Obj[Key]) {
 			realValue = newValue;
 
 			try {
@@ -43,18 +43,21 @@ const WRAPPED_FUNCTIONS = new Set<Function>();
 
 /**
  * Преставляет собой обработчики вызова функции
+ *
+ * @template Func Изначальная функция
+ * @template Result Результат `preCallback`, передаваемый `postCallback`
  */
-interface IFunctionCallbacks<F extends Function, V> {
+interface IFunctionCallbacks<Func extends Function, Result> {
 	/**
 	 * Обработчик, вызываемый до исполнения функции
 	 */
-	preCallback(...args: Parameters<F>): V;
+	preCallback(...args: Parameters<Func>): Result;
 
 	/**
 	 * Обработчик, вызываемый после исполнения функции
 	 * с аргументами, которые вернуло исполнение `preCallback`
 	 */
-	postCallback?(value: V): void;
+	postCallback?(value: Result): void;
 }
 
 /**
@@ -65,6 +68,82 @@ function getFunctionName<F extends () => any>(func: F) {
 	const { name } = func;
 
 	return name === "" ? "[anonymous function]" : name;
+}
+
+/**
+ * Представляет собой тип, который принимает `Obj`, что наследует объект,
+ * преобразуя его в список ключей, значение для которых наследует функцию
+ *
+ * @template Obj Объект для преобразования
+ * @example
+ * ```ts
+ * const obj = {
+ * 	prop: "value",
+ * 	test() {
+ * 		return false;
+ * 	},
+ * };
+ *
+ * type MethodsKeys = FunctionsOf<typeof obj>;
+ * // => "test"
+ * ```
+ */
+type FunctionsOf<Obj extends object> = {
+	[Key in keyof Obj]: Obj[Key] extends Function ? Key : never;
+}[keyof Obj];
+
+/**
+ * Представляет собой тип, который принимает `Obj`, что наследует объект,
+ * преобразуя его к карте исключительно состоящей из методов
+ *
+ * @template Obj Объект для преобразования
+ * @example
+ * ```ts
+ * const obj = {
+ * 	prop: "value",
+ * 	test() {
+ * 		return false;
+ * 	},
+ * };
+ *
+ * type OnlyFunctions = FunctionsMap<typeof obj>;
+ * // => { test(): boolean; }
+ * ```
+ */
+type FunctionsMap<Obj extends object> = {
+	[Key in FunctionsOf<Obj>]: Obj[Key] extends Function ? Obj[Key] : never;
+};
+
+/**
+ * Привязывает и возвращает метод объекта
+ *
+ * @param obj Объект, метод которого необходимо вернуть
+ * @param prop Название метода в объекте
+ * @returns Метод, привязанный к объекту
+ * @example
+ * ```ts
+ * const boundGreet = getBound({
+ * 	target: "world",
+ * 	getGreeting() {
+ * 		return `Hello, ${this.target}!`;
+ * 	},
+ * }, "getGreeting");
+ *
+ * console.log(boundGreet());
+ * // => "Hello, world!"
+ * ```
+ */
+export function getBound<
+	Obj extends object,
+	Functions extends FunctionsMap<Obj>,
+	Key extends keyof Functions
+>(
+	obj: Obj,
+	prop: Key,
+): OmitThisParameter<Functions[Key]> {
+	const func = Reflect.get(obj, prop) as Functions[Key];
+
+	return func.bind(obj) as unknown as OmitThisParameter<Functions[Key]>;
 }
 
 /**
