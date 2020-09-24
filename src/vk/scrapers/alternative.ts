@@ -51,13 +51,17 @@ export function getID(treating: ITreating): number | null {
 		}
 
 		case TreatingKind.FeedRow: {
-			const authorElem = elem<HTMLAnchorElement>("a.author", element);
+			const postImg = elem<HTMLImageElement>(".post_img", element);
 
-			if (authorElem == null) return null;
+			if (postImg == null) return null;
 
-			const { fromId } = authorElem.dataset;
+			const { postId } = postImg.dataset;
 
-			return fromId != null ? +fromId : null;
+			if (postId == null) return null;
+
+			const [authorId] = postId.split("_");
+
+			return authorId != null ? +authorId : null;
 		}
 
 		default: return null;
