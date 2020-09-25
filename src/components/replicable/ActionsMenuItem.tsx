@@ -1,5 +1,5 @@
 import { h } from "preact";
-import { ITreating } from "@vk/scrapers";
+import { ITreating, TreatingKind } from "@vk/scrapers";
 import { useCallback } from "preact/hooks";
 import { showBox } from "@/box";
 import { getVKTranslation } from "@utils/i18n";
@@ -24,7 +24,19 @@ function ActionsMenuItem({ invoker }: IActionsMenuItemProps) {
 		[invoker],
 	);
 
-	const { actionsMenuItem: translation } = getVKTranslation();
+	const { actionsMenuItem: { context } } = getVKTranslation();
+
+	let itemText: string | null = null;
+
+	switch (invoker.kind) {
+		case TreatingKind.FeedRow: {
+			itemText = context.feedRow;
+		} break;
+
+		default: {
+			itemText = context.default;
+		} break;
+	}
 
 	return (
 		<a
@@ -32,7 +44,7 @@ function ActionsMenuItem({ invoker }: IActionsMenuItemProps) {
 			role="link"
 			tabIndex={0}
 			onClick={onClick}
-			children={translation.text}
+			children={itemText}
 		/>
 	);
 }

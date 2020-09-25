@@ -4,6 +4,8 @@ import * as Interception from "@utils/interceptors";
 import { log } from "@utils/debug";
 import { getWindow } from "@utils/window";
 import { TreatingKind, SupportedModule, ITreating } from "@vk/scrapers";
+import { getBound, wrapFunction } from "@utils/wrappers";
+import debounce from "debounce";
 
 const MOUNT_MENU_ITEM = getReplicable();
 
@@ -17,6 +19,7 @@ const MOUNT_MENU_ITEM = getReplicable();
  */
 function getMenuDisposition(menu: HTMLDivElement, kind: TreatingKind) {
 	switch (kind) {
+		case TreatingKind.FriendRow:
 		case TreatingKind.Bookmark:
 		case TreatingKind.GroupRow: {
 			const separator = elem(".ui_actions_menu_sep", menu);
@@ -55,7 +58,7 @@ function injectActionsMenuItem(invoker: ITreating) {
 		return;
 	}
 
-	const disposition = getMenuDisposition(menu, TreatingKind.GroupRow);
+	const disposition = getMenuDisposition(menu, invoker.kind);
 
 	if (disposition == null) {
 		log(
@@ -185,10 +188,56 @@ function mountRowsListMenuItems(kind: TreatingKind) {
 	}
 }
 
+// Этот способ куда более эффективный, так как onPostLoaded вызывается
+// не для всех постов, да и не всегда загруженные посты имеют одинаковый
+// формат, из-за чего приходится много гадать поэтому просто пробегаемся
+// по всем постам и проверяем, какие из них отсутствуют в наборе
+
+const handledPosts = new WeakSet<HTMLDivElement>();
+
+const HANDLE_DEBOUNCE = 50; // ms
+
+/**
+ * Обработчик события загрузки нового поста в ленте
+ */
+function onFeedRefresh() {
+	const posts = elems<HTMLDivElement>(".feed_row .post");
+
+	for (const post of asArray(posts)) {
+		if (handledPosts.has(post)) continue;
+
+		injectActionsMenuItem({
+			element: post,
+			kind: TreatingKind.FeedRow,
+		});
+
+		handledPosts.add(post);
+	}
+}
+
+/**
+ * Добавляет обёртку для обработчика события загрузки постов в ленте
+ */
+function addFeedRefreshHandler() {
+	const feedModule = getWindow().feed;
+
+	if (feedModule == null) return;
+
+	Reflect.set(
+		feedModule,
+		"onPostLoaded",
+		wrapFunction(
+			getBound(feedModule, "onPostLoaded"),
+			debounce(onFeedRefresh, HANDLE_DEBOUNCE),
+		),
+	);
+}
+
 const INTERCEPTORS: Interception.InterceptorsCollection = [
 	["GroupsList", () => mountRowsListMenuItems(TreatingKind.GroupRow)],
 	["Bookmarks", mountBookmarksListMenuItems],
 	["Friends", () => mountRowsListMenuItems(TreatingKind.FriendRow)],
+	["feed", addFeedRefreshHandler],
 ];
 
 /**

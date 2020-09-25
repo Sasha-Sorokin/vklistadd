@@ -6,7 +6,9 @@ actionButton:
   text: "Manage lists"
 
 actionsMenuItem:
-  text: "News feed lists"
+  context:
+    default: "News feed lists"
+    feedRow: "Edit lists"
 
 actionLabel:
   template: "Show news {} in the lists:"

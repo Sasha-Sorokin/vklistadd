@@ -6,7 +6,9 @@ actionButton:
   text: "Настроить списки"
 
 actionsMenuItem:
-  text: "Списки новостей"
+  context:
+    default: "Списки новостей"
+    feedRow: "Изменить списки"
 
 actionLabel:
   template: "Отображать новости {} в списках:"

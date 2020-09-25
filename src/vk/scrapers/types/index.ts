@@ -38,6 +38,11 @@ export const enum TreatingKind {
 	 * Текущий элемент — один из друзей в списке
 	 */
 	FriendRow = "friend_row",
+
+	/**
+	 * Текущий элемент — пост в ленте
+	 */
+	FeedRow = "feed_row",
 }
 
 /**
