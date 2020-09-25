@@ -93,28 +93,6 @@ type FunctionsOf<Obj extends object> = {
 }[keyof Obj];
 
 /**
- * Представляет собой тип, который принимает `Obj`, что наследует объект,
- * преобразуя его к карте исключительно состоящей из методов
- *
- * @template Obj Объект для преобразования
- * @example
- * ```ts
- * const obj = {
- * 	prop: "value",
- * 	test() {
- * 		return false;
- * 	},
- * };
- *
- * type OnlyFunctions = FunctionsMap<typeof obj>;
- * // => { test(): boolean; }
- * ```
- */
-type FunctionsMap<Obj extends object> = {
-	[Key in FunctionsOf<Obj>]: Obj[Key] extends Function ? Obj[Key] : never;
-};
-
-/**
  * Привязывает и возвращает метод объекта
  *
  * @param obj Объект, метод которого необходимо вернуть
@@ -135,15 +113,14 @@ type FunctionsMap<Obj extends object> = {
  */
 export function getBound<
 	Obj extends object,
-	Functions extends FunctionsMap<Obj>,
-	Key extends keyof Functions
+	Key extends FunctionsOf<Obj>
 >(
 	obj: Obj,
 	prop: Key,
-): OmitThisParameter<Functions[Key]> {
-	const func = Reflect.get(obj, prop) as Functions[Key];
+): OmitThisParameter<Obj[Key]> {
+	const func = obj[prop] as Function;
 
-	return func.bind(obj) as unknown as OmitThisParameter<Functions[Key]>;
+	return func.bind(obj) as OmitThisParameter<Obj[Key]>;
 }
 
 /**
