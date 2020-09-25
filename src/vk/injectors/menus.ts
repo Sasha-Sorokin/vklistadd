@@ -188,52 +188,6 @@ function mountRowsListMenuItems(kind: TreatingKind) {
 	}
 }
 
-// /**
-//  * Проверяет, если переданный объект является постом
-//  *
-//  * @param item Элемент, который необходимо проверить
-//  * @returns Является ли переданный элемент постом
-//  */
-// function isFeedPost(item: HTMLDivElement | null) {
-// 	return item?.classList.contains("post") ?? false;
-// }
-
-// /**
-//  * Проверяет, если переданный объект является репостом
-//  *
-//  * @param item Элемент, который необходимо проверить
-//  * @returns Является ли переданный объект репостом
-//  */
-// function isFeedRepost(item: HTMLDivElement | null) {
-// 	return item?.matches("[class^='feed_repost']") ?? false;
-// }
-
-
-// /**
-//  * Обработчик события загрузки нового поста в ленте
-//  *
-//  * @param postRow Загруженный пост
-//  */
-// function onPostLoaded(postRow: HTMLDivElement) {
-// 	let post = postRow.firstElementChild as HTMLDivElement | null;
-
-// 	if (!isFeedPost(post)) {
-// 		if (!isFeedRepost(post)) return;
-
-// 		const repost = post?.firstElementChild as HTMLDivElement | null;
-
-// 		if (!isFeedPost(repost)) return;
-
-// 		post = repost;
-// 	}
-
-// 	injectActionsMenuItem({
-// 		element: post!,
-// 		kind: TreatingKind.FeedRow,
-// 	});
-// }
-
-
 // Этот способ куда более эффективный, так как onPostLoaded вызывается
 // не для всех постов, да и не всегда загруженные посты имеют одинаковый
 // формат, из-за чего приходится много гадать поэтому просто пробегаемся
