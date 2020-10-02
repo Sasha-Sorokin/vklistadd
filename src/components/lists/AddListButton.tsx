@@ -11,7 +11,7 @@ const STYLE = toStyleCombiner({
 	button: {
 		marginTop: "10px",
 		width: "max-content",
-		lineHeight: "19px",
+		lineHeight: "17px",
 		cursor: "pointer",
 		display: "block",
 
