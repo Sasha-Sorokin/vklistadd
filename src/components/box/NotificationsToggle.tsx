@@ -3,6 +3,7 @@ import { useTarget, useTranslation } from "@utils/hooks";
 import { useEffect } from "preact/hooks";
 import { ProgressIndicator, dotsSize } from "@components/vk/ProgressIndicator";
 import { c, toClassName } from "@utils/fashion";
+import { LinkButton } from "@components/vk/LinkButton";
 
 const INDICATOR_STYLES = toClassName("inline", {
 	display: "inline-block",
@@ -39,9 +40,9 @@ export function NotificationsToggle() {
 		: null;
 
 	return (
-		<a onClick={toggle}>
+		<LinkButton onClick={toggle}>
 			{translation[Number(notifications.isToggled)]}
 			{progressIndicator}
-		</a>
+		</LinkButton>
 	);
 }
