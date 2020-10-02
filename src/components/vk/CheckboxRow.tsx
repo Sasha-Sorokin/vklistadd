@@ -1,6 +1,6 @@
 import { h } from "preact";
 import { toStyleCombiner } from "@utils/fashion";
-import { useCallback } from "preact/hooks";
+import { useCallback, useRef } from "preact/hooks";
 import { Checkbox, CheckboxChecked } from "@/assets";
 import { LOCK_COMBO } from "@common/css";
 
@@ -67,13 +67,14 @@ const S = toStyleCombiner({
 			backgroundImage: CheckboxChecked.url,
 		},
 
-		["&:hover label:before,"
-		+ "& input[type=checkbox]+label:hover:before"]: {
+		["&:hover label::before,"
+		+ "& input[type=checkbox]+label:hover::before,"
+		+ "& input[type=checkbox]:focus+label::before"]: {
 			filter: "brightness(95%)",
 		},
 
 		["&:active label:before,"
-		+ "& input[type=checkbox]+label:active:before"]: {
+		+ "& input[type=checkbox]+label:active::before"]: {
 			filter: "brightness(90%)",
 		},
 	},
@@ -90,6 +91,7 @@ export function CheckboxRow(props: ICheckboxProps) {
 
 	const isChecked = props.checked ?? false;
 	const isDisabled = props.disabled ?? false;
+	const inputRef = useRef<HTMLInputElement>();
 
 	const onClick = () => {
 		if (isDisabled) return;
@@ -100,7 +102,11 @@ export function CheckboxRow(props: ICheckboxProps) {
 	};
 
 	const onLabelClick = useCallback(
-		(e: MouseEvent) => e.preventDefault(),
+		(e: MouseEvent) => {
+			e.preventDefault();
+
+			inputRef.current?.focus();
+		},
 		[],
 	);
 
@@ -112,6 +118,7 @@ export function CheckboxRow(props: ICheckboxProps) {
 				type="checkbox"
 				checked={isChecked}
 				disabled={isDisabled}
+				ref={inputRef}
 			/>
 			<label
 				htmlFor={id}
