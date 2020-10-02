@@ -1,6 +1,6 @@
 import { h } from "preact";
 import { useMemo } from "preact/hooks";
-import { useTooltip } from "@utils/hooks";
+import { Tooltip } from "./Tooltip";
 
 /**
  * Представляет собой опции элемента подсказки
@@ -46,13 +46,13 @@ export function Hint({ style, className, hintOptions, text }: IHintProps) {
 		...hintOptions,
 	}), [className, hintOptions, text]);
 
-	const showTooltip = useTooltip(tooltipOptions);
-
 	return (
-		<span
-			className="hint_icon"
-			style={style}
-			onMouseOver={showTooltip}
-		/>
+		<Tooltip opts={tooltipOptions}>
+			<span
+				className="hint_icon"
+				style={style}
+				tabIndex={0}
+			/>
+		</Tooltip>
 	);
 }
