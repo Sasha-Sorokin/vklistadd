@@ -15,7 +15,7 @@ const MOUNT_MENU_ITEM = getReplicable();
  *
  * @param menu Элемент меню
  * @param kind Объект, для которого создаётся элемент меню
- * @returns Родительский элемент или функция для встраивания
+ * @return Родительский элемент или функция для встраивания
  */
 function getMenuDisposition(menu: HTMLDivElement, kind: TreatingKind) {
 	switch (kind) {
@@ -26,19 +26,19 @@ function getMenuDisposition(menu: HTMLDivElement, kind: TreatingKind) {
 
 			if (separator == null) break;
 
-			const referenceNode = kind === TreatingKind.Bookmark
-				? separator
-				: separator.nextSibling;
+			const referenceNode =
+				kind === TreatingKind.Bookmark
+					? separator
+					: separator.nextSibling;
 
 			if (referenceNode == null) return null;
 
-			return (component: DocumentFragment) => insertBefore(
-				referenceNode,
-				component,
-			);
+			return (component: DocumentFragment) =>
+				insertBefore(referenceNode, component);
 		}
 
-		default: break;
+		default:
+			break;
 	}
 
 	return menu;
@@ -88,16 +88,19 @@ interface IBookmarksContext {
 }
 
 /**
- * @returns Тип закладок по текущему фильтру
+ * @return Тип закладок по текущему фильтру
  */
 function getBookmarksType() {
 	const currentURL = new URL(getWindow().location.href);
 	const currentType = currentURL.searchParams.get("type");
 
 	switch (currentType) {
-		case "group": return SupportedModule.Group;
-		case "user": return SupportedModule.Profile;
-		default: return null;
+		case "group":
+			return SupportedModule.Group;
+		case "user":
+			return SupportedModule.Profile;
+		default:
+			return null;
 	}
 }
 
@@ -123,15 +126,12 @@ function mountBookmarksListMenuItems() {
 	 *
 	 * @param this Сам массив
 	 * @param args Аргументы push функции
-	 * @returns Результат push функции
+	 * @return Результат push функции
 	 */
-	function pushInterceptor(
-		this: Bookmarks,
-		...args: Bookmarks
-	) {
+	function pushInterceptor(this: Bookmarks, ...args: Bookmarks) {
 		const result = proto.push.apply(this, args);
 
-		if (args === null || args.length === 0) return result;
+		if (args.length === 0) return result;
 
 		for (const arg of [...args]) {
 			injectActionsMenuItem({
@@ -163,9 +163,7 @@ function mountBookmarksListMenuItems() {
  */
 function mountRowsListMenuItems(kind: TreatingKind) {
 	const container = elem<HTMLDivElement>(
-		kind === TreatingKind.GroupRow
-			? ".groups_list"
-			: "#friends_list",
+		kind === TreatingKind.GroupRow ? ".groups_list" : "#friends_list",
 	);
 
 	if (container == null) return;
@@ -181,9 +179,10 @@ function mountRowsListMenuItems(kind: TreatingKind) {
 		injectActionsMenuItem({
 			element: row,
 			kind,
-			subType: kind === TreatingKind.GroupRow
-				? SupportedModule.Public
-				: SupportedModule.Profile,
+			subType:
+				kind === TreatingKind.GroupRow
+					? SupportedModule.Public
+					: SupportedModule.Profile,
 		});
 	}
 }
@@ -193,7 +192,7 @@ function mountRowsListMenuItems(kind: TreatingKind) {
 // формат, из-за чего приходится много гадать поэтому просто пробегаемся
 // по всем постам и проверяем, какие из них отсутствуют в наборе
 
-const handledPosts = new WeakSet<HTMLDivElement>();
+const HANDLED_POSTS = new WeakSet<HTMLDivElement>();
 
 const HANDLE_DEBOUNCE = 50; // ms
 
@@ -204,14 +203,14 @@ function onFeedRefresh() {
 	const posts = elems<HTMLDivElement>(".feed_row .post");
 
 	for (const post of asArray(posts)) {
-		if (handledPosts.has(post)) continue;
+		if (HANDLED_POSTS.has(post)) continue;
 
 		injectActionsMenuItem({
 			element: post,
 			kind: TreatingKind.FeedRow,
 		});
 
-		handledPosts.add(post);
+		HANDLED_POSTS.add(post);
 	}
 }
 

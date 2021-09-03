@@ -5,7 +5,7 @@
 /**
  * Возвращает функцию сохранения настроек текущего скриптового менеджера
  *
- * @returns Функция сохранения настроек в текущем скриптовом менеджере
+ * @return Функция сохранения настроек в текущем скриптовом менеджере
  */
 function getGetValue() {
 	// eslint-disable-next-line
@@ -18,9 +18,9 @@ function getGetValue() {
  *
  * @param name Название настройки, которую необходимо запросить
  * @param defaultValue Значение настройки по умолчанию
- * @returns Прошлое сохранённое значение или значение по умолчанию
+ * @return Прошлое сохранённое значение или значение по умолчанию
  */
-export async function getValueOrDefault<TValue extends GM.Value>(
+export async function getValueOrDefault<TValue>(
 	name: string,
 	defaultValue: TValue,
 ): Promise<TValue> {
@@ -35,9 +35,9 @@ export async function getValueOrDefault<TValue extends GM.Value>(
  * Получает значение сохранённой настройки
  *
  * @param name Название настройки, которую необходимо запросить
- * @returns Прошлое сохранённое значение для указанной настройки или `undefined`
+ * @return Прошлое сохранённое значение для указанной настройки или `undefined`
  */
-export async function getValue<TValue extends GM.Value>(
+export async function getValue<TValue>(
 	name: string,
 ): Promise<TValue | undefined> {
 	const value = await getGetValue()(name);
@@ -54,7 +54,7 @@ export async function getValue<TValue extends GM.Value>(
  * @param name Название изменяемой настройки
  * @param value Значение указанной настройки
  */
-export async function setValue(name: string, value: GM.Value) {
+export async function setValue<TValue>(name: string, value: TValue) {
 	// eslint-disable-next-line
 	const setGMValue = GM?.setValue ?? window.GM_setValue;
 

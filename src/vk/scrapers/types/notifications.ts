@@ -42,12 +42,12 @@ export interface INotificationsHookStateAvailable {
 	/**
 	 * Переключает статус подписки на уведомления
 	 */
-	toggle(): void;
+	toggle(this: void): void;
 
 	/**
 	 * Функция для отключения наблюдения за обновлениями переключателя
 	 */
-	disconnect(): void;
+	disconnect(this: void): void;
 }
 
 /**

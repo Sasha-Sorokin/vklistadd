@@ -1,3 +1,4 @@
+import { AnyObj, UnknownObj } from "@common/types";
 import { ILists } from "@vk/api/lists";
 import { ITreating } from "@vk/scrapers";
 import { LabelColor } from "./controlsLabel";
@@ -11,7 +12,7 @@ export interface IBoxDetail {
 	/**
 	 * Текущий объект контекста (`window.cur`)
 	 */
-	context: object;
+	context: AnyObj;
 
 	/**
 	 * Если бокс вызван не для самой страницы, а элемента на ней
@@ -29,22 +30,22 @@ export interface IBoxDetail {
 	 *
 	 * @param lists Контроллер списков
 	 */
-	onListsLoad(lists: ILists): void;
+	onListsLoad(this: void, lists: ILists): void;
 
 	/**
 	 * Обработчик ошибки загрузки списков
 	 */
-	onListsLoadFail?(): void;
+	onListsLoadFail?(this: void): void;
 
 	/**
 	 * Функция отображения надписи снизу бокса
 	 */
-	displayLabel(text: string, color?: LabelColor): void;
+	displayLabel(this: void, text: string, color?: LabelColor): void;
 
 	/**
 	 * Регистрирует обработчик сохранения изменений
 	 *
-	 * @returns Функция для удаления обработчика
+	 * @return Функция для удаления обработчика
 	 */
-	handleSave(callback: SaveCallback): () => void;
+	handleSave(this: void, callback: SaveCallback): () => void;
 }

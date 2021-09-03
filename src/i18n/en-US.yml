@@ -1,74 +1,69 @@
-addListButton:
-  text: "Create a new list"
-  tooltip: "Redirect to news page"
-
+---
 actionButton:
-  text: "Manage lists"
-
-actionsMenuItem:
-  context:
-    default: "News feed lists"
-    feedRow: "Edit lists"
-
+    text: Manage lists
 actionLabel:
-  template: "Show news {} in the lists:"
-  context:
-    group: "this group's"
-    public: "this community's"
-    profile: "this user's"
-    bookmark: "for this bookmark"
-    other: "this page's"
-
-editListButton:
-  text: "Edit “{}”"
-  icon: "Icon"
-
-followStatus:
-  context:
-    group:
-    - "You have not joined this group."
-    - "You are a member of this group."
-    public:
-    - "You are not following page."
-    - "You are following this page."
-    profile:
-    - "Not in the friends list."
-    - "You are following them."
-    own: "This is beautiful you!"
-
-  unknown: "Unknown follow status."
-
-  hint: "You can add to the tabs without following or adding to friends."
-
-errorMessages:
-  WRAPPING_A_WRAPPER: "Attempting to wrap already wrapped function."
-  VK_LANGUAGE_DETECT_FAIL: "Failed to detect VK language."
-  NO_OR_INVALID_CONTEXT: "Window doesn't contain context or current context object doesn't contain options (odd behavior)."
-  NO_PARENT_NODE: "Referenced node has no parent node."
-  ALREADY_INJECTED: "Interceptors already were injected in the window."
-
+    context:
+        bookmark: for this bookmark
+        group: of this group
+        other: of this page
+        profile: of this user
+        public: of this community
+    template: "Show news {} in the lists:"
+actionsMenuItem:
+    context:
+        default: News feed lists
+        feedRow: Edit lists
+addListButton:
+    text: Create a new list
+    tooltip: Redirect to news page
 box:
-  title: "Manage lists"
-
-listLoader:
-  loadFailed: "Unable to fetch your lists :("
-
-lists:
-  empty: "You have no lists."
-
-listCreation:
-  highlightTooltip: "{} is here"
-
-infoBlock:
-  avatarAlt: "{}'s avatar"
-
+    savingChanges: Saving changes...
+    savingShift: Hold Shift to keep window open
+    title: Manage lists
+editListButton:
+    icon: Icon
+    text: Edit “{}”
 errorBoundary:
-  text: "Unfortunately, due to a bug in our code, this window has failed to render :(\n\nPlease, try another browser and !!report to extension developer!! if that won't solve the problem."
+    text: |-
+        Unfortunately, due to a bug in our code, this window has failed to render :(
 
+        Please, try another browser and !!report to extension developer!! if that won't solve the problem.
+errorMessages:
+    alreadyInjected: Interceptors already were injected in the window.
+    noOrInvalidContext: Window doesn't contain context or current context object doesn't contain options (odd behavior).
+    noParentNode: Referenced node has no parent node.
+    vkLanguageDetectFail: Failed to detect VK language.
+    wrappingWrapper: Attempting to wrap already wrapped function.
+followStatus:
+    context:
+        group:
+            - You have not joined this group.
+            - You are a member of this group.
+        own: This is beautiful you!
+        profile:
+            - Not in the friends list.
+            - You are following them.
+        public:
+            - You are not following page.
+            - You are following this page.
+    hint: You can add to the tabs without following or adding to friends.
+    unknown: Unknown follow status.
+infoBlock:
+    avatarAlt: "{}'s avatar"
+listCreation:
+    highlightTooltip: "{} is here"
+listLoader:
+    loadFailed: Unable to fetch your lists :(
+lists:
+    empty: You have no lists.
 notificationsStatus:
-- Notifications disabled.
-- Notifications enabled.
-
+    - Notifications disabled.
+    - Notifications enabled.
+privateWarning:
+    group:
+        - This is a closed group. You will need to join it to see its news in selected lists.
+        - This is a closed group. You will need to stay in it to see its news in selected lists.
+    profile: This is a closed profile. You need to add this user as a friend to see their news.
 versionChecker:
-  installed: '<b>Yay! VK List Add is now installed.</b><br>Thank you for installing our extension. <a href="__wiki__" target="blank" rel="noreferrer">Do you want to learn how to use it?</a>'
-  updated: '<b>VK List Add has been updated!</b></br>Want to see <a href="__changeLogLink__" target="blank" rel="noreferrer">our changelog?</a>'
+    installed: <b>Yay! VK List Add is now installed.</b><br>Thank you for installing our extension. <a href="__wiki__" target="blank" rel="noreferrer">Do you want to learn how to use it?</a>
+    updated: <b>VK List Add has been updated!</b></br>Want to see <a href="__changeLogLink__" target="blank" rel="noreferrer">our changelog?</a>

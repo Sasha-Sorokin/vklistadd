@@ -1,3 +1,4 @@
+import { Member } from "@common/types";
 import { getWindow } from "@utils/window";
 import { SupportedModule } from "../types";
 
@@ -17,18 +18,20 @@ interface ISharedContext {
 }
 
 /**
- * @returns Текущий контекст на странице
+ * @return Текущий контекст на странице
  */
-export function getContext<T = {}>() {
+export function getContext<T = Record<Member, unknown>>() {
 	return getWindow().cur as ISharedContext & T;
 }
 
 /**
  * @param module Строка `module` из текущего контекста
- * @returns Является ли модуль `module` поддерживающимся модулем
+ * @return Является ли модуль `module` поддерживающимся модулем
  */
-export function isSupportedModule(module: string): module is SupportedType {
-	return module === SupportedModule.Group
-		|| module === SupportedModule.Public
-		|| module === SupportedModule.Public;
+export function isSupportedModule(module: string): module is SupportedModule {
+	return (
+		module === SupportedModule.Group ||
+		module === SupportedModule.Public ||
+		module === SupportedModule.Public
+	);
 }

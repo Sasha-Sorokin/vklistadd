@@ -6,7 +6,7 @@ import { getNavigatorTranslations } from "@utils/i18n/navigator";
 const MESSAGES = getNavigatorTranslations().errorMessages;
 
 /**
- * @returns Сгенерированные сообщения об ошибках, содержащие коды
+ * @return Сгенерированные сообщения об ошибках, содержащие коды
  */
 function generateErrorMessages(): Readonly<typeof MESSAGES> {
 	const errorMessages = Object.create(null);
@@ -36,7 +36,7 @@ const [INITIAL, ...STYLES] = [
  */
 export function log<Level extends LogLevel>(
 	level: Level,
-	...args: Parameters<(typeof console)[Level]>
+	...args: Parameters<typeof console[Level]>
 ) {
 	const [message, ...rest] = args;
 

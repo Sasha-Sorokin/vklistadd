@@ -3,7 +3,7 @@ import { LanguageCode, TRANSLATIONS } from "./translations";
 /**
  * Определяет язык, используемый браузером
  *
- * @returns Кодовое название текущего языка или `null`,
+ * @return Кодовое название текущего языка или `null`,
  * если определение провалилось
  */
 function detectNavigatorLanguage(): LanguageCode | null {
@@ -17,7 +17,7 @@ function detectNavigatorLanguage(): LanguageCode | null {
 const NAVIGATOR_LANGUAGE = detectNavigatorLanguage() ?? "en-US";
 
 /**
- * @returns Код языка в браузере, для которого у нас имеются переводы
+ * @return Код языка в браузере, для которого у нас имеются переводы
  */
 export function getNavigatorLanguage() {
 	return NAVIGATOR_LANGUAGE;
@@ -26,7 +26,7 @@ export function getNavigatorLanguage() {
 const NAVIGATOR_TRANSLATIONS = TRANSLATIONS[getNavigatorLanguage()];
 
 /**
- * @returns Переводы для языка браузера
+ * @return Переводы для языка браузера
  */
 export function getNavigatorTranslations() {
 	return NAVIGATOR_TRANSLATIONS;

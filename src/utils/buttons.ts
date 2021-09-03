@@ -24,12 +24,22 @@ export const enum ButtonState {
 	Progress = 6,
 }
 
-const BUTTON_CLASS = {
-	LOCKED: "flat_btn_lock",
-	DISABLED: "button_disabled",
-} as const;
+/**
+ * Перечисление классов кнопки
+ */
+enum ButtonClass {
+	/**
+	 * Кнопка заблокирована
+	 */
+	Locked = "flat_btn_lock",
 
-const BUTTON_DISABLE = [POINTER_LOCKED, BUTTON_CLASS.DISABLED];
+	/**
+	 * Кнопка отключена
+	 */
+	Disabled = "button_disabled",
+}
+
+const BUTTON_DISABLE = [POINTER_LOCKED, ButtonClass.Disabled];
 
 /**
  * Переключает "выключеное" состояние кнопки

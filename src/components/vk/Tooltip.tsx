@@ -2,7 +2,7 @@ import { h, isValidElement, VNode, cloneElement } from "preact";
 import { useCallback, useState, useEffect, useMemo } from "preact/hooks";
 import { getWindow } from "@utils/window";
 import { wrapFunction } from "@utils/wrappers";
-import { default as uid } from "uid";
+import { uid } from "uid";
 
 /**
  * Представляет собой свойства элемента, на котором можно сфокусироваться или
@@ -12,17 +12,17 @@ export interface IFocusableElementProps {
 	/**
 	 * Обработчик наведения мышкой
 	 */
-	onMouseOver?(e: MouseEvent): void;
+	onMouseOver?(this: void, e: MouseEvent): void;
 
 	/**
 	 * Обработчик фокусировки на элементе
 	 */
-	onFocus?(e: FocusEvent): void;
+	onFocus?(this: void, e: FocusEvent): void;
 
 	/**
 	 * Обработчик потери фокуса элементом
 	 */
-	onBlur?(e: FocusEvent): void;
+	onBlur?(this: void, e: FocusEvent): void;
 
 	/**
 	 * ID элементов, описывающих компонент
@@ -51,19 +51,24 @@ type TooltipOptions = Partial<VK.ITooltipOptions<Element>>;
 type TooltipObject = VK.ITooltipObject<Element, TooltipOptions>;
 
 const ID_RANDOMNESS_LENGTH = 5;
-const createTooltipID = () => `tooltip_${uid(ID_RANDOMNESS_LENGTH)}`;
+
+/**
+ * @return Уникальный ID для подсказки
+ */
+function createTooltipId() {
+	return `tooltip_${uid(ID_RANDOMNESS_LENGTH)}`;
+}
 
 /**
  * Представляет собой хук с логикой создания подсказки
  *
  * @param opts Опции подсказки
- *
- * @returns Объект с функциями управления подсказой и её ID
+ * @return Объект с функциями управления подсказой и её ID
  */
 function useTooltipPreps(opts: TooltipOptions) {
 	// const childRef = useRef<Element>();
 
-	const tooltipId = useMemo(createTooltipID, [opts]);
+	const tooltipId = useMemo(createTooltipId, [opts]);
 
 	const [tooltipRef] = useState<{ current?: TooltipObject }>({});
 
@@ -71,14 +76,17 @@ function useTooltipPreps(opts: TooltipOptions) {
 		tooltipRef.current?.destroy();
 	}, [tooltipRef]);
 
-	const setTooltip = useCallback((tt: TooltipObject) => {
-		destroyTooltip();
+	const setTooltip = useCallback(
+		(tt: TooltipObject) => {
+			destroyTooltip();
 
-		tooltipRef.current = tt;
+			tooltipRef.current = tt;
 
-		tt.container.setAttribute("role", "tooltip");
-		tt.container.setAttribute("id", tooltipId);
-	}, [destroyTooltip, tooltipRef, tooltipId]);
+			tt.container.setAttribute("role", "tooltip");
+			tt.container.setAttribute("id", tooltipId);
+		},
+		[destroyTooltip, tooltipRef, tooltipId],
+	);
 
 	// Мы не убираем обработчик события init у подсказки в опциях,
 	// поэтому нам нужно предусмотреть тот случай, когда обработчик
@@ -88,16 +96,20 @@ function useTooltipPreps(opts: TooltipOptions) {
 	// Для этого смотрим, задан ли обработчик и если так, то создаём
 	// функцию, которая вызовет сначала его, а потом наш метод установки
 	// подсказки. Если обработчика нет — вызываем установку напрямую.
-	const tooltipOptions: TooltipOptions = useMemo(() => ({
-		...opts,
-		init: opts?.init != null
-			? (tt) => {
-				opts?.init?.(tt);
+	const tooltipOptions: TooltipOptions = useMemo(
+		() => ({
+			...opts,
+			init:
+				opts.init != null
+					? (tt) => {
+							opts.init?.(tt);
 
-				setTooltip(tt);
-			}
-			: setTooltip,
-	}), [opts, setTooltip]);
+							setTooltip(tt);
+					  }
+					: setTooltip,
+		}),
+		[opts, setTooltip],
+	);
 
 	// Это такой хак, чтобы не реализовывать загрузку модуля подсказок вручную:
 	// как только отрисовка завершится, мы тут же бросаемся отобразить подсказку
@@ -108,9 +120,12 @@ function useTooltipPreps(opts: TooltipOptions) {
 	// 	getWindow().showTooltip(childRef.current, tooltipOptions);
 	// }, [childRef]);
 
-	const showTooltip = useCallback((e: MouseEvent) => {
-		getWindow().showTooltip(e.target as Element, tooltipOptions);
-	}, [tooltipOptions]);
+	const showTooltip = useCallback(
+		(e: MouseEvent) => {
+			getWindow().showTooltip(e.target as Element, tooltipOptions);
+		},
+		[tooltipOptions],
+	);
 
 	const hideTooltip = useCallback(() => {
 		tooltipRef.current?.hide();
@@ -126,20 +141,21 @@ function useTooltipPreps(opts: TooltipOptions) {
 	};
 }
 
+const TOOLTIP_NOT_ELEMENT =
+	"Tooltip element must have only one child that is valid Preact element";
+
 /**
- * @returns Клонированный дочерний элемент с обёрнутыми обработчиками и
+ * @param props Свойства элемента подсказки
+ * @return Клонированный дочерний элемент с обёрнутыми обработчиками и
  */
-export function Tooltip<P>({ children, opts }: ITooltipProps<P>) {
-	const {
-		showTooltip,
-		hideTooltip,
-		destroyTooltip,
-		tooltipId,
-	} = useTooltipPreps(opts);
+export function Tooltip<P>(props: ITooltipProps<P>) {
+	const { children, opts } = props;
+	const { showTooltip, hideTooltip, destroyTooltip, tooltipId } =
+		useTooltipPreps(opts);
 
 	if (!isValidElement(children)) {
 		// eslint-disable-next-line max-len
-		throw new Error("Tooltip element must have only one child that is valid Preact element");
+		throw new Error(TOOLTIP_NOT_ELEMENT);
 	}
 
 	useEffect(() => destroyTooltip, [destroyTooltip]);
@@ -152,18 +168,16 @@ export function Tooltip<P>({ children, opts }: ITooltipProps<P>) {
 	} = children.props;
 
 	return cloneElement(children, {
-		onMouseOver: onMouseOver != null
-			? wrapFunction(onMouseOver, showTooltip)
-			: showTooltip,
-		onFocus: onFocus != null
-			? wrapFunction(onFocus, showTooltip)
-			: showTooltip,
-		onBlur: onBlur != null
-			? wrapFunction(onBlur, hideTooltip)
-			: hideTooltip,
-		"aria-describedby": ariaBy != null
-			? `${ariaBy} ${tooltipId}`
-			: tooltipId,
+		onMouseOver:
+			onMouseOver != null
+				? wrapFunction(onMouseOver, showTooltip)
+				: showTooltip,
+		onFocus:
+			onFocus != null ? wrapFunction(onFocus, showTooltip) : showTooltip,
+		onBlur:
+			onBlur != null ? wrapFunction(onBlur, hideTooltip) : hideTooltip,
+		"aria-describedby":
+			ariaBy != null ? `${ariaBy} ${tooltipId}` : tooltipId,
 	} as IFocusableElementProps);
 }
 
@@ -195,10 +209,11 @@ export interface ITitleProps<P> {
 }
 
 /**
- * @returns Компонент подсказки
+ * @param props Свойства компонента подсказки
+ * @return Компонент подсказки
  */
-export function Title<P>({ children, ...props }: ITitleProps<P>) {
-	const { text, shift, opts } = props;
+export function Title<P>(props: ITitleProps<P>) {
+	const { text, shift, opts, children } = props;
 
 	// Этот код точно повторяет то, как работает showTitle.
 	//
@@ -207,12 +222,15 @@ export function Title<P>({ children, ...props }: ITitleProps<P>) {
 	//
 	// Чтобы не создавать каждый раз новый объект и приводить к
 	// обнулению прошлого обработчика, используем useMemo
-	const $opts = useMemo(() => ({
-		text,
-		black: true,
-		shift,
-		...opts,
-	}), [text, shift, opts]);
+	const $opts = useMemo(
+		() => ({
+			text,
+			black: true,
+			shift,
+			...opts,
+		}),
+		[text, shift, opts],
+	);
 
 	return <Tooltip opts={$opts}>{children}</Tooltip>;
 }

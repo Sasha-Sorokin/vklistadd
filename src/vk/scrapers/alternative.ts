@@ -5,7 +5,7 @@ import { NotificationsTogglerHook } from "./types/notifications";
 
 /**
  * @param treating Информация об альтернативном элементе
- * @returns Статус подписки текущего пользователя на объект
+ * @return Статус подписки текущего пользователя на объект
  */
 export function isFollowing(treating: ITreating): boolean | null {
 	switch (treating.kind) {
@@ -16,7 +16,8 @@ export function isFollowing(treating: ITreating): boolean | null {
 			return true;
 		}
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
@@ -25,7 +26,7 @@ const FRIEND_ID = /friends_user_row(\d+)/;
 
 /**
  * @param treating Информация об альтернативном элементе
- * @returns ID объекта внутри альтернативного элемента
+ * @return ID объекта внутри альтернативного элемента
  */
 export function getID(treating: ITreating): number | null {
 	const { element, kind } = treating;
@@ -33,21 +34,21 @@ export function getID(treating: ITreating): number | null {
 	switch (kind) {
 		case TreatingKind.FriendRow:
 		case TreatingKind.GroupRow: {
-			const regexp = kind === TreatingKind.GroupRow
-				? GROUP_ID
-				: FRIEND_ID;
+			const isGroup = kind === TreatingKind.GroupRow;
+
+			const regexp = isGroup ? GROUP_ID : FRIEND_ID;
 
 			const id = regexp.exec(element.id)?.[1];
 
 			if (id == null) return null;
 
-			return kind === TreatingKind.GroupRow ? -+id : +id;
+			return isGroup ? -Number(id) : Number(id);
 		}
 
 		case TreatingKind.Bookmark: {
 			const { id } = (element as HTMLDivElement).dataset;
 
-			return id != null ? +id : null;
+			return id != null ? +Number(id) : null;
 		}
 
 		case TreatingKind.FeedRow: {
@@ -61,16 +62,17 @@ export function getID(treating: ITreating): number | null {
 
 			const [authorId] = postId.split("_");
 
-			return authorId != null ? +authorId : null;
+			return Number(authorId);
 		}
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
 /**
  * @param treating Информация об альтернативном элементе
- * @returns Ссылка на объект внутри альтернативного элемента
+ * @return Ссылка на объект внутри альтернативного элемента
  */
 export function getLink(treating: ITreating): string | null {
 	const { element } = treating;
@@ -101,21 +103,19 @@ export function getLink(treating: ITreating): string | null {
 		}
 
 		case TreatingKind.FeedRow: {
-			const link = elem<HTMLAnchorElement>(
-				"a.author",
-				element,
-			);
+			const link = elem<HTMLAnchorElement>("a.author", element);
 
 			return link?.href ?? null;
 		}
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
 /**
  * @param treating Информация об альтернативном элементе
- * @returns Иконка для объекта внутри альтернативного элемента
+ * @return Иконка для объекта внутри альтернативного элемента
  */
 export function getIcon(treating: ITreating): string | null {
 	const { element, kind } = treating;
@@ -139,7 +139,7 @@ export function getIcon(treating: ITreating): string | null {
 				element,
 			);
 
-			const url = icon?.style.backgroundImage?.slice(
+			const url = icon?.style.backgroundImage.slice(
 				"url(".length,
 				-")".length,
 			);
@@ -156,23 +156,21 @@ export function getIcon(treating: ITreating): string | null {
 			return icon?.src ?? null;
 		}
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
 /**
  * @param treating Информация об альтернативном элементе
- * @returns Название/имя объекта внутри альтернативного элемента
+ * @return Название/имя объекта внутри альтернативного элемента
  */
 export function getName(treating: ITreating): string | null {
 	const { element } = treating;
 
 	switch (treating.kind) {
 		case TreatingKind.GroupRow: {
-			const title = elem<HTMLAnchorElement>(
-				"a.group_row_title",
-				element,
-			);
+			const title = elem<HTMLAnchorElement>("a.group_row_title", element);
 
 			return title?.textContent ?? null;
 		}
@@ -196,25 +194,21 @@ export function getName(treating: ITreating): string | null {
 		}
 
 		case TreatingKind.FeedRow: {
-			const link = elem<HTMLAnchorElement>(
-				"a.author",
-				element,
-			);
+			const link = elem<HTMLAnchorElement>("a.author", element);
 
 			return link?.textContent ?? null;
 		}
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
 /**
  * @param treating Информация об альтернативном элементе
- * @returns Тип объекта внутри альтернативного элемента
+ * @return Тип объекта внутри альтернативного элемента
  */
-export function getType(
-	treating: ITreating,
-): SupportedModule | null {
+export function getType(treating: ITreating): SupportedModule | null {
 	if (treating.subType != null) return treating.subType;
 
 	// Можно предположить из ID, все минусовые ID принадлежат группам
@@ -222,9 +216,7 @@ export function getType(
 
 	if (id == null) return null;
 
-	return id < 0
-		? SupportedModule.Public
-		: SupportedModule.Profile;
+	return id < 0 ? SupportedModule.Public : SupportedModule.Profile;
 }
 
 type OptionalHook = NotificationsTogglerHook | null;
@@ -233,7 +225,7 @@ const TOGGLER_HOOKS = new WeakMap<Element, OptionalHook>();
 
 /**
  * @param treating Информация об альтернативном элементе
- * @returns Переключатель уведомлений для альтернативного элемента
+ * @return Переключатель уведомлений для альтернативного элемента
  */
 export function getNotificationsToggler(treating: ITreating): OptionalHook {
 	const { element, kind } = treating;
@@ -243,51 +235,56 @@ export function getNotificationsToggler(treating: ITreating): OptionalHook {
 	if (hook !== undefined) return hook;
 
 	switch (kind) {
-		case TreatingKind.GroupRow: {
-			const children = childrenOf<HTMLElement>(
-				elem(".ui_actions_menu", element),
-			);
-
-			if (children == null) break;
-
-			const menuItem = findWithCallback(
-				children,
-				"onclick",
-				"GroupsList.toggleSubscription",
-			);
-
-			if (menuItem != null) {
-				hook = createTogglerHook(
-					menuItem,
-					() => menuItem.dataset.value === "1",
-					() => menuItem.click(),
+		case TreatingKind.GroupRow:
+			{
+				const children = childrenOf<HTMLElement>(
+					elem(".ui_actions_menu", element),
 				);
-			}
-		} break;
 
-		case TreatingKind.FeedRow: {
-			const children = childrenOf<HTMLElement>(
-				elem(".ui_action_menu", element),
-			);
+				if (children == null) break;
 
-			if (children == null) break;
-
-			const menuItem = findWithCallback(
-				children,
-				"onclick",
-				"Feed.toggleSubscription",
-			);
-
-			if (menuItem != null) {
-				hook = createTogglerHook(
-					menuItem,
-					() => menuItem.dataset.act === "1",
-					() => menuItem.click(),
+				const menuItem = findWithCallback(
+					children,
+					"onclick",
+					"GroupsList.toggleSubscription",
 				);
-			}
-		} break;
 
-		default: break;
+				if (menuItem != null) {
+					hook = createTogglerHook(
+						menuItem,
+						() => menuItem.dataset.value === "1",
+						() => menuItem.click(),
+					);
+				}
+			}
+			break;
+
+		case TreatingKind.FeedRow:
+			{
+				const children = childrenOf<HTMLElement>(
+					elem(".ui_action_menu", element),
+				);
+
+				if (children == null) break;
+
+				const menuItem = findWithCallback(
+					children,
+					"onclick",
+					"Feed.toggleSubscription",
+				);
+
+				if (menuItem != null) {
+					hook = createTogglerHook(
+						menuItem,
+						() => menuItem.dataset.act === "1",
+						() => menuItem.click(),
+					);
+				}
+			}
+			break;
+
+		default:
+			break;
 	}
 
 	hook = hook ?? null;

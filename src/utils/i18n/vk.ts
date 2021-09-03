@@ -17,22 +17,23 @@ const VK_LANGUAGE_MAPPINGS: IHashMap<LanguageCode | undefined> = {
  *
  * @throws Если функция вызвана слишком рано и langConfig ещё
  * не был объявлен в объекте окна
- * @returns Код языка, для которого у нас есть перевод
+ * @return Код языка, для которого у нас есть перевод
  */
 function detectVKLanguage() {
 	const { langConfig } = getWindow();
 
-	if (langConfig == null) {
-		throw new Error(ERROR_MESSAGES.VK_LANGUAGE_DETECT_FAIL);
+	// проверка на правильное состояние
+	if ((langConfig as unknown) == null) {
+		throw new Error(ERROR_MESSAGES.vkLanguageDetectFail);
 	}
 
 	return VK_LANGUAGE_MAPPINGS[langConfig.id] ?? getNavigatorLanguage();
 }
 
-let vkLanguage: LanguageCode;
+let vkLanguage: LanguageCode | null = null;
 
 /**
- * @returns Язык, выбранный в ВКонтакте
+ * @return Язык, выбранный в ВКонтакте
  */
 export function getVKLanguage() {
 	if (vkLanguage == null) {
@@ -43,7 +44,7 @@ export function getVKLanguage() {
 }
 
 /**
- * @returns Переводы для языка, выбранный во ВКонтакте
+ * @return Переводы для языка, выбранного во ВКонтакте
  */
 export function getVKTranslation() {
 	return TRANSLATIONS[getVKLanguage()];

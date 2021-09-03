@@ -4,7 +4,7 @@
  *
  * @param array Массив, в который добавляются элементы
  * @param elements Элементы, добавляемые в массив
- * @returns Новый размер массива
+ * @return Новый размер массива
  */
 export function addUnique<T>(array: T[], ...elements: T[]) {
 	let length: number | undefined;
@@ -23,7 +23,7 @@ export function addUnique<T>(array: T[], ...elements: T[]) {
  *
  * @param array Массив, из которого удаляются элементы
  * @param elements Удаляемые из массива элементы
- * @returns Массив удалённых элементов
+ * @return Массив удалённых элементов
  */
 export function removeElements<T>(array: T[], ...elements: T[]) {
 	const removed: T[] = [];
@@ -52,7 +52,7 @@ type Array<ElementType, IsReadonly> = IsReadonly extends true
  * сравнении будет отмечен как readonly массив
  *
  * @param arg Объект, который возможно является массивом
- * @returns `true` если объект является массивом
+ * @return `true` если объект является массивом
  * @example
  * ```ts
  * if (isArray<string, true>(arr)) {

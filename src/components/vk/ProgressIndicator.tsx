@@ -26,7 +26,7 @@ const SIZE_CLASSES = new Map<number, string>();
  * любому элементу вообще, который содержит индикаторы прогресса
  *
  * @param dotSize Размер одной точки
- * @returns Название класса для применения к компоненту индикатора или
+ * @return Название класса для применения к компоненту индикатора или
  * любому элементу, содержащему в дочерних классах индикатор прогресса
  */
 export function dotsSize(dotSize: number) {
@@ -52,7 +52,6 @@ export function dotsSize(dotSize: number) {
 
 	return className;
 }
-
 
 /**
  * Представляет собой опции индикатора прогресса
@@ -83,11 +82,11 @@ export interface IProgressIndicatorProps {
  * Компонент индикации прогресса
  *
  * @param props Настройки индикатора
- * @returns DIV элемент с тремя точками внутри
+ * @return DIV элемент с тремя точками внутри
  */
 export function ProgressIndicator(props: IProgressIndicatorProps) {
 	const { centered, className, style } = props;
-	const progressHolder = useRef<HTMLDivElement>();
+	const progressHolder = useRef<HTMLDivElement>(null);
 	const [isMounted, setMounted] = useState(false);
 
 	useEffect(() => {

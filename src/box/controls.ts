@@ -10,7 +10,7 @@ import { initializeShortcuts } from "./shortcuts";
 
 /**
  * @param lists Сохраняемый объект списков
- * @returns Сохранились ли изменения
+ * @return Сохранились ли изменения
  */
 async function saveChanges(lists: ILists) {
 	try {
@@ -28,7 +28,7 @@ async function saveChanges(lists: ILists) {
  * Инициализирует кнопки и вторичные элементы бокса
  *
  * @param box Бокс, для которого инициализируются элементы
- * @returns Функции для интеграции с боксом
+ * @return Функции для интеграции с боксом
  */
 export function initializeControls(box: VK.MessageBox) {
 	const isSaving = createSwitch(false);
@@ -50,16 +50,12 @@ export function initializeControls(box: VK.MessageBox) {
 	const lockControls = (isSaving: boolean) => {
 		setButtonState(
 			saveButton,
-			isSaving
-				? ButtonState.Progress
-				: ButtonState.Interactive,
+			isSaving ? ButtonState.Progress : ButtonState.Interactive,
 		);
 
 		setButtonState(
 			cancelButton,
-			isSaving
-				? ButtonState.Disabled
-				: ButtonState.Interactive,
+			isSaving ? ButtonState.Disabled : ButtonState.Interactive,
 		);
 	};
 
@@ -139,9 +135,7 @@ export function initializeControls(box: VK.MessageBox) {
 
 		setButtonState(
 			saveButton,
-			$lists == null
-				? ButtonState.Disabled
-				: ButtonState.Interactive,
+			$lists == null ? ButtonState.Disabled : ButtonState.Interactive,
 		);
 	};
 

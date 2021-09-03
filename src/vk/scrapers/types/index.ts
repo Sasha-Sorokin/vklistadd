@@ -64,3 +64,5 @@ export interface ITreating {
 	 */
 	subType?: SupportedModule;
 }
+
+export default {};

@@ -28,8 +28,7 @@ interface ITooltipLike {
  * элемент, элемент подсказки, а также её опции никуда не девается (*уточ.*).
  *
  * @param opts Опции для подсказки
- *
- * @returns Функция-обработчик события `onMouseOver`
+ * @return Функция-обработчик события `onMouseOver`
  */
 export function $useTooltip(opts?: Partial<VK.ITooltipOptions<Element>>) {
 	const [tooltipRef] = useState<{ current?: ITooltipLike }>({});
@@ -38,11 +37,14 @@ export function $useTooltip(opts?: Partial<VK.ITooltipOptions<Element>>) {
 		tooltipRef.current?.destroy();
 	}, [tooltipRef]);
 
-	const setTooltip = useCallback((tt: ITooltipLike) => {
-		destroyTooltip();
+	const setTooltip = useCallback(
+		(tt: ITooltipLike) => {
+			destroyTooltip();
 
-		tooltipRef.current = tt;
-	}, [destroyTooltip, tooltipRef]);
+			tooltipRef.current = tt;
+		},
+		[destroyTooltip, tooltipRef],
+	);
 
 	useEffect(() => destroyTooltip, [destroyTooltip]);
 
@@ -54,20 +56,27 @@ export function $useTooltip(opts?: Partial<VK.ITooltipOptions<Element>>) {
 	// Для этого смотрим, задан ли обработчик и если так, то создаём
 	// функцию, которая вызовет сначала его, а потом наш метод установки
 	// подсказки. Если обработчика нет — вызываем установку напрямую.
-	const tooltipOptions = useMemo(() => ({
-		...opts,
-		init: opts?.init != null
-			? (tt: ITooltipLike) => {
-				opts?.init?.(tt as never);
+	const tooltipOptions = useMemo(
+		() => ({
+			...opts,
+			init:
+				opts?.init != null
+					? (tt: ITooltipLike) => {
+							opts.init?.(tt as never);
 
-				setTooltip(tt);
-			}
-			: setTooltip,
-	}), [opts, setTooltip]);
+							setTooltip(tt);
+					  }
+					: setTooltip,
+		}),
+		[opts, setTooltip],
+	);
 
-	return useCallback((e: MouseEvent) => {
-		getWindow().showTooltip(e.currentTarget as Element, tooltipOptions);
-	}, [tooltipOptions]);
+	return useCallback(
+		(e: MouseEvent) => {
+			getWindow().showTooltip(e.currentTarget as Element, tooltipOptions);
+		},
+		[tooltipOptions],
+	);
 }
 
 /**
@@ -76,15 +85,12 @@ export function $useTooltip(opts?: Partial<VK.ITooltipOptions<Element>>) {
  * переданное содержимое подсказки
  *
  * @see useTooltip За дополнительной информацией, почему следует использовать
- * этот хук в качестве замены прямого вызова `Window#showTitle`
- *
+ * этот хук в качестве замены прямого вызова {@link Window#showTitle}
  * @param titleContents Содержимое подсказки
  * @param shift Отступы подсказки
  * @param opts Опции для подсказки
- *
  * @see Window#showTitle За дополнительной информацией о параметрах
- *
- * @returns Фукнция-обработчик события `onMouseOver`
+ * @return Фукнция-обработчик события `onMouseOver`
  */
 export function $useTitle(
 	titleContents: string,
@@ -98,12 +104,15 @@ export function $useTitle(
 	//
 	// Чтобы не создавать каждый раз новый объект и приводить к
 	// обнулению прошлого обработчика, используем useMemo
-	const $opts = useMemo(() => ({
-		text: titleContents,
-		black: true,
-		shift,
-		...opts,
-	}), [opts, shift, titleContents]);
+	const $opts = useMemo(
+		() => ({
+			text: titleContents,
+			black: true,
+			shift,
+			...opts,
+		}),
+		[opts, shift, titleContents],
+	);
 
 	return $useTooltip($opts);
 }

@@ -4,7 +4,7 @@ import { IModuleContext } from "@common/types";
 import { SupportedModule } from "@vk/scrapers";
 
 /**
- * @returns Текст, соответствующий статусу подписки
+ * @return Текст, соответствующий статусу подписки
  */
 export function FollowText() {
 	const [detail, target] = useBoxContexts();
@@ -22,35 +22,34 @@ export function FollowText() {
 		return <Fragment>{translation.context.own}</Fragment>;
 	}
 
-	const select = isFollowed == null
-		? null
-		: Number(isFollowed);
+	const select = isFollowed == null ? null : Number(isFollowed);
 
-	const text = select != null
-		? (() => {
-			const { context: translations } = translation;
+	const text =
+		select != null
+			? (() => {
+					const { context: translations } = translation;
 
-			const reference = invoker != null
-				? invoker.subType
-				: context.module;
+					const reference =
+						invoker != null ? invoker.subType : context.module;
 
-			switch (reference) {
-				case SupportedModule.Group: {
-					return translations.group;
-				}
+					switch (reference) {
+						case SupportedModule.Group: {
+							return translations.group;
+						}
 
-				case SupportedModule.Public: {
-					return translations.public;
-				}
+						case SupportedModule.Public: {
+							return translations.public;
+						}
 
-				case SupportedModule.Profile: {
-					return translations.profile;
-				}
+						case SupportedModule.Profile: {
+							return translations.profile;
+						}
 
-				default: return null;
-			}
-		})()?.[select]
-		: translation.unknown;
+						default:
+							return null;
+					}
+			  })()?.[select]
+			: translation.unknown;
 
 	return <Fragment>{text}</Fragment>;
 }

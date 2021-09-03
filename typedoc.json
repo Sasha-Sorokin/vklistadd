@@ -1,6 +1,5 @@
 {
-    "mode": "modules",
-    "out": "api_doc",
-    "excludeNotExported": true,
-    "excludePrivate": true
+	"out": "api_doc",
+	"excludePrivate": true,
+	"entryPoints": ["src"]
 }

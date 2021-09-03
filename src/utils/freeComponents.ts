@@ -5,9 +5,7 @@ import { render, VNode } from "preact";
  * компонентом, либо функция, которой будет передан данный фрагмент для ручного
  * встраивания
  */
-type InsertFunctionOrParent =
-	| ((fragment: DocumentFragment) => void)
-	| Element;
+type InsertFunctionOrParent = ((fragment: DocumentFragment) => void) | Element;
 
 /**
  * Представляет собой компонент, или функцию, принимающую определённые свойства
@@ -24,16 +22,16 @@ type GetComponentFunctionOrComponent<PropsType> =
  * @param mountFunctionOrParent Родительский элемент или функция, которой
  * передаётся фрагмент для ручного встраивания компонента
  */
-export type MountFunction<PropsType> =
-	(InsertFunctionOrParent: InsertFunctionOrParent, props: PropsType) => void;
-
-const { slice } = Array.prototype;
+export type MountFunction<PropsType> = (
+	InsertFunctionOrParent: InsertFunctionOrParent,
+	props: PropsType,
+) => void;
 
 /**
  * @param component Компонент или функция, возвращающая компонент,
  * который необходимо отрисовать
  * @param props Свойства компонента (если требуются)
- * @returns Элемент, который необходимо отрисовать
+ * @return Элемент, который необходимо отрисовать
  */
 function elementToRender<PropsType>(
 	component: GetComponentFunctionOrComponent<PropsType>,
@@ -77,7 +75,7 @@ function cloneReferences(fragment: DocumentFragment, set: Set<Node>) {
 	// определённых случаях неправильно сопоставляют элементы в массиве
 	// ...
 	// (по крайней мере, так было на момент написания этого комментария)
-	const children = slice.call(fragment.childNodes) as Node[];
+	const children = Array.prototype.slice.call(fragment.childNodes) as Node[];
 
 	for (const child of children) set.add(child);
 }
@@ -99,12 +97,12 @@ function cloneReferences(fragment: DocumentFragment, set: Set<Node>) {
  * его CSS свойство `display` как `contents`.
  *
  * @param component Компонент или функция, возвращающая компонент для отрисовки
- * @returns Функция для отрисовки и встраивания компонента в любой элемент
+ * @return Функция для отрисовки и встраивания компонента в любой элемент
  */
 export function asRoaming<PropsType>(
 	component: GetComponentFunctionOrComponent<PropsType>,
 ): MountFunction<PropsType> {
-	let currentNodes: Set<Node>;
+	let currentNodes: Set<Node> | null = null;
 
 	return function renderAndMount(
 		insertFunctionOrParent: InsertFunctionOrParent,
@@ -139,7 +137,7 @@ export function asRoaming<PropsType>(
  * рекомендуется изучить документацию метода `asRoaming`.
  *
  * @param component Компонент или функция, возвращающая компонент, для отрисовки
- * @returns Функция для отрисовки и встраивания компонента в любой элемент
+ * @return Функция для отрисовки и встраивания компонента в любой элемент
  */
 export function asReplicable<PropsType>(
 	component: GetComponentFunctionOrComponent<PropsType>,

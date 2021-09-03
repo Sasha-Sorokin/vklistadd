@@ -14,8 +14,7 @@ const LINK_BUTTON_CLASS = toClassName("linkButton", {
 
 /**
  * @param props Обычные свойства кнопки
- *
- * @returns Кнопку стилизованную под ссылку
+ * @return Кнопку стилизованную под ссылку
  */
 export function LinkButton(props: JSX.IntrinsicElements["button"]) {
 	const { className } = props;

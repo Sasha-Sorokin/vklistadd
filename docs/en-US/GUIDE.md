@@ -7,16 +7,16 @@ on the page of a community or user, in bookmarks or communities list.
 <details>
 <summary>Table of contents</summary>
 
-- [How to use VK List Add?](#how-to-use-vk-list-add)
-  - [Adding to the lists](#adding-to-the-lists)
-    - [On the page of a community](#on-the-page-of-a-community)
-    - [On the user's page](#on-the-users-page)
-    - [Through the communities list](#through-the-communities-list)
-    - [Through the friends lists](#through-the-friends-lists)
-    - [Through the bookmarks](#through-the-bookmarks)
-  - [Managing lists](#managing-lists)
-  - [This is all](#this-is-all)
-</details>
+-   [How to use VK List Add?](#how-to-use-vk-list-add)
+    -   [Adding to the lists](#adding-to-the-lists)
+        -   [On the page of a community](#on-the-page-of-a-community)
+        -   [On the user's page](#on-the-users-page)
+        -   [Through the communities list](#through-the-communities-list)
+        -   [Through the friends lists](#through-the-friends-lists)
+        -   [Through the bookmarks](#through-the-bookmarks)
+    -   [Managing lists](#managing-lists)
+    -   [This is all](#this-is-all)
+    </details>
 
 ## Adding to the lists
 

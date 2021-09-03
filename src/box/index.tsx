@@ -7,11 +7,12 @@ import { BoxContext } from "@components/contexts/BoxContext";
 import { ITreating } from "@vk/scrapers";
 import { TranslationContext } from "@components/contexts/TranslationContext";
 import { useMemo } from "preact/hooks";
+import { UnknownObj } from "@common/types";
 import { IBoxDetail } from "./types";
 import { initializeControls } from "./controls";
 import { showControlsLabel } from "./controlsLabel";
 
-let contentWrap: HTMLDivElement;
+let contentWrap: HTMLDivElement | null = null;
 
 /**
  * Представляет собой свойства бокса
@@ -25,9 +26,10 @@ interface IBoxProps {
 
 /**
  * @param props Информация для контекста бокса
- * @returns Содержимое бокса
+ * @return Содержимое бокса
  */
-function Box({ detail }: IBoxProps) {
+function Box(props: IBoxProps) {
+	const { detail } = props;
 	const translation = useMemo(getVKTranslation, []);
 
 	return (
@@ -62,7 +64,7 @@ type CachedBox = [VK.MessageBox, ReturnType<typeof initializeControls>];
 let currentBox: CachedBox | undefined;
 
 /**
- * @returns Ранее или ново- созданный бокс
+ * @return Ранее или ново- созданный бокс
  */
 function getBox() {
 	let box = currentBox;
@@ -106,7 +108,7 @@ export function showBox(invoker?: Readonly<ITreating>) {
 
 	box.show();
 
-	const ctx = getWindow().cur as object;
+	const ctx = getWindow().cur as UnknownObj;
 
 	if (detailBasis == null) {
 		detailBasis = {
@@ -117,9 +119,8 @@ export function showBox(invoker?: Readonly<ITreating>) {
 		};
 	}
 
-	const isDetailUpdated = detail == null
-		|| detail.context !== ctx
-		|| detail.invoker !== invoker;
+	const isDetailUpdated =
+		detail == null || detail.context !== ctx || detail.invoker !== invoker;
 
 	if (isDetailUpdated) {
 		detail = {

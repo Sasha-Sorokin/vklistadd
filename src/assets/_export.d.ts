@@ -1,7 +1,7 @@
 declare module "*.svg" {
-	namespace DoNotImport {
+	namespace SvgImage {
 		const base64: string;
 	}
 
-	export default DoNotImport.base64;
+	export default SvgImage.base64;
 }

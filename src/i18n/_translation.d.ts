@@ -12,6 +12,7 @@ declare interface ITranslation {
 		 * Текст кнопки
 		 */
 		text: string;
+
 		/**
 		 * Текст подсказки
 		 */
@@ -125,14 +126,17 @@ declare interface ITranslation {
 			 * В контексте группы
 			 */
 			group: [string, string];
+
 			/**
 			 * В контексте паблика
 			 */
 			public: [string, string];
+
 			/**
 			 * В контексте профиля
 			 */
 			profile: [string, string];
+
 			/**
 			 * В контексте текущего пользователя
 			 */
@@ -157,23 +161,27 @@ declare interface ITranslation {
 		/**
 		 * Попытка обвернуть функцию, которая уже является обёрткой
 		 */
-		WRAPPING_A_WRAPPER: string;
+		wrappingWrapper: string;
+
 		/**
 		 * Определение языка ВКонтакте провалилось
 		 */
-		VK_LANGUAGE_DETECT_FAIL: string;
+		vkLanguageDetectFail: string;
+
 		/**
 		 * Отсутствует или неверный контекст
 		 */
-		NO_OR_INVALID_CONTEXT: string;
+		noOrInvalidContext: string;
+
 		/**
 		 * Отсутствует родительский элемент
 		 */
-		NO_PARENT_NODE: string;
+		noParentNode: string;
+
 		/**
 		 * Повторная попытка установки отловщиков
 		 */
-		ALREADY_INJECTED: string;
+		alreadyInjected: string;
 	};
 
 	/**

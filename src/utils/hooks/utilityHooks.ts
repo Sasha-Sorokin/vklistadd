@@ -1,14 +1,21 @@
 import { useState, useCallback } from "preact/hooks";
 
 /**
- * @returns Функция для принудительного обновления компонента
+ * @return Функция для принудительного обновления компонента
  */
 export function useForceUpdate() {
-	const [, setTick] = useState(0);
+	let ret = useState(0);
+
+	if ((ret as unknown) == null) {
+		// иногда Preact багает и не возвращает нам useState?!
+		ret = [0, () => 0];
+	}
+
+	const [, setTick] = ret;
 
 	return useCallback(() => {
 		setTick((tick) => tick + 1);
-	}, []);
+	}, [setTick]);
 }
 
 /**
@@ -16,16 +23,19 @@ export function useForceUpdate() {
  * действия по умолчанию для элемента
  *
  * @param callback Обработчик события
- * @returns Обработчик, который можно использовать для событий
+ * @return Обработчик, который можно использовать для событий
  */
 export function usePreventedCallback<E extends Event>(
 	callback?: ((event: E) => void) | null,
 ) {
-	return useCallback((event: E) => {
-		event.preventDefault();
+	return useCallback(
+		(event: E) => {
+			event.preventDefault();
 
-		callback?.(event);
+			callback?.(event);
 
-		return false;
-	}, [callback]);
+			return false;
+		},
+		[callback],
+	);
 }

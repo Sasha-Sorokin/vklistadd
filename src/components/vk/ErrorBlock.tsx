@@ -5,12 +5,10 @@ type DivProps = h.JSX.HTMLAttributes<HTMLDivElement>;
 
 /**
  * @param props Все свойства, которые можно применить к DIV элементу
- * @returns Устрашающий пользователя красный блок с воскл. знаком
+ * @return Устрашающий пользователя красный блок с воскл. знаком
  */
 export function ErrorBlock(props: DivProps) {
 	const className = c("error", props.className);
 
-	return (
-		<div {...props} className={className} />
-	);
+	return <div {...props} className={className} />;
 }

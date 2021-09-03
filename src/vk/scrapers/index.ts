@@ -15,7 +15,7 @@ export * from "./types";
 
 /**
  * @param altTreating Информация об альтернативном элементе
- * @returns Ссылка на объект
+ * @return Ссылка на объект
  */
 export function getLink(altTreating?: ITreating): string | null {
 	if (altTreating != null) return alternative.getLink(altTreating);
@@ -29,7 +29,7 @@ export function getLink(altTreating?: ITreating): string | null {
 
 /**
  * @param altTreating Информация об альтернативном элементе
- * @returns Ссылка на иконку объекта
+ * @return Ссылка на иконку объекта
  */
 export function getIcon(altTreating?: ITreating): string | null {
 	if (altTreating != null) return alternative.getIcon(altTreating);
@@ -43,7 +43,7 @@ export function getIcon(altTreating?: ITreating): string | null {
 
 /**
  * @param altTreating Информация об альтернативном элементе
- * @returns Название/имя объекта
+ * @return Название/имя объекта
  */
 export function getName(altTreating?: ITreating): string | null {
 	if (altTreating != null) return alternative.getName(altTreating);
@@ -57,7 +57,7 @@ export function getName(altTreating?: ITreating): string | null {
 
 /**
  * @param altTreating Информация об альтернативном элементе
- * @returns Статус подписки на объект
+ * @return Статус подписки на объект
  */
 export function isFollowing(altTreating?: ITreating): boolean | null {
 	if (altTreating != null) return alternative.isFollowing(altTreating);
@@ -71,7 +71,7 @@ export function isFollowing(altTreating?: ITreating): boolean | null {
 
 /**
  * @param altTreating Информация об альтернативном элементе
- * @returns Статус приватности объекта
+ * @return Статус приватности объекта
  */
 export function isPrivate(altTreating?: ITreating): boolean | null {
 	if (altTreating != null) return false;
@@ -96,7 +96,7 @@ export function isPrivate(altTreating?: ITreating): boolean | null {
 
 /**
  * @param altTreating Информация об альтернативном элементе
- * @returns ID объекта
+ * @return ID объекта
  */
 export function getID(altTreating?: ITreating) {
 	if (altTreating != null) return alternative.getID(altTreating);
@@ -106,21 +106,23 @@ export function getID(altTreating?: ITreating) {
 
 /**
  * @param altTreating Информация об альтернативном элементе
- * @returns Принадлежит ли объект текущему пользователю
+ * @return Принадлежит ли объект текущему пользователю
  */
 export function isOwn(altTreating?: ITreating) {
 	if (altTreating != null) return null;
 
 	switch (getContext().module) {
-		case SupportedModule.Profile: return profile.isOwn();
+		case SupportedModule.Profile:
+			return profile.isOwn();
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
 /**
  * @param altTreating Информация об альтернативном элементе
- * @returns Тип объекта
+ * @return Тип объекта
  */
 export function getType(altTreating?: ITreating): SupportedModule | null {
 	if (altTreating != null) return alternative.getType(altTreating);
@@ -134,13 +136,14 @@ export function getType(altTreating?: ITreating): SupportedModule | null {
 			return module as SupportedModule;
 		}
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
 /**
  * @param altTreating Информация об альтернативном элементе
- * @returns Переключатель уведомлений
+ * @return Переключатель уведомлений
  */
 export function getNotificationsToggler(altTreating?: ITreating) {
 	if (altTreating != null) {
@@ -157,7 +160,8 @@ export function getNotificationsToggler(altTreating?: ITreating) {
 			return profile.getNotificationsToggler();
 		}
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
@@ -215,21 +219,20 @@ export interface IFullContext {
 /**
  * Представляет собой неполный контекст
  */
-export type PartialContext =
-	Nullable<Pick<IFullContext, keyof Omit<IFullContext, "useNotifications">>>
-	& Pick<IFullContext, "useNotifications">;
+export type PartialContext = Nullable<
+	Pick<IFullContext, keyof Omit<IFullContext, "useNotifications">>
+> &
+	Pick<IFullContext, "useNotifications">;
 
 /**
  * @param altTreating Информация об элементе, для которого нужно получить
  * информацию
- * @returns Вся информация о текущем паблике, группе или пользователе из
+ * @return Вся информация о текущем паблике, группе или пользователе из
  * контекста страница
  */
-export function getFullContext(
-	altTreating?: ITreating,
-): PartialContext {
-	const useNotifications = getNotificationsToggler(altTreating)
-		?? createDummyTogglerHook();
+export function getFullContext(altTreating?: ITreating): PartialContext {
+	const useNotifications =
+		getNotificationsToggler(altTreating) ?? createDummyTogglerHook();
 
 	return {
 		type: getType(altTreating),

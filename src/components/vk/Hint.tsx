@@ -33,26 +33,27 @@ const HINT_TOOLTIP_SLIDE = 10;
 
 /**
  * @param props Параметры элемента подсказки
- * @returns Элемент подсказки
+ * @return Элемент подсказки
  */
-export function Hint({ style, className, hintOptions, text }: IHintProps) {
-	const tooltipOptions = useMemo(() => ({
-		text,
-		dir: VK.TooltipDirection.Auto,
-		center: true,
-		className,
-		shift: HINT_TOOLTIP_SHIFT,
-		slide: HINT_TOOLTIP_SLIDE,
-		...hintOptions,
-	}), [className, hintOptions, text]);
+export function Hint(props: IHintProps) {
+	const { style, className, hintOptions, text } = props;
+
+	const tooltipOptions = useMemo(
+		() => ({
+			text,
+			dir: VK.TooltipDirection.Auto,
+			center: true,
+			className,
+			shift: HINT_TOOLTIP_SHIFT,
+			slide: HINT_TOOLTIP_SLIDE,
+			...hintOptions,
+		}),
+		[className, hintOptions, text],
+	);
 
 	return (
 		<Tooltip opts={tooltipOptions}>
-			<span
-				className="hint_icon"
-				style={style}
-				tabIndex={0}
-			/>
+			<span className="hint_icon" style={style} tabIndex={0} />
 		</Tooltip>
 	);
 }

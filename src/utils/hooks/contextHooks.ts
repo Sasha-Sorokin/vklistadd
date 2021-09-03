@@ -6,7 +6,7 @@ import { TranslationContext } from "@components/contexts/TranslationContext";
 /**
  * Хук для использования текущего объекта из контекста
  *
- * @returns Текущий объект, для которого создан бокс
+ * @return Текущий объект, для которого создан бокс
  */
 export function useTarget() {
 	return useContext(TargetContext);
@@ -15,7 +15,7 @@ export function useTarget() {
 /**
  * Хук для использования текущего контекста бокса
  *
- * @returns Текущий контекст бокса
+ * @return Текущий контекст бокса
  */
 export function useBoxDetail() {
 	return useContext(BoxContext);
@@ -24,7 +24,7 @@ export function useBoxDetail() {
 /**
  * Хук для использование основных контекстов бокса (кроме переводов)
  *
- * @returns Массив из: контекста бокса и текущем объекте
+ * @return Массив из: контекста бокса и текущем объекте
  */
 export function useBoxContexts() {
 	const detail = useBoxDetail();
@@ -36,7 +36,7 @@ export function useBoxContexts() {
 /**
  * Алиас для `useContext(TranslationContext)`
  *
- * @returns Текущие переводы
+ * @return Текущие переводы
  */
 export function useTranslations() {
 	return useContext(TranslationContext);
@@ -46,7 +46,7 @@ export function useTranslations() {
  * Хук для использования конкретной ветви из контекста перевода
  *
  * @param tree Название ветви перевода
- * @returns Содержимое ветви
+ * @return Содержимое ветви
  */
 export function useTranslation<Key extends keyof ITranslation>(tree: Key) {
 	const translation = useTranslations();

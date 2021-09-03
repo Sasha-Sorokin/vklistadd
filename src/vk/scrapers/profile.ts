@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { elem, decodeDOMString, childrenOf } from "@utils/dom";
 import { getContext } from "./utils";
 import { findWithCallback, createTogglerHook } from "./utils/notifications";
@@ -15,12 +14,13 @@ interface IProfileContext {
 		/**
 		 * Ссылка на объект (пользователя)
 		 */
-		loc: string;
+		loc?: string;
 
 		/**
 		 * ID пользователя
 		 */
-		"user_id": number;
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		user_id: number;
 
 		/**
 		 * Имя страницы для отображения на кнопке «Назад»
@@ -31,7 +31,7 @@ interface IProfileContext {
 }
 
 /**
- * @returns Статус подписки на пользователя
+ * @return Статус подписки на пользователя
  */
 export function isFollowing(): boolean | null {
 	const statusElement = elem("#friend_status");
@@ -50,7 +50,7 @@ export function isFollowing(): boolean | null {
 }
 
 /**
- * @returns Является ли страница пользователя закрытой
+ * @return Является ли страница пользователя закрытой
  */
 export function isPrivate(): boolean | null {
 	// Весьма просто - смотрим, есть ли затворка
@@ -58,20 +58,20 @@ export function isPrivate(): boolean | null {
 }
 
 /**
- * @returns Ссылка на страницу пользователя
+ * @return Ссылка на страницу пользователя
  */
 export function getLink(): string | null {
 	const ctx = getContext<IProfileContext>();
 
-	const { loc, user_id } = ctx.options;
+	const { loc, user_id: userId } = ctx.options;
 
 	if (loc != null) return `/${loc}`;
 
-	return `/id${user_id}`;
+	return `/id${userId}`;
 }
 
 /**
- * @returns Принадлежит ли страница текущему пользователю
+ * @return Принадлежит ли страница текущему пользователю
  */
 export function isOwn(): boolean | null {
 	const topProfileLink = elem<HTMLAnchorElement>(".top_profile_link");
@@ -82,7 +82,7 @@ export function isOwn(): boolean | null {
 }
 
 /**
- * @returns Ссылка на аватарку страницы
+ * @return Ссылка на аватарку страницы
  */
 export function getIcon(): string | null {
 	// 1. Попробуем достать аватарку из поста на стене
@@ -103,7 +103,7 @@ export function getIcon(): string | null {
 }
 
 /**
- * @returns Имя страницы
+ * @return Имя страницы
  */
 export function getName(): string | null {
 	return decodeDOMString(getContext<IProfileContext>().options.back);
@@ -116,7 +116,7 @@ type OptionalHook = NotificationsTogglerHook | null;
 const NOTIFICATIONS_TOGGLERS = new WeakMap<Context, OptionalHook>();
 
 /**
- * @returns Переключатель уведомлений
+ * @return Переключатель уведомлений
  */
 export function getNotificationsToggler(): OptionalHook {
 	const context = getContext();

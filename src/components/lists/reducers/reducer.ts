@@ -34,7 +34,7 @@ interface IListsState {
  *
  * @param state Текущее состояние
  * @param action Предпринимаемое действие
- * @returns Состояние после выполнения действия
+ * @return Состояние после выполнения действия
  */
 export function listsReducer(
 	state: Readonly<IListsState>,
@@ -60,8 +60,7 @@ export function listsReducer(
 			const { invoker, target } = action;
 			const { lastInvoker, lastTarget } = state;
 
-			const noChanges = invoker === lastInvoker
-				&& target === lastTarget;
+			const noChanges = invoker === lastInvoker && target === lastTarget;
 
 			if (noChanges) return state;
 
@@ -74,7 +73,8 @@ export function listsReducer(
 			};
 		}
 
-		default: return { ...state };
+		default:
+			return { ...state };
 	}
 }
 
@@ -85,7 +85,7 @@ const DEFAULT_STATE = Object.freeze({
 /**
  * Хук для использования редьюсера загрузчика списков
  *
- * @returns Состояние редьюсера и функция выполнения действия
+ * @return Состояние редьюсера и функция выполнения действия
  */
 export function useLoaderReducer() {
 	return useReducer(listsReducer, DEFAULT_STATE);

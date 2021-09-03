@@ -6,7 +6,7 @@ import { c } from "@utils/fashion";
 import { MARGIN_RESET, ERROR_MULTILINE } from "@common/css";
 
 /**
- * @returns Блок с предупреждением о том, что приватности текущего объекта
+ * @return Блок с предупреждением о том, что приватности текущего объекта
  */
 export function TargetPrivateWarning() {
 	const translation = useTranslation("privateWarning");
@@ -28,7 +28,8 @@ export function TargetPrivateWarning() {
 				return translation.profile;
 			}
 
-			default: return null;
+			default:
+				return null;
 		}
 	})();
 

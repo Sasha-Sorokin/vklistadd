@@ -11,21 +11,25 @@ export interface ISeparatorProps {
 	noMargin?: boolean;
 }
 
-const STYLE = toStyleCombiner({
-	noMargin: {
-		margin: "0",
+const STYLE = toStyleCombiner(
+	{
+		noMargin: {
+			margin: "0",
+		},
 	},
-}, {
-	separator: "top_profile_sep",
-});
+	{
+		separator: "top_profile_sep",
+	},
+);
 
 /**
- * @returns Разделитель
+ * @param props Свойства разделителя
+ * @return Разделитель
  */
-export function Separator({ noMargin }: ISeparatorProps) {
+export function Separator(props: ISeparatorProps) {
+	const { noMargin } = props;
+
 	return (
-		<div
-			className={STYLE("separator", "noMargin", noMargin ?? false)}
-		/>
+		<div className={STYLE("separator", "noMargin", noMargin ?? false)} />
 	);
 }

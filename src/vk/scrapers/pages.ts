@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { elem, childrenOf } from "@utils/dom";
 import { getContext } from "./utils";
 import { SupportedModule } from "./types";
@@ -21,7 +20,7 @@ interface IPublicContext {
 		/**
 		 * Ссылка на паблик
 		 */
-		// eslint-disable-next-line @typescript-eslint/camelcase
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		public_link: string;
 	};
 }
@@ -42,13 +41,13 @@ interface IGroupContext {
 		/**
 		 * ID группы
 		 */
-		// eslint-disable-next-line @typescript-eslint/camelcase
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		group_id: number;
 	};
 }
 
 /**
- * @returns Статус подписки на группу/паблик
+ * @return Статус подписки на группу/паблик
  */
 export function isFollowing(): boolean | null {
 	const { module } = getContext();
@@ -62,12 +61,13 @@ export function isFollowing(): boolean | null {
 			return elem(".page_actions_btn") != null;
 		}
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
 /**
- * @returns Статус закрытости группы
+ * @return Статус закрытости группы
  */
 export function isPrivate(): boolean | null {
 	// Смотрим на сообщение о закрытости группы
@@ -75,7 +75,7 @@ export function isPrivate(): boolean | null {
 }
 
 /**
- * @returns Ссылка на группу/паблик
+ * @return Ссылка на группу/паблик
  */
 export function getLink(): string | null {
 	const { module } = getContext();
@@ -86,19 +86,22 @@ export function getLink(): string | null {
 		}
 
 		case SupportedModule.Group: {
-			const { options: { loc, group_id } } = getContext<IGroupContext>();
+			const {
+				options: { loc, group_id: groupId },
+			} = getContext<IGroupContext>();
 
 			if (loc != null) return `/${loc}`;
 
-			return `/club${group_id}`;
+			return `/club${groupId}`;
 		}
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
 /**
- * @returns Ссылка на иконку группы/паблика
+ * @return Ссылка на иконку группы/паблика
  */
 export function getIcon(): string | null {
 	// 1. Попытаемся забрать аватарку из шапки
@@ -111,9 +114,7 @@ export function getIcon(): string | null {
 
 	// 2. Ищем пост от имени группы / паблика
 
-	const postAvatar = elem<HTMLImageElement>(
-		".post.own img.post_img",
-	);
+	const postAvatar = elem<HTMLImageElement>(".post.own img.post_img");
 
 	if (postAvatar != null) return postAvatar.src;
 
@@ -131,7 +132,7 @@ export function getIcon(): string | null {
 }
 
 /**
- * @returns Название группы/паблика
+ * @return Название группы/паблика
  */
 export function getName(): string | null {
 	return elem<HTMLHeadingElement>("h1.page_name")?.textContent ?? null;
@@ -144,7 +145,7 @@ type OptionalToggler = NotificationsTogglerHook | null;
 const NOTIFICATIONS_TOGGLERS = new WeakMap<Context, OptionalToggler>();
 
 /**
- * @returns Переключатель уведомлений
+ * @return Переключатель уведомлений
  */
 export function getNotificationsToggler(): NotificationsTogglerHook | null {
 	const context = getContext();

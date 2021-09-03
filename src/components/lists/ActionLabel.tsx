@@ -7,7 +7,7 @@ import { useBoxDetail, useTranslation } from "@utils/hooks";
 type ContextType = keyof ITranslation["actionLabel"]["context"];
 
 /**
- * @returns Надпись, призывающая к действию — добавлению объекта в списки
+ * @return Надпись, призывающая к действию — добавлению объекта в списки
  */
 export function ActionLabel() {
 	const detail = useBoxDetail();
@@ -23,29 +23,33 @@ export function ActionLabel() {
 
 	const { invoker, context } = detail;
 
-	const reference = invoker != null
-		? invoker.subType
-		: (context as IModuleContext).module;
+	const reference =
+		invoker != null ? invoker.subType : (context as IModuleContext).module;
 
-	const text = byContext(((): ContextType => {
-		switch (reference) {
-			case SupportedModule.Group: return "group";
-			case SupportedModule.Profile: return "profile";
-			case SupportedModule.Public: return "public";
+	const text = byContext(
+		((): ContextType => {
+			switch (reference) {
+				case SupportedModule.Group:
+					return "group";
+				case SupportedModule.Profile:
+					return "profile";
+				case SupportedModule.Public:
+					return "public";
 
-			default: {
-				switch (invoker?.kind) {
-					case TreatingKind.Bookmark: return "bookmark";
+				default: {
+					switch (invoker?.kind) {
+						case TreatingKind.Bookmark:
+							return "bookmark";
 
-					default: break;
+						default:
+							break;
+					}
+
+					return "other";
 				}
-
-				return "other";
 			}
-		}
-	})());
-
-	if (text == null) return null;
+		})(),
+	);
 
 	return <div className={DEFAULT_MARGIN}>{text}</div>;
 }

@@ -5,7 +5,7 @@ export const LISTS_LOADED = "LISTS_LOADED";
 
 /**
  * @param lists Новый объект списков
- * @returns Действие после загрузки списков
+ * @return Действие после загрузки списков
  */
 export function listsLoaded(lists: ILists | null) {
 	return {
@@ -17,7 +17,7 @@ export function listsLoaded(lists: ILists | null) {
 export const LOAD_FAILED = "LOAD_FAILED";
 
 /**
- * @returns Действие после ошибки загрузки списков
+ * @return Действие после ошибки загрузки списков
  */
 export function loadFailure() {
 	return { type: LOAD_FAILED } as const;
@@ -28,7 +28,7 @@ export const INVOKER_CHANGE = "INVOKER_CHANGE";
 /**
  * @param target Новый объект
  * @param invoker Новый альтернативный элемент
- * @returns Действие по изменению текущего объекта и альтернативного элемента
+ * @return Действие по изменению текущего объекта и альтернативного элемента
  */
 export function targetChange(target?: PartialContext, invoker?: ITreating) {
 	return {

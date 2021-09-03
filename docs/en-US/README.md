@@ -43,7 +43,7 @@ This script doesn't add any applications on your behalf and uses only internal
 site's APIs. We also trying not to send excessive requests, when it's
 unnecessary (e.g. when you reopen the same window).
 
-We cannot give any warranties, though, so you are using this at your risk: 
+We cannot give any warranties, though, so you are using this at your risk:
 though low chances, but if VK changes something, this script may break some
 of the site's function, but you can always disable or uninstall it.
 
@@ -52,7 +52,7 @@ process a few times simpler.
 
 ## 🐞 Bug reports
 
-If script won't work correctly or you have any questions, please use 
+If script won't work correctly or you have any questions, please use
 [Issues section →][issues]
 
 [issues]: https://github.com/Sasha-Sorokin/vklistadd/issues
@@ -62,15 +62,15 @@ If script won't work correctly or you have any questions, please use
 Writting these scripts uses time and strength. You can show your appreciation
 to the author through the following methods:
 
-- 🌟 Leave a star on this repository, so more people can see it
-- 💬 Share this script with your VK friends: it could find some use among them
-- 🧩 See some of my other scripts:
-  - [Yandex.Music MSA integration][msa1]: integrate music closer to the system
-  - [Same integration, but for VK][msa2]
-  - [VK Tabby Tabs][tabs]: show news feed lists as tabs
-- 💸 Support me by sending [a few cents via Yandex.Money][yamoney]
+-   🌟 Leave a star on this repository, so more people can see it
+-   💬 Share this script with your VK friends: it could find some use among them
+-   🧩 See some of my other scripts:
+    -   [Yandex.Music MSA integration][msa1]: integrate music closer to the system
+    -   [Same integration, but for VK][msa2]
+    -   [VK Tabby Tabs][tabs]: show news feed lists as tabs
+-   💸 Support me by sending [a few cents via Yandex.Money][yamoney]
 
-[msa1]:https://github.com/Sasha-Sorokin/ymusic_msa
+[msa1]: https://github.com/Sasha-Sorokin/ymusic_msa
 [msa2]: https://github.com/Sasha-Sorokin/vkaintegra
 [tabs]: https://github.com/Sasha-Sorokin/vktabbytabs
 [yamoney]: https://money.yandex.ru/to/410014746904198
@@ -79,37 +79,42 @@ to the author through the following methods:
 
 This project uses some cool things, such as:
 
-- [Minimal React-like library — Preact][preact]
+-   [Minimal React-like library — Preact][preact]
 
-  Thanks to this library we can have a quick and responsive UI and writing
-  it becomes a big joy (no sarcasm indeed, this is really cool!).
-- [simplestyle-js to style our UI components][simplestyle]
+    Thanks to this library we can have a quick and responsive UI and writing
+    it becomes a big joy (no sarcasm indeed, this is really cool!).
 
-  We tried to replicate the exact look of VK UI in our components so it would
-  more natively integrate in your VK experience. By using simplestyle we can
-  do it a lot faster, yet comfortable without much of the code.
-- [Strictness of TypeScript][typescript]
+-   [simplestyle-js to style our UI components][simplestyle]
 
-  TypeScript adds defenition of types to JavaScript and thanks to this, we are
-  able to catch many mistakes while building the script and writing code
-  becomes a lot easier.
-- [Rollup.js bundler][rollup]
+    We tried to replicate the exact look of VK UI in our components so it would
+    more natively integrate in your VK experience. By using simplestyle we can
+    do it a lot faster, yet comfortable without much of the code.
 
-  Rollup allows us to split codebase into multiple components and moudles and
-  then compile all of it into a single file — the script you would use. It's
-  not just bundles that all, but also converts icons and texts for us.
-- [Many other libraries — you can't count them all!][package]
+-   [Strictness of TypeScript][typescript]
 
-  Thanks to open source, creating such things because a very interesting and
-  creative, yet easy task. Thanks to everyone who works on open source <3
-- And last of all, of course — [to VK][vk_about]
+    TypeScript adds defenition of types to JavaScript and thanks to this, we are
+    able to catch many mistakes while building the script and writing code
+    becomes a lot easier.
 
-  Thank you for half-exposed API, specially or not. You give other people a
-  possibilty to infinitely extend your site, help other users and grow your
-  skills by doing so.
+-   [Rollup.js bundler][rollup]
 
-  VK is currently hiring developers, though highly probably with Russian
-  knowledge only. [See job openings here →][vk_jobs]
+    Rollup allows us to split codebase into multiple components and moudles and
+    then compile all of it into a single file — the script you would use. It's
+    not just bundles that all, but also converts icons and texts for us.
+
+-   [Many other libraries — you can't count them all!][package]
+
+    Thanks to open source, creating such things because a very interesting and
+    creative, yet easy task. Thanks to everyone who works on open source <3
+
+-   And last of all, of course — [to VK][vk_about]
+
+    Thank you for half-exposed API, specially or not. You give other people a
+    possibilty to infinitely extend your site, help other users and grow your
+    skills by doing so.
+
+    VK is currently hiring developers, though highly probably with Russian
+    knowledge only. [See job openings here →][vk_jobs]
 
 [preact]: https://preactjs.com/
 [simplestyle]: https://github.com/benduran/simplestyle

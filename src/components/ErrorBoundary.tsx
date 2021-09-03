@@ -13,7 +13,7 @@ const LINK_PLACEHOLDER = `{${Math.random()}`;
  * Обрабатывает текст ошибки и возвращает его в параграфах
  *
  * @param text Текст ошибки в текущей локализации
- * @returns Дочернее содержимое контейнера ошибки
+ * @return Дочернее содержимое контейнера ошибки
  */
 function wrapText(text: string) {
 	let link: ComponentChild;
@@ -23,12 +23,14 @@ function wrapText(text: string) {
 
 		const linkText = text.slice(lPos, text.indexOf(TAG, lPos));
 
-		link = <a
-			href="__report_link__"
-			target="_blank"
-			rel="noreferrer"
-			children={linkText}
-		/>;
+		link = (
+			<a
+				href="__report_link__"
+				target="_blank"
+				rel="noreferrer"
+				children={linkText}
+			/>
+		);
 
 		text = text.replace(`${TAG}${linkText}${TAG}`, LINK_PLACEHOLDER);
 	}
@@ -60,7 +62,7 @@ function wrapText(text: string) {
 }
 
 /**
- * Свойства компонента обработки ошибочного поведения
+ * Представляет собой свойства компонента обработки ошибочного поведения
  */
 export interface IErrorBoundaryProps {
 	/**
@@ -70,23 +72,30 @@ export interface IErrorBoundaryProps {
 }
 
 /**
- * @returns Компонент, который при ошибочном поведении одного из дочерних
+ * @param props Свойства компонента обработки ошибочного поведения
+ * @return Компонент, который при ошибочном поведении одного из дочерних
  * компонентов перестаёт отрисовывать дерево дальше и вместо него отображает
  * ошибку
  */
-export function ErrorBoundary({ children }: IErrorBoundaryProps) {
+export function ErrorBoundary(props: IErrorBoundaryProps) {
+	const { children } = props;
+
 	// Из-за ошибки в типах Preact, мы не можем использовать обработчик
 	// с параметром ошибки: https://github.com/preactjs/preact/pull/2397.
 	// Чтобы обойти это, объявляем наш обработчик как never
 	const [error] = useErrorBoundary(((err: Error): void => {
 		log(
-			"error", "%cError boundary caught an error%c",
-			"font-weight: bold;", "",
+			"error",
+			"%cError boundary caught an error%c",
+			"font-weight: bold;",
+			"",
 			err,
 		);
 	}) as never);
 
-	const { errorBoundary: { text } } = getVKTranslation();
+	const {
+		errorBoundary: { text },
+	} = getVKTranslation();
 
 	if (error != null) {
 		return (

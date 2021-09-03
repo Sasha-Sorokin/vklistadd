@@ -1,14 +1,14 @@
 import { h } from "preact";
 import { useTarget, useTranslations } from "@utils/hooks";
 import { toClassName } from "@utils/fashion";
-import { EditPen } from "@/assets";
 import { useCallback, useMemo } from "preact/hooks";
 import { editList } from "@vk/helpers/newsfeed";
 import { IList } from "@vk/api/lists";
 import { Title } from "@components/vk/Tooltip";
+import { ICON_PEN } from "@/assets";
 
 /**
- * Свойства кнопки редактирования списка
+ * Представляет собой свойства кнопки редактирования списка
  */
 interface IEditListButtonProps {
 	/**
@@ -33,9 +33,11 @@ export const EDIT_BUTTON_CLASS = toClassName("editListButton", {
 });
 
 /**
- * @returns Кнопка редактирования списка
+ * @param props Свойства кнопки редактирования списка
+ * @return Кнопка редактирования списка
  */
-export function EditListButton({ list }: IEditListButtonProps) {
+export function EditListButton(props: IEditListButtonProps) {
+	const { list } = props;
 	const translation = useTranslations();
 	const { text, icon } = translation.editListButton;
 	const target = useTarget();
@@ -52,7 +54,7 @@ export function EditListButton({ list }: IEditListButtonProps) {
 			<button
 				className={EDIT_BUTTON_CLASS}
 				onClick={onClick}
-				children={<img src={EditPen.dataURL} alt={icon} />}
+				children={<img src={ICON_PEN.dataURL} alt={icon} />}
 			/>
 		</Title>
 	);

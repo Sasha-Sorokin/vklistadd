@@ -18,7 +18,7 @@ const TOOLTIP_HIDE_TIME = 5000;
  * @param context Объект, для которого требуется создать список
  * @param translation Объект с текущими переводами
  * @param preSelect Должен ли элемент быть выбран заранее
- * @returns Успешность операции
+ * @return Успешность операции
  */
 export function editList(
 	listId: number,
@@ -30,7 +30,10 @@ export function editList(
 
 	if (id == null || icon == null || name == null || link == null) {
 		log("warn", "[createList] Not sufficient data", {
-			id, icon, name, link,
+			id,
+			icon,
+			name,
+			link,
 		});
 
 		return false;
@@ -51,7 +54,9 @@ export function editList(
 
 	const target = { id, icon, name, link };
 
-	const { listCreation: { highlightTooltip } } = translation;
+	const {
+		listCreation: { highlightTooltip },
+	} = translation;
 
 	const tooltipText = highlightTooltip.replace("{}", name);
 
@@ -97,10 +102,7 @@ export function editList(
 
 			getWindow().showTitle(avatarElem, tooltipText, undefined, {
 				init(tooltip) {
-					setTimeout(
-						() => tooltip.hide(),
-						TOOLTIP_HIDE_TIME,
-					);
+					setTimeout(() => tooltip.hide(), TOOLTIP_HIDE_TIME);
 				},
 			});
 		}

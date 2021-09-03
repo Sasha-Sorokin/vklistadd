@@ -28,20 +28,22 @@ const LISTS_LIST_CLASS = toClassName("listsList", {
 });
 
 /**
- * @returns Компонент, генерирующий флажки для каждого переданного списка
+ * @param props Свойства компонента рендера списка
+ * @return Компонент, генерирующий флажки для каждого переданного списка
  */
-export function ListsRender({ lists, disabled }: IListsRenderProps) {
+export function ListsRender(props: IListsRenderProps) {
+	const { lists, disabled } = props;
 	const { empty } = useTranslation("lists");
 
 	if (lists.length === 0) {
 		return <div className={GRAY_NOTICE}>{empty}</div>;
 	}
 
-	const rows = lists.map((_) => <ListRow list={_} disabled={disabled} />);
-
 	return (
 		<ul className={LISTS_LIST_CLASS}>
-			{rows}
+			{lists.map((list) => (
+				<ListRow list={list} disabled={disabled} key={list.id} />
+			))}
 		</ul>
 	);
 }

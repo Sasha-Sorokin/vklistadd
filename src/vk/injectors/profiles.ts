@@ -2,9 +2,7 @@ import { elem, insertBefore } from "@utils/dom";
 import { getRoaming } from "@components/roaming/ProfileMenuItem";
 import { setupInitInterceptors } from "@utils/interceptors";
 
-const PAGE_EXTRA_ACTIONS = ".page_extra_actions_wrap";
-const ACTIONS_MENU_INNER = ".page_actions_inner";
-const CONTAINER = `${PAGE_EXTRA_ACTIONS} > ${ACTIONS_MENU_INNER}`;
+const CONTAINER = ".profile_actions > .page_actions_expanded" as const;
 
 const MOUNT_MENU_ITEM = getRoaming();
 
@@ -14,12 +12,19 @@ const MOUNT_MENU_ITEM = getRoaming();
 function mountMenuItem() {
 	const container = elem(CONTAINER);
 
-	const firstItem = container?.firstElementChild;
+	if (container == null) return;
 
-	if (firstItem == null) return;
+	let referenceElement = elem(
+		".PageActionCellSeparator",
+		container,
+	)?.nextElementSibling;
+
+	referenceElement ??= container.firstElementChild?.nextElementSibling;
+
+	if (referenceElement == null) return;
 
 	MOUNT_MENU_ITEM((menuItem) => {
-		insertBefore(firstItem, menuItem);
+		insertBefore(referenceElement!, menuItem);
 	}, undefined);
 }
 

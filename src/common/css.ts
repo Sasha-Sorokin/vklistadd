@@ -1,4 +1,4 @@
-import { style, c } from "@utils/fashion";
+import { c, style } from "@utils/fashion";
 
 export const SHARED_STYLES = Object.freeze(
 	style({

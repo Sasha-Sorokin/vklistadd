@@ -6,7 +6,7 @@ import { ERROR_MESSAGES, log } from "./debug";
  *
  * @param selectors Селектор или селекторы, по которым ищется элемент
  * @param scope Элемент в котором производится поиск элемента
- * @returns Найденный элемент
+ * @return Найденный элемент
  */
 export function elem<E extends Element = Element>(
 	selectors: string,
@@ -20,7 +20,7 @@ export function elem<E extends Element = Element>(
  *
  * @param selectors Селектор или селекторы, по которым отбираются элементы
  * @param scope Элемент в котором производится поиск элемента
- * @returns Отобранные элементы
+ * @return Отобранные элементы
  */
 export function elems<E extends Element = Element>(
 	selectors: string,
@@ -39,7 +39,7 @@ export function elems<E extends Element = Element>(
 export function insertBefore(referenceNode: Node, newNode: Node) {
 	const { parentNode } = referenceNode;
 
-	if (parentNode == null) throw new Error(ERROR_MESSAGES.NO_PARENT_NODE);
+	if (parentNode == null) throw new Error(ERROR_MESSAGES.noParentNode);
 
 	parentNode.insertBefore(newNode, referenceNode);
 }
@@ -48,7 +48,7 @@ export function insertBefore(referenceNode: Node, newNode: Node) {
  * Преобразует список DOM узлов в массив
  *
  * @param nodeList Список, который нужно преобразовать
- * @returns Массив узлов из переданного списка
+ * @return Массив узлов из переданного списка
  */
 export function asArray<E extends Element = Element>(
 	nodeList: NodeListOf<E> | HTMLCollectionOf<E>,
@@ -58,18 +58,17 @@ export function asArray<E extends Element = Element>(
 
 /**
  * @param value Значение, для которого нужно убрать кавычки
- * @returns `value` без кавычек
+ * @return `value` без кавычек
  */
 export function unwrapCSSValue(value: string) {
 	return /^"(.+)"$|^'(.+)'$/.exec(value)?.[1] ?? value;
 }
 
-const domParser = new DOMParser();
+const DOM_PARSER = new DOMParser();
 
 /**
  * @param input DOM строка, которую требуется разобрать
- * @returns Unicode вариант строки `input`
- *
+ * @return Unicode вариант строки `input`
  * @example
  * ```js
  * decodeDOMString('&copy; Great Inc., 2020');
@@ -77,14 +76,14 @@ const domParser = new DOMParser();
  * ```
  */
 export function decodeDOMString(input: string) {
-	const { documentElement } = domParser.parseFromString(input, "text/html");
+	const { documentElement } = DOM_PARSER.parseFromString(input, "text/html");
 
 	return documentElement.textContent;
 }
 
 /**
  * @param element Элемент, дочерние элементы которого необходимо вернуть
- * @returns Массив дочерних элементов `element` или null
+ * @return Массив дочерних элементов `element` или null
  */
 export function childrenOf<E extends Element>(element?: Element | null) {
 	return element == null
@@ -99,13 +98,12 @@ export type ParentMatchFunction = (e: HTMLElement) => boolean;
  * родительский элемент, который удовлетворяет `search`
  *
  * @param element Дочерний элемент, с которого начинается поиск
- * @param search Поиск: CSS селектор или функция, которой передаётся элемент
- *
- * @returns Первый родительский элемент, удовлетворяющий `search`, либо `null`
+ * @param match Поиск: CSS селектор или функция, которой передаётся элемент
+ * @return Первый родительский элемент, удовлетворяющий `search`, либо `null`
  */
 export function findMatchingParent<E extends HTMLElement>(
 	element: HTMLElement,
-	search: string | ParentMatchFunction,
+	match: string | ParentMatchFunction,
 ): E | null {
 	let currentParent: HTMLElement | null = element;
 
@@ -116,18 +114,18 @@ export function findMatchingParent<E extends HTMLElement>(
 		return currentParent;
 	};
 
-	const shallExec = typeof search === "function";
+	const isMatchFunction = typeof match === "function";
 
 	while (nextParent() != null) {
-		if (shallExec) {
-			if ((search as ParentMatchFunction)(currentParent)) {
+		if (isMatchFunction) {
+			if (match(currentParent)) {
 				return currentParent as E;
 			}
 
 			continue;
 		}
 
-		if (currentParent.matches(search as string)) {
+		if (currentParent.matches(match)) {
 			return currentParent as E;
 		}
 	}
@@ -155,13 +153,12 @@ interface IObservation {
 const OBSERVATIONS = new WeakMap<HTMLElement, Readonly<IObservation>>();
 
 // eslint-disable-next-line @typescript-eslint/no-extra-parens
-export const OBSERVE_OPTIONS_ATTRIBUTES: Readonly<MutationObserverInit> = (
+export const OBSERVE_OPTIONS_ATTRIBUTES: Readonly<MutationObserverInit> =
 	Object.freeze({
 		subtree: false,
 		childList: false,
 		attributes: true,
-	})
-);
+	});
 
 /**
  * Время в миллисекундах до того, как наблюдатель будет устранён
@@ -179,7 +176,7 @@ const CURRENT_DESTROY_TIMERS = new WeakMap<MutationObserver, number>();
  *
  * @param element Элемент, за которым требуется вести наблюдение
  * @param options Опции для наблюдателя
- * @returns Объект с методами для добавления обработчиков
+ * @return Объект с методами для добавления обработчиков
  */
 export function observe(
 	element: HTMLElement,
@@ -219,15 +216,9 @@ export function observe(
 		};
 
 		const scheduleDestroy = () => {
-			const destroyTimer = setTimeout(
-				destroy,
-				BEFORE_OBSERVER_DESTROY,
-			);
+			const destroyTimer = setTimeout(destroy, BEFORE_OBSERVER_DESTROY);
 
-			CURRENT_DESTROY_TIMERS.set(
-				observer,
-				destroyTimer,
-			);
+			CURRENT_DESTROY_TIMERS.set(observer, destroyTimer);
 		};
 
 		observation = Object.freeze({

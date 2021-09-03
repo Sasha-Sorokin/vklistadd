@@ -1,6 +1,35 @@
-import { default as createStyle, ISimpleStyleRules } from "simplestyle-js";
-import { IHashMap } from "@common/types";
+import { createStyles, SimpleStyleRules } from "simplestyle-js";
+import { Properties } from "csstype";
 import { addUnique, isArray } from "./arrays";
+import { getWindow } from "./window";
+import { ready } from "./ready";
+
+let head: HTMLHeadElement | null = null;
+
+/**
+ * Возвращает HEAD элемент страницы
+ *
+ * @return HEAD элемент страницы
+ */
+function getHead() {
+	if (head == null) {
+		head = getWindow().document.head;
+	}
+
+	return head;
+}
+
+/**
+ * Добавляет STYLE элемент в головной (HEAD) элемент страницы
+ *
+ * @param stylesheet Таблица стилей, содержимое STYLE элемента
+ */
+function appendStyle(stylesheet: string) {
+	const style = document.createElement("style");
+	style.innerHTML = stylesheet;
+
+	ready(() => getHead().appendChild(style));
+}
 
 /**
  * На основе объекта со стилями генерирует и встраивает CSS, возвращая объект
@@ -9,12 +38,17 @@ import { addUnique, isArray } from "./arrays";
  * Это простой alias, чтобы не мучиться с редактированием некорректных импортов.
  * Всю работу со стилями проделывает библиотека `simplestyle-js`
  *
- * @param args Карта с базовыми названиями для классов со значением объекта
+ * @param styles Карта с базовыми названиями для классов со значением объекта
  * стилей в ВерблюжейНотации
- * @returns Карту, где уже вместо объектов стилей находятся их классы для
+ * @return Карту, где уже вместо объектов стилей находятся их классы для
  * дальнейшего использования в компонентах
  */
-export { default as style } from "simplestyle-js";
+export function style<S extends SimpleStyleRules>(styles: S) {
+	const { classes, stylesheet } = createStyles(styles, {});
+	// добавляем стили вручную только по окончанию загрузки страницы
+	appendStyle(stylesheet);
+	return classes;
+}
 
 /**
  * Представляет собой возможные типы класса
@@ -31,7 +65,7 @@ type ClassNamesToggles<ClassNames extends Prop> = {
 /**
  * Представляет собой название класса или readonly массив из них
  */
-type Droplet<ClassNames extends Prop> = ClassNames | (readonly ClassNames[]);
+type Droplet<ClassNames extends Prop> = ClassNames | readonly ClassNames[];
 
 /**
  * Представляет собой единичный аргумент функции `c`
@@ -46,16 +80,13 @@ type Drop<ClassNames extends Prop> =
 /**
  * Представляет собой readonly аргументы функции `c`
  */
-type DropArgs<ClassNames extends Prop = Prop> =
-	readonly (Drop<ClassNames>)[];
+type DropArgs<ClassNames extends Prop = Prop> = readonly Drop<ClassNames>[];
 
 /**
- * **C**ombine. Объединяет названия классов при определённых условиях
+ * Combine. Объединяет названия классов при определённых условиях
  *
  * @param names Название или объект с классами, либо условие
- *
- * @returns Объединённое название классов для которых выполнены заданные условия
- *
+ * @return Объединённое название классов для которых выполнены заданные условия
  * @example
  * // Аргументы:
  * c("post", "own", post.author.id === currentUser.id); // => "post own"
@@ -153,13 +184,12 @@ type ClassNamesMap<Keys extends Prop> = { [Key in Keys]: string };
  * Создаёт сопостовляющую функцию для вызова `c` на основе переданной карты
  *
  * @param map Карта, для которой необходимо создать функцию
- *
- * @returns Сопостовляющая функция, принимающая аргументы точно как `c`,
+ * @return
+ * Сопостовляющая функция, принимающая аргументы точно как `c`,
  * только вместо произвольных названий классов, принимает исключительно
  * названия свойств в карте названий классов, которые впоследствии будут
  * преобразованы в соответствующие свойствам классы и переданы функции `c` для
  * объединения.
- *
  * @example
  * ```ts
  * s(styles)("leftFloat", "clearfix");
@@ -182,9 +212,7 @@ export function s<Keys extends Prop>(map: ClassNamesMap<Keys>) {
 
 				case "object": {
 					if (isArray<Keys, true>(drop)) {
-						reversed.push(
-							drop.map((codename) => map[codename]),
-						);
+						reversed.push(drop.map((codename) => map[codename]));
 
 						continue;
 					}
@@ -212,26 +240,30 @@ export function s<Keys extends Prop>(map: ClassNamesMap<Keys>) {
 	};
 }
 
+type MappedStyles = Record<string, Properties | SimpleStyleRules>;
+
 /**
  * Создаёт стили и возвращает объединитель для них
  *
  * @param styles Карта стилей, которые необходимо создать
  * @param additions Дополнительные, ранее созданные стили, для использования
  * в объединителе. При коллизии имеет меньший приоритет, чем созданные стили.
- *
- * @returns Объединитель для созданных стилей
+ * @return Объединитель для созданных стилей
  */
 export function toStyleCombiner<
-	Styles extends IHashMap<ISimpleStyleRules<Styles>>,
-	Additions extends IHashMap<string> | undefined
->(
-	styles: Styles,
-	additions?: Additions,
-) {
-	return s<keyof Styles | keyof Additions>({
+	Styles extends MappedStyles,
+	Additions extends Record<string, string> | undefined,
+>(styles: Styles, additions?: Additions) {
+	type AllKeys =
+		| keyof Styles
+		| (Additions extends undefined ? never : keyof Additions);
+
+	const combined: Record<AllKeys, string> = {
 		...additions,
-		...createStyle(styles),
-	});
+		...style(styles),
+	};
+
+	return s<AllKeys>(combined);
 }
 
 /**
@@ -239,11 +271,13 @@ export function toStyleCombiner<
  *
  * @param keyName Кодовое название для использование в основе названия класса
  * @param styles Создаваемая карта стилей
- * @returns Название класса
+ * @return Название класса
  */
 export function toClassName(
 	keyName: string,
-	styles: ISimpleStyleRules<unknown>,
+	styles: Properties | SimpleStyleRules,
 ) {
-	return createStyle({ [keyName]: styles })[keyName];
+	const { classes } = createStyles({ [keyName]: styles });
+
+	return classes[keyName];
 }

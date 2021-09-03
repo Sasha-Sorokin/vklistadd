@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable @typescript-eslint/naming-convention */
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
 	namespace VK {
@@ -112,7 +112,7 @@ declare global {
 			/**
 			 * Обработчик попытки скрытия бокса
 			 *
-			 * @returns {boolean} Должен ли бокс закрыться
+			 * @return {boolean} Должен ли бокс закрыться
 			 */
 			onHideAttempt(): boolean;
 
@@ -227,7 +227,7 @@ declare global {
 			public abstract removeButtons(): MessageBox;
 
 			/**
-			 * @returns Текущие кнопки в нижней панели бокса
+			 * @return Текущие кнопки в нижней панели бокса
 			 */
 			public abstract get btns(): {
 				/**
@@ -241,7 +241,7 @@ declare global {
 			};
 
 			/**
-			 * @returns Отображается ли бокс на экране
+			 * @return Отображается ли бокс на экране
 			 */
 			public abstract isVisible(): boolean;
 
@@ -267,7 +267,7 @@ declare global {
 			public abstract destroy(): MessageBox;
 
 			/**
-			 * @returns Элемент для текста в футере
+			 * @return Элемент для текста в футере
 			 */
 			public abstract get controlsTextNode(): HTMLDivElement;
 		}
@@ -339,51 +339,8 @@ declare global {
 		}
 
 		type TooltipShift =
-			| (readonly [number, number])
-			| (readonly [number, number, number, number?]);
-
-		/**
-		 * Представляет собой объект подсказки
-		 */
-		interface ITooltipObject<
-			Elem extends Element,
-			Options extends Partial<ITooltipOptions<Elem>>
-		> {
-			/**
-			 * Элемент, для которого создавалась подсказка
-			 */
-			el: Elem;
-
-			/**
-			 * Опции, использованные при создании подсказки
-			 */
-			opts: Options;
-
-			/**
-			 * Отображает подсказку
-			 */
-			show(): void;
-
-			/**
-			 * Скрывает подсказку
-			 */
-			hide(): void;
-
-			/**
-			 * Уничтожает подсказку
-			 */
-			destroy(): void;
-
-			/**
-			 * Контейнер подсказки
-			 */
-			container: HTMLDivElement;
-
-			/**
-			 * Отображается ли подсказка на экране
-			 */
-			readonly shown: boolean;
-		}
+			| readonly [number, number]
+			| readonly [number, number, number, number?];
 
 		/**
 		 * Представляет собой опции для подсказок
@@ -444,6 +401,49 @@ declare global {
 			 * @param tooltip Объект подсказки
 			 */
 			init(tooltip: ITooltipObject<Elem, this>): void;
+		}
+
+		/**
+		 * Представляет собой объект подсказки
+		 */
+		interface ITooltipObject<
+			Elem extends Element,
+			Options extends Partial<ITooltipOptions<Elem>>,
+		> {
+			/**
+			 * Элемент, для которого создавалась подсказка
+			 */
+			el: Elem;
+
+			/**
+			 * Опции, использованные при создании подсказки
+			 */
+			opts: Options;
+
+			/**
+			 * Отображает подсказку
+			 */
+			show(): void;
+
+			/**
+			 * Скрывает подсказку
+			 */
+			hide(): void;
+
+			/**
+			 * Уничтожает подсказку
+			 */
+			destroy(): void;
+
+			/**
+			 * Контейнер подсказки
+			 */
+			container: HTMLDivElement;
+
+			/**
+			 * Отображается ли подсказка на экране
+			 */
+			readonly shown: boolean;
 		}
 
 		/**
@@ -531,11 +531,7 @@ declare global {
 			 * @param event Событие, вызвавшее переход
 			 * @param opts Опции навигации
 			 */
-			go(
-				url: string,
-				event?: Event | null,
-				opts?: INavigationOpts,
-			): void;
+			go(url: string, event?: Event | null, opts?: INavigationOpts): void;
 		}
 
 		/**
@@ -548,9 +544,7 @@ declare global {
 		 * 4. Ссылка на объект
 		 * 5. 1 если объект выбран, иначе 0
 		 */
-		type OListList = [
-			[number, string, string, string, 0 | 1],
-		];
+		type OListList = [[number, string, string, string, 0 | 1]];
 
 		/**
 		 * Представляет собой хэш карту выбранных элементов в OList компоненте
@@ -584,7 +578,6 @@ declare global {
 	/**
 	 * Представляет собой глобальную область видимости
 	 */
-	// eslint-disable-next-line @typescript-eslint/interface-name-prefix
 	interface Window {
 		/**
 		 * Конфигурация выбранного пользователем языка
@@ -639,7 +632,7 @@ declare global {
 			list: VK.OListList,
 			selected: VK.IOListSelections,
 			opts: unknown,
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		) => any;
 
 		/**
@@ -649,19 +642,19 @@ declare global {
 			/**
 			 * @example "Сохранить"
 			 */
-			"box_save": string;
+			box_save: string;
 			/**
 			 * @example "Отменить"
 			 */
-			"box_cancel": string;
+			box_cancel: string;
 			/**
 			 * @example "Произошла ошибка"
 			 */
-			"global_error_occured": string;
+			global_error_occured: string;
 			/**
 			 * @example "Изменения сохранены"
 			 */
-			"global_changes_saved": string;
+			global_changes_saved: string;
 		};
 
 		/**
@@ -684,7 +677,7 @@ declare global {
 		 * Исполняет скрипт в текущем контексте
 		 *
 		 * @param script JavaScript код, который нужно исполнить
-		 * @returns Результат исполнения скрипта
+		 * @return Результат исполнения скрипта
 		 */
 		eval(script: string): unknown;
 
@@ -745,22 +738,23 @@ declare global {
 		 * `pointer-events: none`. Элемент всё ещё получит события клика,
 		 * например, при использовании клавиатуры. Это следует учесть.
 		 */
-		disableEl(element: HTMLElement): void;
+		disableEl(this: void, element: HTMLElement): void;
 
 		/**
 		 * Убирает блокировку событий мыши у элемента, убирая
 		 * `pointer-events: none` из его стилей
 		 */
-		enableEl(element: HTMLElement): void;
+		enableEl(this: void, element: HTMLElement): void;
 
 		/**
 		 * Плавно скрывает элемент с экрана
 		 *
 		 * @param element Элемент, к которому применяется анимация
 		 * @param durationOrOptions Длительность или опции для анимации
-		 * @returns Запущенная анимация скрытия
+		 * @return Запущенная анимация скрытия
 		 */
 		fadeOut(
+			this: void,
 			element: HTMLElement,
 			durationOrOptions: number | VK.IAnimationOptions,
 		): VK.IAnimation;
@@ -770,9 +764,10 @@ declare global {
 		 *
 		 * @param element Элемент, к которому применяется анимация
 		 * @param durationOrOptions Длительнось или опции для анимации
-		 * @returns Запущенная анимация появления
+		 * @return Запущенная анимация появления
 		 */
 		fadeIn(
+			this: void,
 			element: HTMLElement,
 			durationOrOptions: number | VK.IAnimationOptions,
 		): VK.IAnimation;

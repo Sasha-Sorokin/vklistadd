@@ -19,7 +19,7 @@ const INDICATOR_STYLES = toClassName("inline", {
 const INDICATOR = c(dotsSize(4), INDICATOR_STYLES);
 
 /**
- * @returns Переключатель уведомлений
+ * @return Переключатель уведомлений
  */
 export function NotificationsToggle() {
 	const translation = useTranslation("notificationsStatus");
@@ -35,9 +35,11 @@ export function NotificationsToggle() {
 
 	const { isToggling, toggle } = notifications;
 
-	const progressIndicator = isToggling
-		? <Fragment><ProgressIndicator className={INDICATOR} /></Fragment>
-		: null;
+	const progressIndicator = isToggling ? (
+		<Fragment>
+			<ProgressIndicator className={INDICATOR} />
+		</Fragment>
+	) : null;
 
 	return (
 		<LinkButton onClick={toggle}>

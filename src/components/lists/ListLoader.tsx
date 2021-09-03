@@ -7,9 +7,9 @@ import { Separator } from "@components/vk/Separator";
 import { editList } from "@vk/helpers/newsfeed";
 import { c } from "@utils/fashion";
 import { getWindow } from "@utils/window";
-import { LabelColor } from "@/box/controlsLabel";
 import { MARGIN_RESET, ERROR_MULTILINE } from "@common/css";
 import { useBoxContexts, useTranslations } from "@utils/hooks";
+import { LabelColor } from "@/box/controlsLabel";
 import { useLoaderReducer } from "./reducers/reducer";
 import { ListsRender } from "./ListsRender";
 import { AddListButton } from "./AddListButton";
@@ -31,9 +31,10 @@ const PROGRESS_INDICATOR_SIZE = 6; // px / dot
 
 /**
  * @param props Свойства загрузчика
- * @returns Загрузчик списка для текущего контекста
+ * @return Загрузчик списка для текущего контекста
  */
-export function ListLoader({ disabled }: IListLoaderProps) {
+export function ListLoader(props: IListLoaderProps) {
+	const { disabled } = props;
 	const [$detail, target] = useBoxContexts();
 	const detail = $detail!;
 

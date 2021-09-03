@@ -7,7 +7,7 @@ import { toClassName } from "@utils/fashion";
 import { EditListButton, EDIT_BUTTON_CLASS } from "./EditListButton";
 
 /**
- * Представляет собой опции элемента списка
+ * Представляет собой свойства элемента списка
  */
 export interface IListRowProps {
 	/**
@@ -32,9 +32,11 @@ const LIST_ROW_CLASS = toClassName("listRow", {
 });
 
 /**
- * @returns Флажок для определённого списка
+ * @param props Свойства элемента списка
+ * @return Флажок для определённого списка
  */
-export function ListRow({ list, disabled }: IListRowProps) {
+export function ListRow(props: IListRowProps) {
+	const { list, disabled } = props;
 	const listSelected = list.isSelected();
 
 	const update = useForceUpdate();

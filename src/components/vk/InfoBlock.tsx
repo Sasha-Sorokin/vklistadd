@@ -34,43 +34,46 @@ export interface IInfoBlockProps {
 	disabled?: boolean;
 }
 
-const S = toStyleCombiner({
-	infoBlock: {
-		display: "block",
-		marginBottom: "15px",
-		lineHeight: "130%",
-	},
+const S = toStyleCombiner(
+	{
+		infoBlock: {
+			display: "block",
+			marginBottom: "15px",
+			lineHeight: "130%",
+		},
 
-	leftFloat: {
-		float: "left",
-	},
+		leftFloat: {
+			float: "left",
+		},
 
-	targetInfo: {
-		wordWrap: "break-word",
-		padding: "2px 0 0 12px",
-	},
+		targetInfo: {
+			wordWrap: "break-word",
+			padding: "2px 0 0 12px",
+		},
 
-	targetName: {
-		marginBottom: "2px",
-	},
+		targetName: {
+			marginBottom: "2px",
+		},
 
-	targetAvatar: {
-		position: "relative",
-		width: "42px",
-		height: "42px",
-		borderRadius: "100%",
-		overflow: "hidden",
-		objectFit: "cover",
-	},
+		targetAvatar: {
+			position: "relative",
+			width: "42px",
+			height: "42px",
+			borderRadius: "100%",
+			overflow: "hidden",
+			objectFit: "cover",
+		},
 
-	infoText: {
-		maxHeight: "48px",
-		overflow: "visible",
+		infoText: {
+			maxHeight: "48px",
+			overflow: "visible",
+		},
 	},
-}, {
-	locked: POINTER_LOCKED,
-	clearfix: CLEARFIX,
-});
+	{
+		locked: POINTER_LOCKED,
+		clearfix: CLEARFIX,
+	},
+);
 
 const NO_CLICK = (e: MouseEvent) => {
 	e.preventDefault();
@@ -80,7 +83,7 @@ const NO_CLICK = (e: MouseEvent) => {
 
 /**
  * @param props Свойства блока
- * @returns Блок информации о паблике, группе или пользователе
+ * @return Блок информации о паблике, группе или пользователе
  */
 export function InfoBlock(props: IInfoBlockProps) {
 	const translation = useTranslation("infoBlock");
@@ -97,8 +100,11 @@ export function InfoBlock(props: IInfoBlockProps) {
 
 	return (
 		<div className={S("infoBlock", "clearfix")}>
-			<a className={S("leftFloat", "locked", disabled)}
-				href={link} onClick={onClick}>
+			<a
+				className={S("leftFloat", "locked", disabled)}
+				href={link}
+				onClick={onClick}
+			>
 				<img
 					className={S("targetAvatar")}
 					src={avatarUrl}
@@ -107,11 +113,11 @@ export function InfoBlock(props: IInfoBlockProps) {
 			</a>
 			<div className={S("leftFloat", "targetInfo")}>
 				<div className={S("targetName")}>
-					<a href={link} onClick={onClick}>{displayName}</a>
+					<a href={link} onClick={onClick}>
+						{displayName}
+					</a>
 				</div>
-				<div className={S("leftFloat", "infoText")}>
-					{infoChildren}
-				</div>
+				<div className={S("leftFloat", "infoText")}>{infoChildren}</div>
 			</div>
 		</div>
 	);

@@ -23,16 +23,20 @@ const URLS = {
 export default {
 	input: "src/index.tsx",
 
-	output: [{
-		file: pkg.main,
-		format: "iife",
-	}],
+	output: [
+		{
+			file: pkg.main,
+			format: "iife",
+		},
+	],
 
 	plugins: [
+		typescript({
+			tsconfig: "./tsconfig.json",
+		}),
 		nodeResolve({
 			browser: true,
 		}),
-		typescript(),
 		commonJS(),
 		images(),
 		yaml(),
@@ -56,14 +60,16 @@ export default {
 		}),
 		replace({
 			values: {
-				"__currentVersion__": `${pkg.version}--${Date.now()}`,
-				"__github__": GITHUB,
-				"__changeLogLink__": URLS.CHANGELOG,
-				"__wiki__": URLS.GUIDE,
-				"__isProduction__": process.env["NODE_ENV"] === "production",
+				__currentVersion__: `${pkg.version}--${Date.now()}`,
+				__github__: GITHUB,
+				__changeLogLink__: URLS.CHANGELOG,
+				__wiki__: URLS.GUIDE,
+				__isProduction__: process.env["NODE_ENV"] === "production",
 				// Violentmonkey patch
-				"cancelAnimationFrame(": "unsafeWindow.cancelAnimationFrame.bind(unsafeWindow)(",
+				"cancelAnimationFrame(":
+					"unsafeWindow.cancelAnimationFrame.bind(unsafeWindow)(",
 			},
+			preventAssignment: true,
 		}),
 	],
-}
+};

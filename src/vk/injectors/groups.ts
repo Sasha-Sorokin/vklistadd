@@ -56,7 +56,7 @@ const IS_INJECTED = createSwitch(false);
  */
 export function prepare() {
 	if (lazyToggle(IS_INJECTED, true)) {
-		throw new Error(ERROR_MESSAGES.ALREADY_INJECTED);
+		throw new Error(ERROR_MESSAGES.alreadyInjected);
 	}
 
 	setupInitInterceptors([

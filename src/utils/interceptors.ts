@@ -16,8 +16,10 @@ type VKModuleName = Diff<keyof VKModules, undefined>;
 /**
  * Представляет собой коллекцию отловщиков
  */
-export type InterceptorsCollection =
-	[VKModuleName, Parameters<typeof wrapFunction>[1]][];
+export type InterceptorsCollection = [
+	VKModuleName,
+	Parameters<typeof wrapFunction>[1],
+][];
 
 /**
  * Встраивает в объект окна отловщиков инициализации определённых модулей.

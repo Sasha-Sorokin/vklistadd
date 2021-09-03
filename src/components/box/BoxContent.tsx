@@ -8,7 +8,7 @@ import { TargetInfo } from "./TargetInfo";
 import { TargetPrivateWarning } from "./TargetPrivateWarning";
 
 /**
- * @returns Элемент содержимого бокса
+ * @return Элемент содержимого бокса
  */
 export function BoxContent() {
 	const { context, invoker } = useContext(BoxContext)!;

@@ -12,7 +12,7 @@ const TOOLTIP_SHIFT = [-8, 10] as const;
 const TOOLTIP_CLASS = toClassName("tooltip", { width: "250px" });
 
 /**
- * @returns Элемент подсказки про неважность подписки
+ * @return Элемент подсказки про неважность подписки
  */
 function FollowHint() {
 	const { hint } = useTranslation("followStatus");
@@ -33,22 +33,21 @@ function FollowHint() {
 }
 
 /**
- * @returns Фргамент для блока информации об объекте
+ * @return Фргамент для блока информации об объекте
  */
 function InfoFragment() {
-	const notificationsToggle = <NotificationsToggle />;
-
 	return (
 		<Fragment>
-			<FollowText /><FollowHint />
-			{notificationsToggle != null ? <br /> : ""}
-			{notificationsToggle}
+			<FollowText />
+			<FollowHint />
+			<br />
+			<NotificationsToggle />
 		</Fragment>
 	);
 }
 
 /**
- * @returns Блок информации об объекте в текущем контексте
+ * @return Блок информации об объекте в текущем контексте
  */
 export function TargetInfo() {
 	const target = useTarget();

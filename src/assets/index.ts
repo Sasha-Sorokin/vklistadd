@@ -1,30 +1,50 @@
-import * as gearIcon from "./gear.svg";
-import * as checkbox from "./checkbox.svg";
-import * as checkboxChecked from "./checkbox_checked.svg";
-import * as editPen from "./edit_pen.svg";
+import * as $gearIcon from "./gear.svg";
+import * as $checkbox from "./checkbox.svg";
+import * as $checkboxChecked from "./checkbox_checked.svg";
+import * as $editPen from "./edit_pen.svg";
+import * as $newsfeedIcon from "./newsfeed.svg";
 
 /**
- * @returns Объект ресурса
+ * Представляет собой объект ассета
  */
-function makeAssetObject({ default: dataURL }: { default: string }) {
+interface IAsset {
+	/**
+	 * Data ссылка
+	 */
+	default: string;
+}
+
+/**
+ * @param asset Ассет из которого нужно сделать каркас
+ * @return Объект ресурса
+ */
+function makeAssetObject(asset: IAsset) {
+	const { default: dataURL } = asset;
+
 	return {
 		/**
-		 * @returns Возвращает исходную Data ссылку
+		 * @return Возвращает исходную Data ссылку
 		 */
 		get dataURL() {
 			return dataURL;
 		},
+
 		/**
-		 * @returns Ссылка для использования в CSS файлах
+		 * @return Ссылка для использования в CSS файлах
 		 * @example url("data:image/svg+xml,...")
 		 */
 		get url() {
 			return `url("${dataURL.replace(/"/g, "'")}")`;
 		},
+
+		get source() {
+			return decodeURI(dataURL.split(",")[1]);
+		},
 	};
 }
 
-export const GearIcon = makeAssetObject(gearIcon);
-export const Checkbox = makeAssetObject(checkbox);
-export const CheckboxChecked = makeAssetObject(checkboxChecked);
-export const EditPen = makeAssetObject(editPen);
+export const ICON_GEAR = makeAssetObject($gearIcon);
+export const ICON_CHECKBOX = makeAssetObject($checkbox);
+export const ICON_CHECKBOX_CHECKED = makeAssetObject($checkboxChecked);
+export const ICON_PEN = makeAssetObject($editPen);
+export const ICON_NEWSFEED = makeAssetObject($newsfeedIcon);

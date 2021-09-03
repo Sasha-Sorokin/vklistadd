@@ -19,9 +19,9 @@ interface IAnimationStore {
 const ANIMATION_STORES = new WeakMap<HTMLDivElement, IAnimationStore>();
 
 const ANIMATION_TIMINGS = {
-	FADE_IN: 200,
-	FADE_OUT: 1500,
-	STILL: 500,
+	fadeIn: 200,
+	fadeOut: 1500,
+	still: 500,
 } as const;
 
 /**
@@ -51,13 +51,13 @@ export const enum LabelColor {
 }
 
 const COLOR = {
-	RED: toClassName("colorRed", { color: "#bd3232" }),
-	GRAY: toClassName("colorGray", { color: "#606060" }),
+	red: toClassName("colorRed", { color: "#bd3232" }),
+	gray: toClassName("colorGray", { color: "#606060" }),
 };
 
 /**
  * @param node Элемент футера бокса
- * @returns Хранилище состояния анимации
+ * @return Хранилище состояния анимации
  */
 function getAnimationStore(node: HTMLDivElement) {
 	let store = ANIMATION_STORES.get(node);
@@ -93,8 +93,8 @@ export function showControlsLabel(
 	controlsTextNode.style.opacity = "1";
 	controlsTextNode.innerText = text;
 
-	controlsTextNode.classList.toggle(COLOR.RED, color === LabelColor.Red);
-	controlsTextNode.classList.toggle(COLOR.GRAY, color === LabelColor.Gray);
+	controlsTextNode.classList.toggle(COLOR.red, color === LabelColor.Red);
+	controlsTextNode.classList.toggle(COLOR.gray, color === LabelColor.Gray);
 
 	const { fadeIn, fadeOut } = getWindow();
 
@@ -107,12 +107,12 @@ export function showControlsLabel(
 				store.timeout = undefined;
 
 				store.animation = fadeOut(controlsTextNode, {
-					duration: ANIMATION_TIMINGS.FADE_OUT,
+					duration: ANIMATION_TIMINGS.fadeOut,
 					onComplete() {
 						store.animation = undefined;
 					},
 				});
-			}, ANIMATION_TIMINGS.STILL);
+			}, ANIMATION_TIMINGS.still);
 		},
 	});
 }

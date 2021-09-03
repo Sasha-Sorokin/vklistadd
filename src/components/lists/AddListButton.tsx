@@ -9,26 +9,29 @@ import { LinkButton } from "@components/vk/LinkButton";
 
 const PLUS_ICON = "/images/icons/filter_add.png";
 
-const STYLE = toStyleCombiner({
-	button: {
-		marginTop: "10px",
-		width: "max-content",
-		lineHeight: "17px",
-		cursor: "pointer",
-		display: "block",
+const STYLE = toStyleCombiner(
+	{
+		button: {
+			marginTop: "10px",
+			width: "max-content",
+			lineHeight: "17px",
+			cursor: "pointer",
+			display: "block",
 
-		"&::before": {
-			content: "''",
-			background: `url("${PLUS_ICON}") 1px 3px no-repeat`,
-			width: "15px",
-			height: "15px",
-			float: "left",
-			margin: "0 7px 0 0",
+			"&::before": {
+				content: "''",
+				background: `url("${PLUS_ICON}") 1px 3px no-repeat`,
+				width: "15px",
+				height: "15px",
+				float: "left",
+				margin: "0 7px 0 0",
+			},
 		},
 	},
-}, {
-	locked: LOCK_COMBO,
-});
+	{
+		locked: LOCK_COMBO,
+	},
+);
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
 const TOOLTIP_OFFSETS = [-10, 8] as const;
@@ -47,14 +50,15 @@ export interface IAddListButtonProps {
 	/**
 	 * Обработчик нажатия на ссылку
 	 */
-	onClick?(): void;
+	onClick?(this: void): void;
 }
 
 /**
  * @param props Свойства ссылки
- * @returns Ссылка на добавление нового списка
+ * @return Ссылка на добавление нового списка
  */
-export function AddListButton({ onClick, ...props }: IAddListButtonProps) {
+export function AddListButton(props: IAddListButtonProps) {
+	const { onClick } = props;
 	const disabled = props.disabled ?? false;
 
 	const onLinkClick = usePreventedCallback(disabled ? null : onClick);

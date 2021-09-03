@@ -11,7 +11,7 @@ interface ISwitch {
 	 *
 	 * @param newValue Новое состояние переключателя. Если не указано,
 	 * то инвертирует текущее состояние (`true` => `false`)
-	 * @returns Новое состояние переключателя
+	 * @return Новое состояние переключателя
 	 */
 	toggle(newValue?: boolean): boolean;
 	/**
@@ -19,7 +19,6 @@ interface ISwitch {
 	 * изменяет текущее состояние, но возвращает прошлое
 	 *
 	 * @param newValue Новое состояние для переключателя
-	 *
 	 * @example
 	 * ```ts
 	 * const isFirst = createSwitch(true);
@@ -27,7 +26,7 @@ interface ISwitch {
 	 * // исполняется только один раз!
 	 * }
 	 * ```
-	 * @returns Прошлое состояние переключателя
+	 * @return Прошлое состояние переключателя
 	 */
 	lazyToggle(newValue?: boolean): boolean;
 
@@ -50,7 +49,7 @@ const SWITCH_CALLBACKS = new WeakMap<ISwitch, Set<SwitchCallback>>();
 
 /**
  * @param $switch Переключатель, чьи обработчики нужно вернуть
- * @returns Обработчики изменения состояния переключателя `$switch`
+ * @return Обработчики изменения состояния переключателя `$switch`
  */
 function getCallbacks($switch: ISwitch) {
 	let callbacks = SWITCH_CALLBACKS.get($switch);
@@ -84,7 +83,7 @@ function invokeCallbacks($switch: ISwitch, value: boolean) {
  * Создаёт переключатель
  *
  * @param initialValue Начальное состояние переключателя
- * @returns Простой переключатель
+ * @return Простой переключатель
  */
 export function createSwitch(initialValue = false): ISwitch {
 	let currentValue = initialValue;
@@ -125,7 +124,7 @@ export function createSwitch(initialValue = false): ISwitch {
  * @param $switch Переключатель, состояние которого нужно изменить
  * @param newValue Новое состояние переключателя, если не указано,
  * то инвертирует текущее состояние (`true` => `false`)
- * @returns Новое состояние переключателя
+ * @return Новое состояние переключателя
  */
 export function toggle($switch: ISwitch, newValue?: boolean): boolean {
 	return $switch.toggle(newValue);
@@ -137,7 +136,6 @@ export function toggle($switch: ISwitch, newValue?: boolean): boolean {
  *
  * @param $switch Переключатель, состояние которого нужно изменить
  * @param newValue Новое состояние для переключателя
- *
  * @example
  * ```ts
  * const isFirst = createSwitch(true);
@@ -145,7 +143,7 @@ export function toggle($switch: ISwitch, newValue?: boolean): boolean {
  * // исполняется только один раз!
  * }
  * ```
- * @returns Прошлое состояние переключателя
+ * @return Прошлое состояние переключателя
  */
 export function lazyToggle($switch: ISwitch, newValue?: boolean): boolean {
 	return $switch.lazyToggle(newValue);
@@ -156,7 +154,7 @@ export function lazyToggle($switch: ISwitch, newValue?: boolean): boolean {
  *
  * @param $switch Переключатель, чьё состояние наблюдается
  * @param callback Обработчик изменения состояния
- * @returns Функция, убирающая обработчик
+ * @return Функция, убирающая обработчик
  */
 export function watchSwitch($switch: ISwitch, callback: SwitchCallback) {
 	return $switch.onChange(callback);
@@ -164,7 +162,7 @@ export function watchSwitch($switch: ISwitch, callback: SwitchCallback) {
 
 /**
  * @param $switch Переключатель, чьё состояние необходимо вернуть
- * @returns Текущее состояние переключателя
+ * @return Текущее состояние переключателя
  */
 export function valueOf($switch: ISwitch) {
 	return $switch.currentValue;

@@ -1,9 +1,9 @@
 import { h } from "preact";
 import { ITreating, TreatingKind } from "@vk/scrapers";
 import { useCallback } from "preact/hooks";
-import { showBox } from "@/box";
 import { getVKTranslation } from "@utils/i18n";
 import { asReplicable, MountFunction } from "@utils/freeComponents";
+import { showBox } from "@/box";
 
 /**
  * Представляет собой свойства элемента меню
@@ -16,26 +16,28 @@ export interface IActionsMenuItemProps {
 }
 
 /**
- * @returns Элемент для меню действий в списке групп, закладок или друзей
+ * @param props Свойства элемента меню
+ * @return Элемент для меню действий в списке групп, закладок или друзей
  */
-function ActionsMenuItem({ invoker }: IActionsMenuItemProps) {
-	const onClick = useCallback(
-		() => showBox(invoker),
-		[invoker],
-	);
+function ActionsMenuItem(props: IActionsMenuItemProps) {
+	const { invoker } = props;
 
-	const { actionsMenuItem: { context } } = getVKTranslation();
+	const onClick = useCallback(() => showBox(invoker), [invoker]);
+
+	const {
+		actionsMenuItem: { context },
+	} = getVKTranslation();
 
 	let itemText: string | null = null;
 
 	switch (invoker.kind) {
-		case TreatingKind.FeedRow: {
+		case TreatingKind.FeedRow:
 			itemText = context.feedRow;
-		} break;
+			break;
 
-		default: {
+		default:
 			itemText = context.default;
-		} break;
+			break;
 	}
 
 	return (
@@ -49,10 +51,10 @@ function ActionsMenuItem({ invoker }: IActionsMenuItemProps) {
 	);
 }
 
-let mountFunction: MountFunction<IActionsMenuItemProps>;
+let mountFunction: MountFunction<IActionsMenuItemProps> | null = null;
 
 /**
- * @returns Функция для репликации и встраивания элемента меню
+ * @return Функция для репликации и встраивания элемента меню
  */
 export function getReplicable() {
 	if (mountFunction == null) {

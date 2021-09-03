@@ -1,4 +1,4 @@
 node_modules
 .vscode
 api_doc
-yarn-error.log
+dist

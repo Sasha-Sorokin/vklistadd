@@ -12,8 +12,7 @@ interface IShortcutsCallbacks {
 
 /**
  * @param box Бокс, элемент которого необходимо получить
- *
- * @returns Родительский объект всего содержимого бокса
+ * @return Родительский объект всего содержимого бокса
  */
 function getBoxContainer(box: VK.MessageBox): HTMLDivElement | null {
 	return findMatchingParent(box.bodyNode, ".popup_box_container");
@@ -24,8 +23,7 @@ function getBoxContainer(box: VK.MessageBox): HTMLDivElement | null {
  *
  * @param box Бокс, к которому добавляется обработчик
  * @param callbacks Обработчики нажатий определённых комбинаций
- *
- * @returns Функция для удаления обработчика
+ * @return Функция для удаления обработчика
  */
 export function initializeShortcuts(
 	box: VK.MessageBox,
@@ -33,19 +31,25 @@ export function initializeShortcuts(
 ) {
 	const handler = (e: KeyboardEvent) => {
 		switch (e.key) {
-			case "Enter": {
-				if (!e.ctrlKey) break;
+			case "Enter":
+				{
+					if (!e.ctrlKey) break;
 
-				callbacks.onSave(e);
-			} break;
+					callbacks.onSave(e);
+				}
+				break;
 
-			default: break;
+			default:
+				break;
 		}
 	};
 
 	const boxContainer = getBoxContainer(box);
 
-	if (boxContainer == null) return () => { /* dummy */ };
+	if (boxContainer == null)
+		return () => {
+			/* dummy */
+		};
 
 	boxContainer.addEventListener("keyup", handler);
 
