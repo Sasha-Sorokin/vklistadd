@@ -1,0 +1,146 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      trigger_ref:
+        description: |-
+          The reference that triggered the release and consequent publish.
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+
+      - name: Setup Git user
+        uses: fregante/setup-git-user@v1
+
+      - name: Resolve tag
+        id: tag_resolve
+        run: |-
+          echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
+          REF_COMMIT=$(git rev-list -n 1 $GITHUB_REF)
+          echo "::set-output name=commit::$REF_COMMIT"
+
+      # Purposely writing to package-lock.json so next one to run npm i won't
+      # have to deal with updated package-lock.json due to version mismatch.
+      - name: Write version to package.json
+        run: |-
+          jq ".version=\"$BUILD_VERSION\"" package.json > tmp
+          rm package.json
+          mv tmp package.json
+
+          jq ".version = \"$BUILD_VERSION\" | .packages[\"\"].version = \"$BUILD_VERSION\"" package-lock.json > tmp
+          rm package-lock.json
+          mv tmp package-lock.json
+        env:
+          BUILD_VERSION: ${{ steps.tag_resolve.outputs.version }}
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Build initial packs
+        run: npm run build:packs
+        env:
+          NODE_ENV: production
+
+      - name: Push new packs to the release branch
+        id: push_packs
+        run: |-
+          git stash save "Tracked files go whoop"
+
+          git fetch origin $REL_BRANCH
+
+          echo "Trying switching to branch $REL_BRANCH"
+          if ! git switch $REL_BRANCH ; then
+            echo "No local or remote branch called $REL_BRANCH"
+            echo "Making a new orphan one..."
+            git switch --orphan $REL_BRANCH
+          fi
+
+          if [[ $( git status --porcelain=v2 $REL_SOURCE | grep "$REL_SOURCE" ) ]]; then
+            git add $REL_SOURCE
+
+            echo "We have changes to commit:"
+            git status --short $REL_SOURCE
+
+            echo "HEAD before commit: $(git rev-parse HEAD)"
+
+            git commit -m "chore: auto-commit [auto]
+
+            Based on the commit:
+            ${{ steps.tag_resolve.outputs.commit }}
+            
+            [no ci]"
+
+            echo "HEAD after commit: $(git rev-parse HEAD)"
+
+            git push origin $REL_BRANCH
+          else
+            echo "No changes to commit! :O"
+          fi
+
+          echo "::set-output name=head::$(git rev-parse HEAD)"
+
+          echo "Returning home..."
+
+          git checkout $GITHUB_REF
+
+          echo "Spilling out the stash"
+
+          git stash pop
+        env:
+          REL_SOURCE: dist
+          REL_BRANCH: packs
+
+      - name: Restore packs
+        run: |-
+          git restore --source ${{ steps.push_packs.outputs.head }} -- dist/built
+
+      - name: Build UserScript wrapper
+        run: npm run build:userscript
+        env:
+          NODE_ENV: production
+          # push_packs should return last available packs commit
+          BIND_COMMIT: "${{ steps.push_packs.outputs.head }}"
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/built/vklistadd.user.js"
+          prerelease: ${{ github.event.inputs.trigger_ref != 'refs/heads/master' }}
+
+      - name: Normalize trigger ref
+        if: ${{ github.event.inputs.trigger_ref != null }}
+        id: resolve_trigger_ref
+        run: |-
+          echo "::set-output name=name::${TRIGGER_REF#refs/heads/}"
+        env:
+          TRIGGER_REF: ${{ github.event.inputs.trigger_ref }}
+
+      - name: Post updated package.json and package-lock.json
+        if: ${{ github.event.inputs.trigger_ref != null }}
+        uses: EndBug/add-and-commit@v7
+        with:
+          add: package.json package-lock.json
+          default_author: github_actions
+          branch: ${{ steps.resolve_trigger_ref.outputs.name }}
+          message: |-
+            chore(package): updated versions [auto]
+
+            Corrected package.json and package-lock.json after successful build.
+
+            These are the same that were used for the build itself.
+
+            Based on the commit:
+            ${{ steps.tag_resolve.outputs.commit }}
+
+            [no ci]

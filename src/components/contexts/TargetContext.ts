@@ -1,6 +1,6 @@
-import { createContext } from "preact";
-import { PartialContext } from "@vk/scrapers";
+import { createContext } from "@external/preact";
+import type { PartialContext } from "@vk/scrapers";
 
-type ContextValue = PartialContext | undefined;
+export type ContextValue = PartialContext | undefined;
 
 export const TargetContext = createContext<ContextValue>(undefined);

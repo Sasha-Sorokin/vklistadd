@@ -1,51 +1,52 @@
-import { ERROR_MESSAGES, log } from "@utils/debug";
+import { errorMessages } from "@utils/errors";
 import { createSwitch, lazyToggle } from "@utils/switch";
 import * as actionMenuButton from "@components/roaming/ActionButton";
 import { elem } from "@utils/dom";
 import { setupInitInterceptors } from "@utils/interceptors";
+import { log } from "@utils/debug";
 
-const MOUNT_ACTION_BUTTON = actionMenuButton.getRoaming();
+const mountFunction = actionMenuButton.getRoaming();
 
-const ACTIONS_CONTAINER = "._page_actions_container";
-const MSG_STATUS_BLOCK = ".group_send_msg_status_block";
+const actionsContainerSelector = "._page_actions_container";
+const messagesStatesBlockSelector = ".group_send_msg_status_block";
 
 /**
  * Встраивает кнопку вызова окна изменения списков
  */
-function injectActionButton() {
-	const container = elem(ACTIONS_CONTAINER);
+function mountActionButton() {
+  const container = elem(actionsContainerSelector);
 
-	if (container == null) {
-		log("error", "Failed to find page actions container!");
+  if (container == null) {
+    log("error", "Failed to find page actions container!");
 
-		return;
-	}
+    return;
+  }
 
-	let referenceNode: Element | null;
+  let referenceNode: Element | null;
 
-	{
-		const sendMsgAction = elem(MSG_STATUS_BLOCK, container);
+  {
+    const sendMsgAction = elem(messagesStatesBlockSelector, container);
 
-		if (sendMsgAction != null) referenceNode = sendMsgAction;
-		else referenceNode = container.firstElementChild;
-	}
+    if (sendMsgAction != null) referenceNode = sendMsgAction;
+    else referenceNode = container.firstElementChild;
+  }
 
-	if (referenceNode == null) {
-		log("warn", "Failed to find reference node!");
+  if (referenceNode == null) {
+    log("warn", "Failed to find reference node!");
 
-		return;
-	}
+    return;
+  }
 
-	MOUNT_ACTION_BUTTON((actionButton) => {
-		const mountNode = referenceNode?.parentNode;
+  mountFunction((actionButton) => {
+    const mountNode = referenceNode?.parentNode;
 
-		const button = mountNode?.insertBefore(actionButton, referenceNode);
+    const button = mountNode?.insertBefore(actionButton, referenceNode);
 
-		log("info", "Successfully injected button:", button);
-	}, undefined);
+    log("info", "Successfully injected button:", button);
+  }, undefined);
 }
 
-const IS_INJECTED = createSwitch(false);
+const isInjectedSwitch = createSwitch(false);
 
 /**
  * Встраивает в объект окна отловщиков инициализаций всех объектов,
@@ -55,12 +56,12 @@ const IS_INJECTED = createSwitch(false);
  * @throws При попыткой повторного встраивания (скорее всего, ошибка)
  */
 export function prepare() {
-	if (lazyToggle(IS_INJECTED, true)) {
-		throw new Error(ERROR_MESSAGES.alreadyInjected);
-	}
+  if (lazyToggle(isInjectedSwitch, true)) {
+    throw new Error(errorMessages.alreadyInjected);
+  }
 
-	setupInitInterceptors([
-		["public", injectActionButton],
-		["Groups", injectActionButton],
-	]);
+  setupInitInterceptors([
+    ["public", mountActionButton],
+    ["Groups", mountActionButton],
+  ]);
 }

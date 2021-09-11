@@ -1,32 +1,32 @@
-import { ILists } from "@vk/api/lists";
-import { useReducer } from "preact/hooks";
-import { ITreating, PartialContext } from "@vk/scrapers";
+import type { ILists } from "@vk/api/lists";
+import type { ITreating, PartialContext } from "@vk/scrapers";
+import { useReducer } from "@external/preact/hooks";
 import { LoadingState, ListsActions } from "./types";
-import { LISTS_LOADED, LOAD_FAILED, INVOKER_CHANGE } from "./actions";
+import { ListActionType } from "./actions";
 
 /**
  * Представляет собой состояние компонента списков
  */
 interface IListsState {
-	/**
-	 * Текущий статус загрузки списков
-	 */
-	loadingStatus: LoadingState;
+  /**
+   * Текущий статус загрузки списков
+   */
+  loadingStatus: LoadingState;
 
-	/**
-	 * Объект списков
-	 */
-	lists?: ILists;
+  /**
+   * Объект списков
+   */
+  lists?: ILists;
 
-	/**
-	 * Последний объект, для которого загружались списки
-	 */
-	lastTarget?: PartialContext;
+  /**
+   * Последний объект, для которого загружались списки
+   */
+  lastTarget?: PartialContext;
 
-	/**
-	 * Последний использованный альтернативный элемент при загрузке списков
-	 */
-	lastInvoker?: ITreating;
+  /**
+   * Последний использованный альтернативный элемент при загрузке списков
+   */
+  lastInvoker?: ITreating;
 }
 
 /**
@@ -37,49 +37,49 @@ interface IListsState {
  * @return Состояние после выполнения действия
  */
 export function listsReducer(
-	state: Readonly<IListsState>,
-	action: ListsActions,
+  state: Readonly<IListsState>,
+  action: ListsActions,
 ): Readonly<IListsState> {
-	switch (action.type) {
-		case LISTS_LOADED: {
-			return {
-				...state,
-				loadingStatus: LoadingState.Loaded,
-				lists: action.lists ?? undefined,
-			};
-		}
+  switch (action.type) {
+    case ListActionType.ListsLoaded: {
+      return {
+        ...state,
+        loadingStatus: LoadingState.Loaded,
+        lists: action.lists ?? undefined,
+      };
+    }
 
-		case LOAD_FAILED: {
-			return {
-				...state,
-				loadingStatus: LoadingState.Failed,
-			};
-		}
+    case ListActionType.LoadFailed: {
+      return {
+        ...state,
+        loadingStatus: LoadingState.Failed,
+      };
+    }
 
-		case INVOKER_CHANGE: {
-			const { invoker, target } = action;
-			const { lastInvoker, lastTarget } = state;
+    case ListActionType.TargetChange: {
+      const { invoker, target } = action;
+      const { lastInvoker, lastTarget } = state;
 
-			const noChanges = invoker === lastInvoker && target === lastTarget;
+      const noChanges = invoker === lastInvoker && target === lastTarget;
 
-			if (noChanges) return state;
+      if (noChanges) return state;
 
-			return {
-				...state,
-				loadingStatus: LoadingState.Reset,
-				lastInvoker: invoker,
-				lastTarget: target,
-				lists: undefined,
-			};
-		}
+      return {
+        ...state,
+        loadingStatus: LoadingState.Reset,
+        lastInvoker: invoker,
+        lastTarget: target,
+        lists: undefined,
+      };
+    }
 
-		default:
-			return { ...state };
-	}
+    default:
+      return { ...state };
+  }
 }
 
-const DEFAULT_STATE = Object.freeze({
-	loadingStatus: LoadingState.Initial,
+const defaultState = Object.freeze({
+  loadingStatus: LoadingState.Initial,
 });
 
 /**
@@ -88,5 +88,5 @@ const DEFAULT_STATE = Object.freeze({
  * @return Состояние редьюсера и функция выполнения действия
  */
 export function useLoaderReducer() {
-	return useReducer(listsReducer, DEFAULT_STATE);
+  return useReducer(listsReducer, defaultState);
 }

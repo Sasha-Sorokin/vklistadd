@@ -8,5 +8,5 @@
  * @return `true` если флаг присутствует в наборе, иначе `false`
  */
 export function hasFlag(flags: number, flag: number) {
-	return (flags & flag) === flag;
+  return (flags & flag) === flag;
 }

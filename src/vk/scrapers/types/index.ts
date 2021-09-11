@@ -2,20 +2,20 @@
  * Перечисление поддерживаемых модулей
  */
 export const enum SupportedModule {
-	/**
-	 * Идентификатор модуля профиля
-	 */
-	Profile = "profile",
+  /**
+   * Идентификатор модуля профиля
+   */
+  Profile = "profile",
 
-	/**
-	 * Идентификатор модуля паблика
-	 */
-	Public = "public",
+  /**
+   * Идентификатор модуля паблика
+   */
+  Public = "public",
 
-	/**
-	 * Идентификатор модуля группы
-	 */
-	Group = "groups",
+  /**
+   * Идентификатор модуля группы
+   */
+  Group = "groups",
 }
 
 // #region Альтернативные элементы
@@ -24,45 +24,45 @@ export const enum SupportedModule {
  * Тип элемента и обращения к нему
  */
 export const enum TreatingKind {
-	/**
-	 * Текущий элемент — закладка
-	 */
-	Bookmark = "bookmark",
+  /**
+   * Текущий элемент — закладка
+   */
+  Bookmark = "bookmark",
 
-	/**
-	 * Текущий элемент — одна из групп в списке
-	 */
-	GroupRow = "group_row",
+  /**
+   * Текущий элемент — одна из групп в списке
+   */
+  GroupRow = "group_row",
 
-	/**
-	 * Текущий элемент — один из друзей в списке
-	 */
-	FriendRow = "friend_row",
+  /**
+   * Текущий элемент — один из друзей в списке
+   */
+  FriendRow = "friend_row",
 
-	/**
-	 * Текущий элемент — пост в ленте
-	 */
-	FeedRow = "feed_row",
+  /**
+   * Текущий элемент — пост в ленте
+   */
+  FeedRow = "feed_row",
 }
 
 /**
  * Представляет собой опции альтернативного использования
  */
 export interface ITreating {
-	/**
-	 * Тип элемента
-	 */
-	kind: TreatingKind;
+  /**
+   * Тип элемента
+   */
+  kind: TreatingKind;
 
-	/**
-	 * Элемент для объекта
-	 */
-	element: Element;
+  /**
+   * Элемент для объекта
+   */
+  element: Element;
 
-	/**
-	 * Тип объекта для которого предназначается элемент
-	 */
-	subType?: SupportedModule;
+  /**
+   * Тип объекта для которого предназначается элемент
+   */
+  subType?: SupportedModule;
 }
 
 export default {};

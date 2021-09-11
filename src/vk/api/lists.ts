@@ -1,4 +1,4 @@
-import { ERROR_MESSAGES } from "@utils/debug";
+import { errorMessages } from "@utils/errors";
 import { getWindow } from "@utils/window";
 import { getBound } from "@utils/wrappers";
 
@@ -16,23 +16,23 @@ const EVAL = getBound(getWindow(), "eval");
  * @return Опции для запроса
  */
 function genericOptions(resolve: () => void, reject: () => void) {
-	return {
-		onDone(_html: string, js: string) {
-			// ВКонтакте пришлёт JavaScript код для вызова expand-а
-			// опций в текущем контексте (window.cur), его нужно
-			// выполнить, иначе списки никак не получить
-			EVAL(js);
+  return {
+    onDone(_html: string, js: string) {
+      // ВКонтакте пришлёт JavaScript код для вызова expand-а
+      // опций в текущем контексте (window.cur), его нужно
+      // выполнить, иначе списки никак не получить
+      EVAL(js);
 
-			// _html обычно содержит код, который нужно добавить,
-			// но мы можем его смело игнорировать, он нам не нужен
+      // _html обычно содержит код, который нужно добавить,
+      // но мы можем его смело игнорировать, он нам не нужен
 
-			resolve();
-		},
-		onFail() {
-			reject();
-		},
-		cache: false,
-	};
+      resolve();
+    },
+    onFail() {
+      reject();
+    },
+    cache: false,
+  };
 }
 
 /**
@@ -42,17 +42,17 @@ function genericOptions(resolve: () => void, reject: () => void) {
  * @return Промис, который отрезольвится по получению списка
  */
 async function initializeLists(contextId: number) {
-	return new Promise<void>((resolve, reject) => {
-		getWindow().ajax.post(
-			"al_feed.php",
-			{
-				act: "a_get_lists_by_item",
-				// eslint-disable-next-line @typescript-eslint/naming-convention
-				item_id: contextId,
-			},
-			genericOptions(resolve, reject),
-		);
-	});
+  return new Promise<void>((resolve, reject) => {
+    getWindow().ajax.post(
+      "al_feed.php",
+      {
+        act: "a_get_lists_by_item",
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        item_id: contextId,
+      },
+      genericOptions(resolve, reject),
+    );
+  });
 }
 
 /**
@@ -64,20 +64,20 @@ async function initializeLists(contextId: number) {
  * @return Промис который отрезольвится после переключения списков
  */
 async function toggleLists(contextId: number, toggles: number[], hash: string) {
-	return new Promise<void>((resolve, reject) => {
-		getWindow().ajax.post(
-			"al_feed.php",
-			{
-				act: "a_toggle_lists",
-				// eslint-disable-next-line @typescript-eslint/naming-convention
-				item_id: contextId,
-				// eslint-disable-next-line @typescript-eslint/naming-convention
-				lists_ids: toggles.join(","),
-				hash,
-			},
-			genericOptions(resolve, reject),
-		);
-	});
+  return new Promise<void>((resolve, reject) => {
+    getWindow().ajax.post(
+      "al_feed.php",
+      {
+        act: "a_toggle_lists",
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        item_id: contextId,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        lists_ids: toggles.join(","),
+        hash,
+      },
+      genericOptions(resolve, reject),
+    );
+  });
 }
 
 // #endregion
@@ -86,14 +86,14 @@ async function toggleLists(contextId: number, toggles: number[], hash: string) {
  * Статус списка (для изменений)
  */
 export const enum ListToggle {
-	/**
-	 * Использовать список для текущего объекта
-	 */
-	Used = 1,
-	/**
-	 * Не использовать список для текущего объекта
-	 */
-	Unused = -1,
+  /**
+   * Использовать список для текущего объекта
+   */
+  Used = 1,
+  /**
+   * Не использовать список для текущего объекта
+   */
+  Unused = -1,
 }
 
 /**
@@ -105,50 +105,50 @@ type ListsStates = Map<string, ListToggle>;
  * Статус списка
  */
 const enum ListStatus {
-	/**
-	 * Текущий объект не находится в списке
-	 */
-	Disabled = 0,
-	/**
-	 * Текущий объект находится в списке
-	 */
-	Enabled = 1,
+  /**
+   * Текущий объект не находится в списке
+   */
+  Disabled = 0,
+  /**
+   * Текущий объект находится в списке
+   */
+  Enabled = 1,
 }
 
 /**
  * Представляет собой опции страницы после загрузки списков
  */
 interface IListedOptions {
-	/**
-	 * Набор списков и их статусов
-	 */
-	feedListsSet: {
-		[listId: string]: ListStatus;
-	};
-	/**
-	 * Набор списков и их названия
-	 */
-	feedLists: {
-		[listId: string]: string;
-	};
-	/**
-	 * Массив изменений в списках
-	 */
-	feedListsChanges: number[];
-	/**
-	 * Хэш для сохранения изменений
-	 */
-	feedListsHash: string;
+  /**
+   * Набор списков и их статусов
+   */
+  feedListsSet: {
+    [listId: string]: ListStatus;
+  };
+  /**
+   * Набор списков и их названия
+   */
+  feedLists: {
+    [listId: string]: string;
+  };
+  /**
+   * Массив изменений в списках
+   */
+  feedListsChanges: number[];
+  /**
+   * Хэш для сохранения изменений
+   */
+  feedListsHash: string;
 }
 
 /**
  * Представляет собой контекст страницы с опциями списков
  */
 interface IListedContext {
-	/**
-	 * Опции страницы
-	 */
-	options?: Partial<IListedOptions>;
+  /**
+   * Опции страницы
+   */
+  options?: Partial<IListedOptions>;
 }
 
 /**
@@ -159,61 +159,61 @@ interface IListedContext {
  * @param hash Уникальный хэш для запроса
  */
 export async function saveLists(
-	contextId: number,
-	states: ListsStates,
-	hash: string,
+  contextId: number,
+  states: ListsStates,
+  hash: string,
 ) {
-	const toggles: number[] = [];
-	const postCommit: [string, ListToggle][] = [];
+  const toggles: number[] = [];
+  const postCommit: [string, ListToggle][] = [];
 
-	for (const [listId, state] of states.entries()) {
-		toggles.push(Number(listId) * state);
+  for (const [listId, state] of states.entries()) {
+    toggles.push(Number(listId) * state);
 
-		postCommit.push([listId, state]);
-	}
+    postCommit.push([listId, state]);
+  }
 
-	await toggleLists(contextId, toggles, hash);
+  await toggleLists(contextId, toggles, hash);
 
-	const ctx = getWindow().cur;
+  const ctx = getWindow().cur;
 
-	if (ctx == null) return;
+  if (ctx == null) return;
 
-	const set = (ctx as IListedContext).options?.feedListsSet;
+  const set = (ctx as IListedContext).options?.feedListsSet;
 
-	if (set == null) return;
+  if (set == null) return;
 
-	for (const [listId, state] of postCommit) {
-		set[Number(listId)] = state === ListToggle.Used ? 1 : 0;
-	}
+  for (const [listId, state] of postCommit) {
+    set[Number(listId)] = state === ListToggle.Used ? 1 : 0;
+  }
 }
 
 /**
  * Представляет собой список
  */
 export interface IList {
-	/**
-	 * ID списка
-	 */
-	id: number;
+  /**
+   * ID списка
+   */
+  id: number;
 
-	/**
-	 * Название списка
-	 */
-	name: string;
+  /**
+   * Название списка
+   */
+  name: string;
 
-	/**
-	 * Проверяет, используется ли список
-	 *
-	 * @return Используется ли список
-	 */
-	isSelected(): boolean;
+  /**
+   * Проверяет, используется ли список
+   *
+   * @return Используется ли список
+   */
+  isSelected(): boolean;
 
-	/**
-	 * Добавляет или убирает текущий объект из списка
-	 *
-	 * @param value Находится ли объект в списке
-	 */
-	toggle(value: boolean): void;
+  /**
+   * Добавляет или убирает текущий объект из списка
+   *
+   * @param value Находится ли объект в списке
+   */
+  toggle(value: boolean): void;
 }
 
 /**
@@ -224,32 +224,32 @@ export interface IList {
  * @return Преобразованные списки
  */
 function mapLists(options: IListedOptions, states: ListsStates): IList[] {
-	const { feedLists, feedListsSet } = options;
+  const { feedLists, feedListsSet } = options;
 
-	const lists: IList[] = [];
+  const lists: IList[] = [];
 
-	for (const id of Object.keys(feedListsSet)) {
-		const name = feedLists[id];
+  for (const id of Object.keys(feedListsSet)) {
+    const name = feedLists[id];
 
-		lists.push({
-			name,
-			id: Number(id),
-			isSelected() {
-				const state = states.get(id);
+    lists.push({
+      name,
+      id: Number(id),
+      isSelected() {
+        const state = states.get(id);
 
-				return state == null
-					? feedListsSet[id] === ListStatus.Enabled
-					: state === ListToggle.Used;
-			},
-			toggle(isUsed) {
-				const state = isUsed ? ListToggle.Used : ListToggle.Unused;
+        return state == null
+          ? feedListsSet[id] === ListStatus.Enabled
+          : state === ListToggle.Used;
+      },
+      toggle(isUsed) {
+        const state = isUsed ? ListToggle.Used : ListToggle.Unused;
 
-				states.set(id, state);
-			},
-		});
-	}
+        states.set(id, state);
+      },
+    });
+  }
 
-	return lists;
+  return lists;
 }
 
 /**
@@ -259,46 +259,49 @@ function mapLists(options: IListedOptions, states: ListsStates): IList[] {
  * @return `true`, если все опции на месте, иначе `false`
  */
 export function ensureOptions(
-	options?: Partial<IListedOptions>,
+  options?: Partial<IListedOptions>,
 ): options is IListedOptions {
-	return (
-		options != null &&
-		options.feedLists != null &&
-		options.feedListsSet != null &&
-		options.feedListsHash != null &&
-		options.feedListsChanges != null
-	);
+  return (
+    options != null &&
+    options.feedLists != null &&
+    options.feedListsSet != null &&
+    options.feedListsHash != null &&
+    options.feedListsChanges != null
+  );
 }
 
 /**
  * Представляет собой объект списков
  */
 export interface ILists {
-	/**
-	 * Все списки
-	 */
-	lists: IList[];
+  /**
+   * Все списки
+   */
+  lists: IList[];
 
-	/**
-	 * Сбрасывает все изменения к актуальному состоянию
-	 */
-	resetChanges(): void;
+  /**
+   * Сбрасывает все изменения к актуальному состоянию
+   */
+  resetChanges(): void;
 
-	/**
-	 * Сохраняет изменения в списках
-	 */
-	commitChanges(): Promise<void>;
+  /**
+   * Сохраняет изменения в списках
+   */
+  commitChanges(): Promise<void>;
 }
 
-const LISTS_ID_MAPS = new WeakMap<Partial<IListedOptions>, number>();
+const listsIdMaps = new WeakMap<Partial<IListedOptions>, number>();
 
-const CACHES = new WeakMap<Partial<IListedContext>, Map<number, ILists>>();
+const contextCaches = new WeakMap<
+  Partial<IListedContext>,
+  Map<number, ILists>
+>();
 
 /**
  * @return Контекст текущего модуля на странице
  */
 function getCurrentContext() {
-	return getWindow().cur as IListedContext | undefined;
+  return getWindow().cur as IListedContext | undefined;
 }
 
 /**
@@ -309,11 +312,11 @@ function getCurrentContext() {
  * @return `null`, если кэш отсутствует, иначе объект списка
  */
 function pullFromCache(contextId: number) {
-	const currentContext = getCurrentContext();
+  const currentContext = getCurrentContext();
 
-	if (currentContext == null) return null;
+  if (currentContext == null) return null;
 
-	return CACHES.get(currentContext)?.get(contextId) ?? null;
+  return contextCaches.get(currentContext)?.get(contextId) ?? null;
 }
 
 /**
@@ -323,19 +326,19 @@ function pullFromCache(contextId: number) {
  * @param lists Элемент списков
  */
 function pushToCache(contextId: number, lists: ILists) {
-	const currentContext = getCurrentContext();
+  const currentContext = getCurrentContext();
 
-	if (currentContext == null) return;
+  if (currentContext == null) return;
 
-	let caches = CACHES.get(currentContext);
+  let caches = contextCaches.get(currentContext);
 
-	if (caches == null) {
-		caches = new Map();
+  if (caches == null) {
+    caches = new Map();
 
-		CACHES.set(currentContext, caches);
-	}
+    contextCaches.set(currentContext, caches);
+  }
 
-	caches.set(contextId, lists);
+  caches.set(contextId, lists);
 }
 
 /**
@@ -348,52 +351,58 @@ function pushToCache(contextId: number, lists: ILists) {
  * @return Объект со всеми списками и функцией сохранения изменений
  */
 export async function getLists(
-	contextId: number,
-	force = false,
-	useCache = true,
+  contextId: number,
+  force = false,
+  useCache = true,
 ): Promise<ILists> {
-	const ctx = getWindow().cur as IListedContext | undefined;
+  let shouldInitialize = force;
 
-	if (ctx == null) {
-		throw new Error(ERROR_MESSAGES.noOrInvalidContext);
-	}
+  const ctx = getWindow().cur as IListedContext | undefined;
 
-	let { options } = ctx;
+  if (ctx == null) {
+    throw new Error(errorMessages.noOrInvalidContext);
+  }
 
-	const associatedId = options != null ? LISTS_ID_MAPS.get(options) : null;
+  let { options } = ctx;
 
-	if (associatedId != null && contextId !== associatedId) force = true;
+  const associatedId = options != null ? listsIdMaps.get(options) : null;
 
-	if (useCache) {
-		const cachedLists = pullFromCache(contextId);
+  if (associatedId != null && contextId !== associatedId) {
+    shouldInitialize = true;
+  }
 
-		if (cachedLists != null) return cachedLists;
-	}
+  if (useCache) {
+    const cachedLists = pullFromCache(contextId);
 
-	if (force || !ensureOptions(options)) await initializeLists(contextId);
+    if (cachedLists != null) return cachedLists;
+  }
 
-	if (options == null) options = ctx.options;
+  if (shouldInitialize || !ensureOptions(options)) {
+    await initializeLists(contextId);
+  }
 
-	if (options == null || !ensureOptions(options)) {
-		throw new Error(ERROR_MESSAGES.noOrInvalidContext);
-	}
+  if (options == null) options = ctx.options;
 
-	const states: ListsStates = new Map();
+  if (options == null || !ensureOptions(options)) {
+    throw new Error(errorMessages.noOrInvalidContext);
+  }
 
-	const lists: ILists = {
-		lists: mapLists(options, states),
-		resetChanges() {
-			states.clear();
-		},
-		async commitChanges() {
-			// FIXME: eslint is right, options might change in here (ref)
-			await saveLists(contextId, states, options!.feedListsHash!);
+  const states: ListsStates = new Map();
 
-			states.clear();
-		},
-	};
+  const lists: ILists = {
+    lists: mapLists(options, states),
+    resetChanges() {
+      states.clear();
+    },
+    async commitChanges() {
+      // FIXME: eslint is right, options might change in here (ref)
+      await saveLists(contextId, states, options!.feedListsHash!);
 
-	pushToCache(contextId, lists);
+      states.clear();
+    },
+  };
 
-	return lists;
+  pushToCache(contextId, lists);
+
+  return lists;
 }

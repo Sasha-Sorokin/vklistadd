@@ -4,10 +4,10 @@ import { findMatchingParent } from "@utils/dom";
  * Обработчики нажатий комбинаций клавиш
  */
 interface IShortcutsCallbacks {
-	/**
-	 * Обработчик нажатия Ctrl+Enter для сохранения изменений
-	 */
-	onSave(e: KeyboardEvent): void;
+  /**
+   * Обработчик нажатия Ctrl+Enter для сохранения изменений
+   */
+  onSave(e: KeyboardEvent): void;
 }
 
 /**
@@ -15,7 +15,7 @@ interface IShortcutsCallbacks {
  * @return Родительский объект всего содержимого бокса
  */
 function getBoxContainer(box: VK.MessageBox): HTMLDivElement | null {
-	return findMatchingParent(box.bodyNode, ".popup_box_container");
+  return findMatchingParent(box.bodyNode, ".popup_box_container");
 }
 
 /**
@@ -26,32 +26,32 @@ function getBoxContainer(box: VK.MessageBox): HTMLDivElement | null {
  * @return Функция для удаления обработчика
  */
 export function initializeShortcuts(
-	box: VK.MessageBox,
-	callbacks: IShortcutsCallbacks,
+  box: VK.MessageBox,
+  callbacks: IShortcutsCallbacks,
 ) {
-	const handler = (e: KeyboardEvent) => {
-		switch (e.key) {
-			case "Enter":
-				{
-					if (!e.ctrlKey) break;
+  const handler = (e: KeyboardEvent) => {
+    switch (e.key) {
+      case "Enter":
+        {
+          if (!e.ctrlKey) break;
 
-					callbacks.onSave(e);
-				}
-				break;
+          callbacks.onSave(e);
+        }
+        break;
 
-			default:
-				break;
-		}
-	};
+      default:
+        break;
+    }
+  };
 
-	const boxContainer = getBoxContainer(box);
+  const boxContainer = getBoxContainer(box);
 
-	if (boxContainer == null)
-		return () => {
-			/* dummy */
-		};
+  if (boxContainer == null)
+    return () => {
+      /* dummy */
+    };
 
-	boxContainer.addEventListener("keyup", handler);
+  boxContainer.addEventListener("keyup", handler);
 
-	return () => boxContainer.removeEventListener("keyup", handler);
+  return () => boxContainer.removeEventListener("keyup", handler);
 }

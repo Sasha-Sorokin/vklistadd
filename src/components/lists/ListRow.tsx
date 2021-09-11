@@ -1,34 +1,34 @@
-import { h } from "preact";
-import { useCallback } from "preact/hooks";
 import { CheckboxRow } from "@components/vk/CheckboxRow";
-import { IList } from "@vk/api/lists";
+import type { IList } from "@vk/api/lists";
 import { useForceUpdate } from "@utils/hooks";
 import { toClassName } from "@utils/fashion";
-import { EditListButton, EDIT_BUTTON_CLASS } from "./EditListButton";
+import { useCallback } from "@external/preact/hooks";
+import { h } from "@external/preact";
+import { EditListButton, editButtonClass } from "./EditListButton";
 
 /**
  * Представляет собой свойства элемента списка
  */
 export interface IListRowProps {
-	/**
-	 * Список, для которого создаётся флажок
-	 */
-	list: IList;
+  /**
+   * Список, для которого создаётся флажок
+   */
+  list: IList;
 
-	/**
-	 * Булевое значение, указывающее, отключён ли флажок
-	 */
-	disabled?: boolean;
+  /**
+   * Булевое значение, указывающее, отключён ли флажок
+   */
+  disabled?: boolean;
 }
 
-const LIST_ROW_CLASS = toClassName("listRow", {
-	display: "flex",
-	justifyContent: "space-between",
-	alignItems: "start",
+const listRowClass = toClassName("listRow", {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "start",
 
-	[`&:hover .${EDIT_BUTTON_CLASS}`]: {
-		opacity: 1,
-	},
+  [`&:hover .${editButtonClass}`]: {
+    opacity: 1,
+  },
 });
 
 /**
@@ -36,31 +36,31 @@ const LIST_ROW_CLASS = toClassName("listRow", {
  * @return Флажок для определённого списка
  */
 export function ListRow(props: IListRowProps) {
-	const { list, disabled } = props;
-	const listSelected = list.isSelected();
+  const { list, disabled } = props;
+  const listSelected = list.isSelected();
 
-	const update = useForceUpdate();
+  const update = useForceUpdate();
 
-	const onChange = useCallback(
-		(newValue: boolean) => {
-			list.toggle(newValue);
+  const onChange = useCallback(
+    (newValue: boolean) => {
+      list.toggle(newValue);
 
-			update();
-		},
-		[list, update],
-	);
+      update();
+    },
+    [list, update],
+  );
 
-	return (
-		<li className={LIST_ROW_CLASS}>
-			<CheckboxRow
-				checked={listSelected}
-				text={list.name}
-				onChange={onChange}
-				disabled={disabled}
-				id={`list${list.id}`}
-			/>
+  return (
+    <li className={listRowClass}>
+      <CheckboxRow
+        checked={listSelected}
+        text={list.name}
+        onChange={onChange}
+        disabled={disabled}
+        id={`list${list.id}`}
+      />
 
-			<EditListButton list={list} />
-		</li>
-	);
+      <EditListButton list={list} />
+    </li>
+  );
 }

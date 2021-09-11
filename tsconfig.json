@@ -1,42 +1,43 @@
 {
-	"compilerOptions": {
-		"module": "ES2015",
-		"target": "es6",
-		"lib": ["dom", "esnext"],
-		"strict": true,
-		"noImplicitAny": true,
-		"noImplicitReturns": true,
-		"noImplicitThis": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"strictFunctionTypes": true,
-		"strictNullChecks": true,
-		"strictBindCallApply": true,
-		"strictPropertyInitialization": true,
-		"outDir": "./dist",
-		"baseUrl": ".",
-		"paths": {
-			"@common/*": ["./src/common/*"],
-			"@utils/*": ["./src/utils/*"],
-			"@locales": ["./src/locales/_locales"],
-			"@components/*": ["./src/components/*"],
-			"@vk/*": ["./src/vk/*"],
-			"@/*": ["./src/*"]
-		},
-		"allowJs": true,
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"jsx": "react",
-		"jsxFactory": "h",
-		"moduleResolution": "node",
-		"types": ["tampermonkey"],
-		"plugins": [
-			{
-				"name": "typescript-styled-plugin"
-			}
-		],
-		"removeComments": true
-	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules/**/src", "dist"]
+  "compilerOptions": {
+    "module": "ES2020",
+    "target": "ES2020",
+    "lib": ["dom", "esnext"],
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "outDir": "./dist/tsc",
+    "baseUrl": ".",
+    "paths": {
+      "@common/*": ["./src/common/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@locales": ["./src/locales/_locales"],
+      "@components/*": ["./src/components/*"],
+      "@vk/*": ["./src/vk/*"],
+      "@external/*": ["./src/externals/alias/*"],
+      "@/*": ["./src/*"]
+    },
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "moduleResolution": "node",
+    "types": ["tampermonkey"],
+    "plugins": [],
+    "removeComments": true,
+    "noEmit": true,
+    "importsNotUsedAsValues": "error"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules/**/src", "dist"]
 }

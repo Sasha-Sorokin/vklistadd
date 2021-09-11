@@ -1,45 +1,45 @@
 import { useTarget, useTranslation } from "@utils/hooks";
-import { h } from "preact";
 import { ErrorBlock } from "@components/vk/ErrorBlock";
 import { SupportedModule } from "@vk/scrapers";
 import { c } from "@utils/fashion";
-import { MARGIN_RESET, ERROR_MULTILINE } from "@common/css";
+import { marginReset, errorMultiple } from "@common/css";
+import { h } from "@external/preact";
 
 /**
  * @return Блок с предупреждением о том, что приватности текущего объекта
  */
 export function TargetPrivateWarning() {
-	const translation = useTranslation("privateWarning");
-	const target = useTarget();
+  const translation = useTranslation("privateWarning");
+  const target = useTarget();
 
-	if (target == null || target.type == null) return null;
+  if (target == null || target.type == null) return null;
 
-	const { isPrivate, type, isFollowed } = target;
+  const { isPrivate, type, isFollowed } = target;
 
-	if (isPrivate == null || !isPrivate) return null;
+  if (isPrivate == null || !isPrivate) return null;
 
-	const text = (() => {
-		switch (type) {
-			case SupportedModule.Group: {
-				return translation.group[Number(isFollowed)];
-			}
+  const text = (() => {
+    switch (type) {
+      case SupportedModule.Group: {
+        return translation.group[Number(isFollowed)];
+      }
 
-			case SupportedModule.Profile: {
-				return translation.profile;
-			}
+      case SupportedModule.Profile: {
+        return translation.profile;
+      }
 
-			default:
-				return null;
-		}
-	})();
+      default:
+        return null;
+    }
+  })();
 
-	if (text == null) return null;
+  if (text == null) return null;
 
-	return (
-		<ErrorBlock
-			className={c(MARGIN_RESET, ERROR_MULTILINE)}
-			style={{ marginTop: "10px" }}
-			children={text}
-		/>
-	);
+  return (
+    <ErrorBlock
+      className={c(marginReset, errorMultiple)}
+      style={{ marginTop: "10px" }}
+      children={text}
+    />
+  );
 }

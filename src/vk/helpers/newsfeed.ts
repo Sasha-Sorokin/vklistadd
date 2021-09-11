@@ -2,13 +2,13 @@ import { getWindow } from "@utils/window";
 import { elem } from "@utils/dom";
 import { toClassName } from "@utils/fashion";
 import { log } from "@utils/debug";
-import { PartialContext } from "@vk/scrapers";
+import type { PartialContext } from "@vk/scrapers";
 
-const ITEM_HIGHLIGHT = toClassName("olistHighlight", {
-	backgroundColor: "#e1e5eb",
+const itemHighlightClass = toClassName("olistHighlight", {
+  backgroundColor: "#e1e5eb",
 });
 
-const TOOLTIP_HIDE_TIME = 5000;
+const tooltipHideMs = 5000;
 
 /**
  * Перенаправляет пользователя на страницу новостей и инициализирует
@@ -21,103 +21,101 @@ const TOOLTIP_HIDE_TIME = 5000;
  * @return Успешность операции
  */
 export function editList(
-	listId: number,
-	context: PartialContext,
-	translation: ITranslation,
-	preSelect: boolean = true,
+  listId: number,
+  context: PartialContext,
+  translation: ITranslation,
+  preSelect: boolean = true,
 ) {
-	const { id, icon, name, link } = context;
+  const { id, icon, name, link } = context;
 
-	if (id == null || icon == null || name == null || link == null) {
-		log("warn", "[createList] Not sufficient data", {
-			id,
-			icon,
-			name,
-			link,
-		});
+  if (id == null || icon == null || name == null || link == null) {
+    log("warn", "[createList] Not sufficient data", {
+      id,
+      icon,
+      name,
+      link,
+    });
 
-		return false;
-	}
+    return false;
+  }
 
-	const window = getWindow();
+  const window = getWindow();
 
-	if (window.nav == null) {
-		log("warn", "[createList] No nav fuction was found in window");
+  if (window.nav == null) {
+    log("warn", "[createList] No nav fuction was found in window");
 
-		return false;
-	}
+    return false;
+  }
 
-	// 1. Создаём фейковый класс компонента списков для того, чтобы
-	//    отловить и заранее выбрать элемент объекта в нём
+  // 1. Создаём фейковый класс компонента списков для того, чтобы
+  //    отловить и заранее выбрать элемент объекта в нём
 
-	const $OList = window.OList;
+  const $OList = window.OList;
 
-	const target = { id, icon, name, link };
+  const target = { id, icon, name, link };
 
-	const {
-		listCreation: { highlightTooltip },
-	} = translation;
+  const {
+    listCreation: { highlightTooltip },
+  } = translation;
 
-	const tooltipText = highlightTooltip.replace("{}", name);
+  const tooltipText = highlightTooltip.replace("{}", name);
 
-	class FakeOList extends $OList {
-		constructor(...args: ConstructorParameters<Window["OList"]>) {
-			const [, list, selected] = args;
+  class FakeOList extends $OList {
+    constructor(...args: ConstructorParameters<Window["OList"]>) {
+      const [, list, selected] = args;
 
-			window.OList = $OList;
+      window.OList = $OList;
 
-			const targetIndex = list.findIndex(
-				(listItem) => listItem[0] === target.id,
-			);
+      const targetIndex = list.findIndex(
+        (listItem) => listItem[0] === target.id,
+      );
 
-			if (targetIndex === -1) {
-				list.splice(0, 0, [
-					target.id,
-					target.name,
-					target.icon,
-					target.link,
-					0,
-				]);
-			}
+      if (targetIndex === -1) {
+        list.splice(0, 0, [
+          target.id,
+          target.name,
+          target.icon,
+          target.link,
+          0,
+        ]);
+      }
 
-			selected[target.id] = preSelect ? 1 : 0;
+      selected[target.id] = preSelect ? 1 : 0;
 
-			super(...args);
+      super(...args);
 
-			const itemElem = elem<HTMLDivElement>(
-				`#olist_item_wrap${target.id}`,
-			);
+      const itemElem = elem<HTMLDivElement>(`#olist_item_wrap${target.id}`);
 
-			if (itemElem == null) return;
+      if (itemElem == null) return;
 
-			itemElem.classList.add(ITEM_HIGHLIGHT);
-			itemElem.scrollIntoView({ block: "center" });
+      itemElem.classList.add(itemHighlightClass);
+      itemElem.scrollIntoView({ block: "center" });
 
-			const avatarElem = elem<HTMLDivElement>(
-				".olist_item_photo_wrap",
-				itemElem,
-			);
+      const avatarElem = elem<HTMLDivElement>(
+        ".olist_item_photo_wrap",
+        itemElem,
+      );
 
-			if (avatarElem == null) return;
+      if (avatarElem == null) return;
 
-			getWindow().showTitle(avatarElem, tooltipText, undefined, {
-				init(tooltip) {
-					setTimeout(() => tooltip.hide(), TOOLTIP_HIDE_TIME);
-				},
-			});
-		}
-	}
+      getWindow().showTitle(avatarElem, tooltipText, undefined, {
+        init(tooltip) {
+          setTimeout(() => tooltip.hide(), tooltipHideMs);
+        },
+      });
+    }
+  }
 
-	// 2. Перенаправляем пользователя на страницу новостей и вызываем
-	//    метод создания нового списка, который сконструирует наш OList
+  // 2. Перенаправляем пользователя на страницу новостей и вызываем
+  //    метод создания нового списка, который сконструирует наш OList
 
-	window.nav.go("feed", null, {
-		onDone() {
-			window.OList = FakeOList;
+  window.nav.go("feed", null, {
+    onDone() {
+      window.OList = FakeOList;
 
-			window.feed?.editList(listId);
-		},
-	});
+      window.feed?.editList(listId);
+    },
+  });
 
-	return true;
+  return true;
 }

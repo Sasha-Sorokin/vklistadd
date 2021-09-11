@@ -1,4 +1,4 @@
-import { LanguageCode, TRANSLATIONS } from "./translations";
+import { LanguageCode, translations } from "./translations";
 
 /**
  * Определяет язык, используемый браузером
@@ -7,27 +7,27 @@ import { LanguageCode, TRANSLATIONS } from "./translations";
  * если определение провалилось
  */
 function detectNavigatorLanguage(): LanguageCode | null {
-	for (const langCode of navigator.languages) {
-		if (langCode in TRANSLATIONS) return langCode as LanguageCode;
-	}
+  for (const langCode of navigator.languages) {
+    if (langCode in translations) return langCode as LanguageCode;
+  }
 
-	return null;
+  return null;
 }
 
-const NAVIGATOR_LANGUAGE = detectNavigatorLanguage() ?? "en-US";
+const navigatorLanguage = detectNavigatorLanguage() ?? "en-US";
 
 /**
  * @return Код языка в браузере, для которого у нас имеются переводы
  */
 export function getNavigatorLanguage() {
-	return NAVIGATOR_LANGUAGE;
+  return navigatorLanguage;
 }
 
-const NAVIGATOR_TRANSLATIONS = TRANSLATIONS[getNavigatorLanguage()];
+const navigatorTranslations = translations[getNavigatorLanguage()];
 
 /**
  * @return Переводы для языка браузера
  */
 export function getNavigatorTranslations() {
-	return NAVIGATOR_TRANSLATIONS;
+  return navigatorTranslations;
 }

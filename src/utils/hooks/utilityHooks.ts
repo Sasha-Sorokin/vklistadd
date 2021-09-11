@@ -1,21 +1,23 @@
-import { useState, useCallback } from "preact/hooks";
+import { useCallback, useState } from "@external/preact/hooks";
+import { log } from "@utils/debug";
 
 /**
  * @return Функция для принудительного обновления компонента
  */
 export function useForceUpdate() {
-	let ret = useState(0);
+  let ret = useState({});
 
-	if ((ret as unknown) == null) {
-		// иногда Preact багает и не возвращает нам useState?!
-		ret = [0, () => 0];
-	}
+  if (!Array.isArray(ret)) {
+    // NOTE(Braw): иногда Preact багает и не возвращает нам useState?!
 
-	const [, setTick] = ret;
+    log("error", "useForceUpdate(): illegal return, fix up", ret);
 
-	return useCallback(() => {
-		setTick((tick) => tick + 1);
-	}, [setTick]);
+    ret = [{}, () => undefined];
+  }
+
+  const [, setTick] = ret;
+
+  return useCallback(() => setTick({}), [setTick]);
 }
 
 /**
@@ -26,16 +28,16 @@ export function useForceUpdate() {
  * @return Обработчик, который можно использовать для событий
  */
 export function usePreventedCallback<E extends Event>(
-	callback?: ((event: E) => void) | null,
+  callback?: ((event: E) => void) | null,
 ) {
-	return useCallback(
-		(event: E) => {
-			event.preventDefault();
+  return useCallback(
+    (event: E) => {
+      event.preventDefault();
 
-			callback?.(event);
+      callback?.(event);
 
-			return false;
-		},
-		[callback],
-	);
+      return false;
+    },
+    [callback],
+  );
 }

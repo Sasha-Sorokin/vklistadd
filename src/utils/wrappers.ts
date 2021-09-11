@@ -1,14 +1,15 @@
-import { AnyObj, MatchKeys, Member } from "@common/types";
-import { ERROR_MESSAGES, log } from "@utils/debug";
+import type { AnyObj, MatchKeys, Member } from "@common/types";
+import { log } from "@utils/debug";
+import { errorMessages } from "./errors";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type PropertyChangedCallback<ValueType> = (newValue: ValueType) => void;
 type DescriptorOmit = "value" | "get" | "set" | "writable";
 type DescriptorDefaults = Omit<PropertyDescriptor, DescriptorOmit>;
 
-const DEFAULT_DESCRIPTOR: DescriptorDefaults = {
-	configurable: true,
-	enumerable: false,
+const defaultDescriptor: DescriptorDefaults = {
+  configurable: true,
+  enumerable: false,
 };
 
 /**
@@ -21,31 +22,31 @@ const DEFAULT_DESCRIPTOR: DescriptorDefaults = {
  * @param descriptor Конфигурация дескриптора
  */
 export function wrapProperty<Obj extends AnyObj, Key extends keyof Obj>(
-	obj: Obj,
-	property: Key,
-	callback: PropertyChangedCallback<Obj[Key]>,
-	descriptor: DescriptorDefaults = DEFAULT_DESCRIPTOR,
+  obj: Obj,
+  property: Key,
+  callback: PropertyChangedCallback<Obj[Key]>,
+  descriptor: DescriptorDefaults = defaultDescriptor,
 ) {
-	let realValue = obj[property];
+  let realValue = obj[property];
 
-	Object.defineProperty(obj, property, {
-		...descriptor,
-		get: () => realValue,
-		set(newValue: Obj[Key]) {
-			realValue = newValue;
+  Object.defineProperty(obj, property, {
+    ...descriptor,
+    get: () => realValue,
+    set(newValue: Obj[Key]) {
+      realValue = newValue;
 
-			try {
-				callback(newValue);
-			} catch {
-				// FIXME: should log here?
-			}
-		},
-	});
+      try {
+        callback(newValue);
+      } catch {
+        // FIXME: should log here?
+      }
+    },
+  });
 }
 
 type Fc = (...args: any[]) => any;
 
-const WRAPPED_FUNCTIONS = new Set<Fc>();
+const wrappedFunctions = new Set<Fc>();
 
 /**
  * Преставляет собой обработчики вызова функции
@@ -54,16 +55,16 @@ const WRAPPED_FUNCTIONS = new Set<Fc>();
  * @template Result Результат `preCallback`, передаваемый `postCallback`
  */
 interface IFunctionCallbacks<Func extends Fc, Result> {
-	/**
-	 * Обработчик, вызываемый до исполнения функции
-	 */
-	preCallback(...args: Parameters<Func>): Result;
+  /**
+   * Обработчик, вызываемый до исполнения функции
+   */
+  preCallback(...args: Parameters<Func>): Result;
 
-	/**
-	 * Обработчик, вызываемый после исполнения функции
-	 * с аргументами, которые вернуло исполнение `preCallback`
-	 */
-	postCallback?(value: Result): void;
+  /**
+   * Обработчик, вызываемый после исполнения функции
+   * с аргументами, которые вернуло исполнение `preCallback`
+   */
+  postCallback?(value: Result): void;
 }
 
 /**
@@ -71,9 +72,9 @@ interface IFunctionCallbacks<Func extends Fc, Result> {
  * @return Название функции `func`
  */
 function getFunctionName<F extends () => any>(func: F) {
-	const { name } = func;
+  const { name } = func;
 
-	return name === "" ? "[anonymous function]" : name;
+  return name === "" ? "[anonymous function]" : name;
 }
 
 /**
@@ -116,12 +117,12 @@ type FunctionsOf<Obj extends Record<Member, unknown>> = MatchKeys<Obj, Fc>;
  * ```
  */
 export function getBound<
-	Obj extends Record<Member, any>,
-	Key extends FunctionsOf<Obj>,
+  Obj extends Record<Member, any>,
+  Key extends FunctionsOf<Obj>,
 >(obj: Obj, prop: Key): OmitThisParameter<Obj[Key]> {
-	const func = obj[prop] as Fc;
+  const func = obj[prop] as Fc;
 
-	return func.bind(obj) as OmitThisParameter<Obj[Key]>;
+  return func.bind(obj) as OmitThisParameter<Obj[Key]>;
 }
 
 /**
@@ -135,78 +136,78 @@ export function getBound<
  * @return Обёртка, которую можно присвоить на место оригинальной функции
  */
 export function wrapFunction<F extends Fc, V>(
-	func: F,
-	callbacks: IFunctionCallbacks<F, V> | Fc,
-	rejectChaining = false,
+  func: F,
+  callbacks: IFunctionCallbacks<F, V> | Fc,
+  rejectChaining = false,
 ): (...args: Parameters<F>) => ReturnType<F> {
-	if (rejectChaining && WRAPPED_FUNCTIONS.has(func)) {
-		throw new Error(ERROR_MESSAGES.wrappingWrapper);
-	}
+  if (rejectChaining && wrappedFunctions.has(func)) {
+    throw new Error(errorMessages.wrappingWrapper);
+  }
 
-	let resultWrapper: (...args: Parameters<F>) => ReturnType<F>;
+  let resultWrapper: (...args: Parameters<F>) => ReturnType<F>;
 
-	const funcName = getFunctionName(func);
+  const funcName = getFunctionName(func);
 
-	if (typeof callbacks === "function") {
-		resultWrapper = function wrappedFunction(...args) {
-			const result = func(...args);
+  if (typeof callbacks === "function") {
+    resultWrapper = function wrappedFunction(...args) {
+      const result = func(...args);
 
-			try {
-				callbacks();
-			} catch (err) {
-				log("error", `Callback for ${funcName} has failed:`, {
-					error: err,
-					function: func,
-					callbackFunction: callbacks,
-				});
-			}
+      try {
+        callbacks();
+      } catch (err) {
+        log("error", `Callback for ${funcName} has failed:`, {
+          error: err,
+          function: func,
+          callbackFunction: callbacks,
+        });
+      }
 
-			return result;
-		};
-	} else {
-		resultWrapper = function wrappedFunction(...args) {
-			// eslint-disable-next-line @typescript-eslint/unbound-method
-			const { preCallback, postCallback } = callbacks;
+      return result;
+    };
+  } else {
+    resultWrapper = function wrappedFunction(...args) {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const { preCallback, postCallback } = callbacks;
 
-			let beforeError: unknown | null = null;
-			let beforeResult: { value: V } | null = null;
-			let funcResult: { value: ReturnType<F> } | null = null;
+      let beforeError: unknown | null = null;
+      let beforeResult: { value: V } | null = null;
+      let funcResult: { value: ReturnType<F> } | null = null;
 
-			try {
-				beforeResult = {
-					value: preCallback(...args),
-				};
-			} catch (err) {
-				beforeError = err;
-			}
+      try {
+        beforeResult = {
+          value: preCallback(...args),
+        };
+      } catch (err) {
+        beforeError = err;
+      }
 
-			funcResult = { value: func(...args) };
+      funcResult = { value: func(...args) };
 
-			if (beforeError != null) {
-				log("error", `Callback for ${funcName} has failed:`, {
-					error: beforeError,
-					function: func,
-					callback: preCallback,
-				});
-			}
+      if (beforeError != null) {
+        log("error", `Callback for ${funcName} has failed:`, {
+          error: beforeError,
+          function: func,
+          callback: preCallback,
+        });
+      }
 
-			try {
-				if (beforeError == null && beforeResult != null) {
-					postCallback?.(beforeResult.value);
-				}
-			} catch (err) {
-				log("error", `Post callback for ${funcName} has failed:`, {
-					error: err,
-					function: func,
-					postCallback,
-				});
-			}
+      try {
+        if (beforeError == null && beforeResult != null) {
+          postCallback?.(beforeResult.value);
+        }
+      } catch (err) {
+        log("error", `Post callback for ${funcName} has failed:`, {
+          error: err,
+          function: func,
+          postCallback,
+        });
+      }
 
-			return funcResult.value;
-		};
-	}
+      return funcResult.value;
+    };
+  }
 
-	WRAPPED_FUNCTIONS.add(resultWrapper);
+  wrappedFunctions.add(resultWrapper);
 
-	return resultWrapper;
+  return resultWrapper;
 }

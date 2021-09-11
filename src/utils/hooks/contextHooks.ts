@@ -1,7 +1,7 @@
-import { useContext } from "preact/hooks";
 import { TargetContext } from "@components/contexts/TargetContext";
 import { BoxContext } from "@components/contexts/BoxContext";
 import { TranslationContext } from "@components/contexts/TranslationContext";
+import { useContext } from "@external/preact/hooks";
 
 /**
  * Хук для использования текущего объекта из контекста
@@ -9,7 +9,7 @@ import { TranslationContext } from "@components/contexts/TranslationContext";
  * @return Текущий объект, для которого создан бокс
  */
 export function useTarget() {
-	return useContext(TargetContext);
+  return useContext(TargetContext);
 }
 
 /**
@@ -18,7 +18,7 @@ export function useTarget() {
  * @return Текущий контекст бокса
  */
 export function useBoxDetail() {
-	return useContext(BoxContext);
+  return useContext(BoxContext);
 }
 
 /**
@@ -27,10 +27,10 @@ export function useBoxDetail() {
  * @return Массив из: контекста бокса и текущем объекте
  */
 export function useBoxContexts() {
-	const detail = useBoxDetail();
-	const target = useTarget();
+  const detail = useBoxDetail();
+  const target = useTarget();
 
-	return [detail, target] as const;
+  return [detail, target] as const;
 }
 
 /**
@@ -39,7 +39,7 @@ export function useBoxContexts() {
  * @return Текущие переводы
  */
 export function useTranslations() {
-	return useContext(TranslationContext);
+  return useContext(TranslationContext);
 }
 
 /**
@@ -49,7 +49,7 @@ export function useTranslations() {
  * @return Содержимое ветви
  */
 export function useTranslation<Key extends keyof ITranslation>(tree: Key) {
-	const translation = useTranslations();
+  const translation = useTranslations();
 
-	return translation[tree];
+  return translation[tree];
 }

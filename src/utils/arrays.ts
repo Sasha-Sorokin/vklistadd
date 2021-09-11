@@ -7,15 +7,15 @@
  * @return Новый размер массива
  */
 export function addUnique<T>(array: T[], ...elements: T[]) {
-	let length: number | undefined;
+  let length: number | undefined;
 
-	for (const element of elements) {
-		if (array.includes(element)) continue;
+  for (const element of elements) {
+    if (array.includes(element)) continue;
 
-		length = array.push(element);
-	}
+    length = array.push(element);
+  }
 
-	return length ?? array.length;
+  return length ?? array.length;
 }
 
 /**
@@ -26,22 +26,22 @@ export function addUnique<T>(array: T[], ...elements: T[]) {
  * @return Массив удалённых элементов
  */
 export function removeElements<T>(array: T[], ...elements: T[]) {
-	const removed: T[] = [];
+  const removed: T[] = [];
 
-	for (const element of elements) {
-		const index = array.indexOf(element);
+  for (const element of elements) {
+    const index = array.indexOf(element);
 
-		if (index === -1) continue;
+    if (index === -1) continue;
 
-		removed.push(...array.splice(index, 1));
-	}
+    removed.push(...array.splice(index, 1));
+  }
 
-	return removed;
+  return removed;
 }
 
 type Array<ElementType, IsReadonly> = IsReadonly extends true
-	? readonly ElementType[]
-	: ElementType[];
+  ? readonly ElementType[]
+  : ElementType[];
 
 /**
  * Проверяет, является ли объект массивом.
@@ -61,7 +61,7 @@ type Array<ElementType, IsReadonly> = IsReadonly extends true
  * ```
  */
 export function isArray<ElementType, IsReadonly = false>(
-	arg: unknown,
+  arg: unknown,
 ): arg is Array<ElementType, IsReadonly> {
-	return Array.isArray(arg);
+  return Array.isArray(arg);
 }

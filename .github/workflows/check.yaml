@@ -1,0 +1,53 @@
+name: Check Code
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+
+      - name: Install NPM packages
+        run: npm ci
+
+      - name: Prettier style
+        run: npx prettier --check .
+
+      - name: Check for code changes
+        id: check_code_changes
+        uses: tj-actions/changed-files@v10
+        with:
+          files: |
+            **/*.json
+            **/*.js
+            **/.*.js
+            **/*.ts
+            **/.*.ts
+            **/*.tsx
+            **/.*.tsx
+            .eslintignore
+
+      - name: Run lint
+        if: ${{ steps.check_code_changes.outputs.any_changed }}
+        run: npx eslint src build --ext ts --ext tsx
+
+      - name: No-emit build "." with TypeScript
+        if: ${{ steps.check_code_changes.outputs.any_changed }}
+        run: npx tsc -p . --noEmit
+
+      - name: No-emit build "build" with TypeScript
+        if: ${{ steps.check_code_changes.outputs.any_changed }}
+        run: npx tsc -p build --noEmit
