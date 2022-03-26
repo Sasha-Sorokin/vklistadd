@@ -1,27 +1,42 @@
-import { ILists } from "@vk/api/lists";
+import type { ILists } from "@vk/api/lists";
 import { getWindow } from "@utils/window";
 import { getVKTranslation } from "@utils/i18n";
 import { setButtonState, ButtonState } from "@utils/buttons";
 import { log } from "@utils/debug";
 import { createSwitch, valueOf } from "@utils/switch";
-import { SaveCallback } from "./types";
+import type { SaveCallback } from "./types";
 import { showControlsLabel, LabelColor } from "./controlsLabel";
 import { initializeShortcuts } from "./shortcuts";
+
+/**
+ * Тип кнопки
+ */
+export const enum BoxButtonType {
+  /**
+   * Первичная кнопка, выделена голубым цветом
+   */
+  Primary = "ok",
+
+  /**
+   * Вторичная кнопка, не имеет выделения
+   */
+  Secondary = "gray",
+}
 
 /**
  * @param lists Сохраняемый объект списков
  * @return Сохранились ли изменения
  */
 async function saveChanges(lists: ILists) {
-	try {
-		await lists.commitChanges();
+  try {
+    await lists.commitChanges();
 
-		return true;
-	} catch (err) {
-		log("warn", "Failed to commit changes:", err);
+    return true;
+  } catch (err) {
+    log("warn", "Failed to commit changes:", err);
 
-		return false;
-	}
+    return false;
+  }
 }
 
 /**
@@ -31,133 +46,133 @@ async function saveChanges(lists: ILists) {
  * @return Функции для интеграции с боксом
  */
 export function initializeControls(box: VK.MessageBox) {
-	const isSaving = createSwitch(false);
+  const isSaving = createSwitch(false);
 
-	let lists: ILists | undefined;
+  let lists: ILists | undefined;
 
-	let saveButton: HTMLButtonElement;
-	let cancelButton: HTMLButtonElement;
+  let saveButton: HTMLButtonElement;
+  let cancelButton: HTMLButtonElement;
 
-	const { lang } = getWindow();
+  const { lang } = getWindow();
 
-	const [savedText, failedText] = [
-		lang.global_changes_saved,
-		lang.global_error_occured,
-	];
+  const [savedText, failedText] = [
+    lang.global_changes_saved,
+    lang.global_error_occured,
+  ];
 
-	const { box: translation } = getVKTranslation();
+  const { box: translation } = getVKTranslation();
 
-	const lockControls = (isSaving: boolean) => {
-		setButtonState(
-			saveButton,
-			isSaving ? ButtonState.Progress : ButtonState.Interactive,
-		);
+  const lockControls = (isSaving: boolean) => {
+    setButtonState(
+      saveButton,
+      isSaving ? ButtonState.Progress : ButtonState.Interactive,
+    );
 
-		setButtonState(
-			cancelButton,
-			isSaving ? ButtonState.Disabled : ButtonState.Interactive,
-		);
-	};
+    setButtonState(
+      cancelButton,
+      isSaving ? ButtonState.Disabled : ButtonState.Interactive,
+    );
+  };
 
-	isSaving.onChange(lockControls);
+  isSaving.onChange(lockControls);
 
-	const saveLists = async (hideBox = true) => {
-		if (lists == null || isSaving.lazyToggle(true)) return;
+  const saveLists = async (hideBox = true) => {
+    if (lists == null || isSaving.lazyToggle(true)) return;
 
-		const saveComplete = await saveChanges(lists);
+    const saveComplete = await saveChanges(lists);
 
-		isSaving.toggle(false);
+    isSaving.toggle(false);
 
-		if (!saveComplete) {
-			showControlsLabel(box, failedText, LabelColor.Red);
+    if (!saveComplete) {
+      showControlsLabel(box, failedText, LabelColor.Red);
 
-			return;
-		}
+      return;
+    }
 
-		if (hideBox) {
-			box.hide();
+    if (hideBox) {
+      box.hide();
 
-			getWindow().showDoneBox(savedText, { timeout: 1000 });
+      getWindow().showDoneBox(savedText, { timeout: 1000 });
 
-			return;
-		}
+      return;
+    }
 
-		showControlsLabel(box, savedText, LabelColor.Gray);
-	};
+    showControlsLabel(box, savedText, LabelColor.Gray);
+  };
 
-	const saveHandler = async (e: MouseEvent | KeyboardEvent) => {
-		await saveLists(!e.shiftKey);
-	};
+  const saveHandler = async (e: MouseEvent | KeyboardEvent) => {
+    await saveLists(!e.shiftKey);
+  };
 
-	// #region Манипуляция боксом
+  // #region Манипуляция боксом
 
-	box.setOptions({
-		onHideAttempt() {
-			if (valueOf(isSaving)) {
-				showControlsLabel(box, translation.savingChanges);
+  box.setOptions({
+    onHideAttempt() {
+      if (valueOf(isSaving)) {
+        showControlsLabel(box, translation.savingChanges);
 
-				return false;
-			}
+        return false;
+      }
 
-			return true;
-		},
+      return true;
+    },
 
-		onBeforeHide() {
-			lists?.resetChanges();
-		},
-	});
+    onBeforeHide() {
+      lists?.resetChanges();
+    },
+  });
 
-	saveButton = box.addButton(
-		lang.box_save,
-		// eslint-disable-next-line @typescript-eslint/promise-function-async
-		(_, e) => saveHandler(e),
-		VK.BoxButtonType.Primary,
-		true,
-	);
+  saveButton = box.addButton(
+    lang.box_save,
+    // eslint-disable-next-line @typescript-eslint/promise-function-async
+    (_, e) => saveHandler(e),
+    BoxButtonType.Primary,
+    true,
+  );
 
-	setButtonState(saveButton, ButtonState.Disabled);
+  setButtonState(saveButton, ButtonState.Disabled);
 
-	cancelButton = box.addButton(
-		lang.box_cancel,
-		undefined,
-		VK.BoxButtonType.Secondary,
-		true,
-	);
+  cancelButton = box.addButton(
+    lang.box_cancel,
+    undefined,
+    BoxButtonType.Secondary,
+    true,
+  );
 
-	initializeShortcuts(box, {
-		onSave: saveHandler,
-	});
+  initializeShortcuts(box, {
+    onSave: saveHandler,
+  });
 
-	// #endregion
+  // #endregion
 
-	const setLists = ($lists: ILists | null) => {
-		if ($lists != null) lists = $lists;
+  const setLists = ($lists: ILists | null) => {
+    if ($lists != null) lists = $lists;
 
-		setButtonState(
-			saveButton,
-			$lists == null ? ButtonState.Disabled : ButtonState.Interactive,
-		);
-	};
+    setButtonState(
+      saveButton,
+      $lists == null ? ButtonState.Disabled : ButtonState.Interactive,
+    );
+  };
 
-	const resetLists = () => setLists(null);
+  const resetLists = () => setLists(null);
 
-	const saveCallbacks = new Set<SaveCallback>();
+  const saveCallbacks = new Set<SaveCallback>();
 
-	const onSave = (callback: SaveCallback) => {
-		saveCallbacks.add(callback);
+  const onSave = (callback: SaveCallback) => {
+    saveCallbacks.add(callback);
 
-		return () => saveCallbacks.delete(callback);
-	};
+    return () => saveCallbacks.delete(callback);
+  };
 
-	isSaving.onChange((value) => {
-		for (const callback of saveCallbacks) {
-			try {
-				callback(value);
-			} catch (err) {
-				log("warn", "One of the onSave callbacks has failed:", err);
-			}
-		}
-	});
+  isSaving.onChange((value) => {
+    for (const callback of saveCallbacks) {
+      try {
+        callback(value);
+      } catch (err) {
+        log("warn", "One of the onSave callbacks has failed:", err);
+      }
+    }
+  });
 
-	return [setLists, resetLists, onSave] as const;
+  return [setLists, resetLists, onSave] as const;
 }

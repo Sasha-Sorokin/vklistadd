@@ -1,77 +1,86 @@
 {
-	"name": "vk_listadd",
-	"version": "3.0.0",
-	"description": "Implements a darky button to add communities or users to feed lists without subscribing to them",
-	"author": {
-		"name": "Sasha Sorokin",
-		"url": "https://github.com/Sasha-Sorokin"
-	},
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/Sasha-Sorokin/vklistadd/issues"
-	},
-	"homepage": "https://github.com/Sasha-Sorokin/vklistadd#readme",
-	"main": "dist/vklistadd.user.js",
-	"scripts": {
-		"test": "echo-cli 'No tests are currently available :('",
-		"build": "yarn clear && rollup -c",
-		"clear": "clear-folder dist",
-		"build:ts": "yarn clear && tsc",
-		"lint": "eslint src --ext ts --ext tsx",
-		"docs": "typedoc",
-		"preversion": "yarn lint && yarn build && git add dist",
-		"prettier": "prettier --write ."
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/Sasha-Sorokin/vklistadd.git"
-	},
-	"keywords": [
-		"userscript",
-		"vk"
-	],
-	"publishConfig": {
-		"message": "chore: версия %s"
-	},
-	"devDependencies": {
-		"@rollup/plugin-alias": "^3.1.2",
-		"@rollup/plugin-commonjs": "20",
-		"@rollup/plugin-image": "^2.1.1",
-		"@rollup/plugin-node-resolve": "^13.0.0",
-		"@rollup/plugin-replace": "3",
-		"@rollup/plugin-yaml": "^3.1.0",
-		"@types/debounce": "^1.2.0",
-		"@types/tampermonkey": "^4.0.0",
-		"@typescript-eslint/eslint-plugin": "4",
-		"@typescript-eslint/eslint-plugin-tslint": "4",
-		"@typescript-eslint/parser": "4",
-		"clear-folder": "^3.0.0",
-		"csstype": "3",
-		"echo-cli": "^1.0.8",
-		"eslint": "^7.32.0",
-		"eslint-config-airbnb-base": "^14.1.0",
-		"eslint-config-preact": "^1.1.0",
-		"eslint-config-prettier": "^8.3.0",
-		"eslint-plugin-import": "^2.20.1",
-		"eslint-plugin-jsdoc": "36",
-		"eslint-plugin-userscript": "Sasha-Sorokin/eslint-plugin-userscript#332aa4e87dbc7dcf995341a75e0f074f0642b396",
-		"prettier": "^2.3.2",
-		"rollup": "^2.52.7",
-		"rollup-plugin-license": "2",
-		"rollup-plugin-typescript2": "^0.30.0",
-		"tsdef": "0.0.14",
-		"tslib": "^2.3.0",
-		"tslint": "^6.1.0",
-		"tslint-consistent-codestyle": "^1.16.0",
-		"tslint-eslint-rules": "^5.4.0",
-		"typedoc": "^0.21.2",
-		"typescript": "^4.3.5",
-		"typescript-styled-plugin": "^0.18.0"
-	},
-	"dependencies": {
-		"debounce": "^1.2.1",
-		"preact": "^10.3.4",
-		"simplestyle-js": "3",
-		"uid": "2"
-	}
+  "name": "vk_listadd",
+  "version": "4.2.25",
+  "description": "Implements a darky button to add communities or users to feed lists without subscribing to them",
+  "private": true,
+  "author": {
+    "name": "Brawaru",
+    "url": "https://github.com/Brawaru"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Brawaru/vklistadd/issues"
+  },
+  "homepage": "https://github.com/Brawaru/vklistadd#readme",
+  "main": "dist/vklistadd.user.js",
+  "scripts": {
+    "clear": "clear-folder dist/built && clear-folder dist/tsc",
+    "build:all": "rollup -c build/index.ts --configPlugin ./build/plugin.js",
+    "build:userscript": "npm run -s build:all -- --environment inputs:userscript",
+    "build:packs": "npm run -s build:all -- --environment inputs:packs",
+    "build": "clear-folder dist/built && npm run -s build:all",
+    "check:src": "tsc -p . --noEmit",
+    "check:build": "tsc -p build --noEmit",
+    "check": "npm run -s check:src && npm run -s check:build",
+    "lint": "eslint src build --ext ts --ext tsx",
+    "docs": "typedoc",
+    "prepack": "npm run -s lint && npm run -s build",
+    "prettier:write": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brawaru/vklistadd.git"
+  },
+  "keywords": [
+    "userscript",
+    "vk"
+  ],
+  "devDependencies": {
+    "@rollup/plugin-alias": "^3.1.5",
+    "@rollup/plugin-commonjs": "20",
+    "@rollup/plugin-image": "^2.1.1",
+    "@rollup/plugin-node-resolve": "^13.0.5",
+    "@rollup/plugin-replace": "3",
+    "@rollup/plugin-yaml": "^3.1.0",
+    "@semantic-release/exec": "^6.0.1",
+    "@types/debounce": "^1.2.1",
+    "@types/tampermonkey": "^4.0.5",
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "clear-folder": "^3.0.0",
+    "csstype": "3",
+    "esbuild": "^0.13.3",
+    "esbuild-plugin-yaml": "^0.0.1",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-preact": "^1.1.4",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jsdoc": "36",
+    "eslint-plugin-userscript": "file:packages/eslint-plugin-userscript-1.0.1.tgz",
+    "isomorphic-git": "^1.10.1",
+    "prettier": "^2.4.1",
+    "rollup": "^2.57.0",
+    "rollup-plugin-esbuild": "^4.5.0",
+    "rollup-plugin-ignore": "^1.0.10",
+    "rollup-plugin-license": "2",
+    "rollup-plugin-typescript2": "^0.30.0",
+    "semantic-release": "^18.0.0",
+    "tsdef": "0.0.14",
+    "tslib": "^2.3.1",
+    "typedoc": "^0.22.4",
+    "types-package-json": "^2.0.39",
+    "typescript": "^4.4.3",
+    "userscript-header-generator": "file:packages/userscript-header-generator-1.0.0.tgz"
+  },
+  "dependencies": {
+    "debounce": "^1.2.1",
+    "preact": "^10.5.14",
+    "proxy-layers": "file:packages/proxy-layers-1.0.0.tgz",
+    "simplestyle-js": "3",
+    "uid": "2"
+  },
+  "engines": {
+    "yarn": "YARN NO LONGER USED - use npm instead."
+  }
 }

@@ -5,9 +5,9 @@ import { log } from "@utils/debug";
 import { getWindow } from "@utils/window";
 import { TreatingKind, SupportedModule, ITreating } from "@vk/scrapers";
 import { getBound, wrapFunction } from "@utils/wrappers";
-import debounce from "debounce";
+import { debounce } from "@external/debounce";
 
-const MOUNT_MENU_ITEM = getReplicable();
+const mountMenuItem = getReplicable();
 
 /**
  * Определяет оптимальное место для встраивания элемента меню в зависимости
@@ -18,30 +18,28 @@ const MOUNT_MENU_ITEM = getReplicable();
  * @return Родительский элемент или функция для встраивания
  */
 function getMenuDisposition(menu: HTMLDivElement, kind: TreatingKind) {
-	switch (kind) {
-		case TreatingKind.FriendRow:
-		case TreatingKind.Bookmark:
-		case TreatingKind.GroupRow: {
-			const separator = elem(".ui_actions_menu_sep", menu);
+  switch (kind) {
+    case TreatingKind.FriendRow:
+    case TreatingKind.Bookmark:
+    case TreatingKind.GroupRow: {
+      const separator = elem(".ui_actions_menu_sep", menu);
 
-			if (separator == null) break;
+      if (separator == null) break;
 
-			const referenceNode =
-				kind === TreatingKind.Bookmark
-					? separator
-					: separator.nextSibling;
+      const referenceNode =
+        kind === TreatingKind.Bookmark ? separator : separator.nextSibling;
 
-			if (referenceNode == null) return null;
+      if (referenceNode == null) return null;
 
-			return (component: DocumentFragment) =>
-				insertBefore(referenceNode, component);
-		}
+      return (component: DocumentFragment) =>
+        insertBefore(referenceNode, component);
+    }
 
-		default:
-			break;
-	}
+    default:
+      break;
+  }
 
-	return menu;
+  return menu;
 }
 
 /**
@@ -50,26 +48,26 @@ function getMenuDisposition(menu: HTMLDivElement, kind: TreatingKind) {
  * @param invoker Информация об элементе, для которого создаётся меню
  */
 function injectActionsMenuItem(invoker: ITreating) {
-	const menu = elem<HTMLDivElement>(".ui_actions_menu", invoker.element);
+  const menu = elem<HTMLDivElement>(".ui_actions_menu", invoker.element);
 
-	if (menu == null) {
-		log("warn", "Not injecting menu item: couldn't find menu");
+  if (menu == null) {
+    log("warn", "Not injecting menu item: couldn't find menu");
 
-		return;
-	}
+    return;
+  }
 
-	const disposition = getMenuDisposition(menu, invoker.kind);
+  const disposition = getMenuDisposition(menu, invoker.kind);
 
-	if (disposition == null) {
-		log(
-			"warn",
-			"Not injecting menu item: was unable to find optimal disposition",
-		);
+  if (disposition == null) {
+    log(
+      "warn",
+      "Not injecting menu item: was unable to find optimal disposition",
+    );
 
-		return;
-	}
+    return;
+  }
 
-	MOUNT_MENU_ITEM(disposition, { invoker });
+  mountMenuItem(disposition, { invoker });
 }
 
 /**
@@ -81,79 +79,79 @@ type Bookmarks = HTMLDivElement[];
  * Представляет собой контекст для модуля закладок
  */
 interface IBookmarksContext {
-	/**
-	 * Массив всех элементов закладок на странице
-	 */
-	pagesAll: Bookmarks;
+  /**
+   * Массив всех элементов закладок на странице
+   */
+  pagesAll: Bookmarks;
 }
 
 /**
  * @return Тип закладок по текущему фильтру
  */
 function getBookmarksType() {
-	const currentURL = new URL(getWindow().location.href);
-	const currentType = currentURL.searchParams.get("type");
+  const currentURL = new URL(getWindow().location.href);
+  const currentType = currentURL.searchParams.get("type");
 
-	switch (currentType) {
-		case "group":
-			return SupportedModule.Group;
-		case "user":
-			return SupportedModule.Profile;
-		default:
-			return null;
-	}
+  switch (currentType) {
+    case "group":
+      return SupportedModule.Group;
+    case "user":
+      return SupportedModule.Profile;
+    default:
+      return null;
+  }
 }
 
 /**
  * Встраивает во все меню рядом с закладками элемент настройки списков
  */
 function mountBookmarksListMenuItems() {
-	const currentType = getBookmarksType();
+  const currentType = getBookmarksType();
 
-	if (currentType == null) return;
+  if (currentType == null) return;
 
-	const { pagesAll } = getWindow().cur as Partial<IBookmarksContext>;
+  const { pagesAll } = getWindow().cur as Partial<IBookmarksContext>;
 
-	if (pagesAll == null) return;
+  if (pagesAll == null) return;
 
-	const proto = Object.getPrototypeOf(pagesAll) as Bookmarks;
+  const proto = Object.getPrototypeOf(pagesAll) as Bookmarks;
 
-	/**
-	 * Закладки подгружаются не сразу после инициализации, поэтому мы не можем
-	 * как обычно перебрать элементы на странице. Чтобы отловить все элементы,
-	 * нужно создать обёртку над push функцией массива со всеми элементами
-	 * закладок на странице.
-	 *
-	 * @param this Сам массив
-	 * @param args Аргументы push функции
-	 * @return Результат push функции
-	 */
-	function pushInterceptor(this: Bookmarks, ...args: Bookmarks) {
-		const result = proto.push.apply(this, args);
+  /**
+   * Закладки подгружаются не сразу после инициализации, поэтому мы не можем
+   * как обычно перебрать элементы на странице. Чтобы отловить все элементы,
+   * нужно создать обёртку над push функцией массива со всеми элементами
+   * закладок на странице.
+   *
+   * @param this Сам массив
+   * @param args Аргументы push функции
+   * @return Результат push функции
+   */
+  function pushInterceptor(this: Bookmarks, ...args: Bookmarks) {
+    const result = proto.push.apply(this, args);
 
-		if (args.length === 0) return result;
+    if (args.length === 0) return result;
 
-		for (const arg of [...args]) {
-			injectActionsMenuItem({
-				element: arg,
-				kind: TreatingKind.Bookmark,
-				subType: currentType!,
-			});
-		}
+    for (const arg of [...args]) {
+      injectActionsMenuItem({
+        element: arg,
+        kind: TreatingKind.Bookmark,
+        subType: currentType!,
+      });
+    }
 
-		return result;
-	}
+    return result;
+  }
 
-	const newProto = Object.create(proto, {
-		push: {
-			value: pushInterceptor,
-			writable: false,
-			enumerable: false,
-			configurable: true,
-		},
-	});
+  const newProto = Object.create(proto, {
+    push: {
+      value: pushInterceptor,
+      writable: false,
+      enumerable: false,
+      configurable: true,
+    },
+  });
 
-	Object.setPrototypeOf(pagesAll, newProto);
+  Object.setPrototypeOf(pagesAll, newProto);
 }
 
 /**
@@ -162,29 +160,27 @@ function mountBookmarksListMenuItems() {
  * @param kind Тип элементов для которых создаются элементы меню
  */
 function mountRowsListMenuItems(kind: TreatingKind) {
-	const container = elem<HTMLDivElement>(
-		kind === TreatingKind.GroupRow ? ".groups_list" : "#friends_list",
-	);
+  const container = elem<HTMLDivElement>(
+    kind === TreatingKind.GroupRow ? ".groups_list" : "#friends_list",
+  );
 
-	if (container == null) return;
+  if (container == null) return;
 
-	const groupRows = elems<HTMLDivElement>(
-		kind === TreatingKind.GroupRow
-			? ".group_list_row"
-			: ".friends_user_row",
-		container,
-	);
+  const groupRows = elems<HTMLDivElement>(
+    kind === TreatingKind.GroupRow ? ".group_list_row" : ".friends_user_row",
+    container,
+  );
 
-	for (const row of asArray(groupRows)) {
-		injectActionsMenuItem({
-			element: row,
-			kind,
-			subType:
-				kind === TreatingKind.GroupRow
-					? SupportedModule.Public
-					: SupportedModule.Profile,
-		});
-	}
+  for (const row of asArray(groupRows)) {
+    injectActionsMenuItem({
+      element: row,
+      kind,
+      subType:
+        kind === TreatingKind.GroupRow
+          ? SupportedModule.Public
+          : SupportedModule.Profile,
+    });
+  }
 }
 
 // Этот способ куда более эффективный, так как onPostLoaded вызывается
@@ -192,51 +188,51 @@ function mountRowsListMenuItems(kind: TreatingKind) {
 // формат, из-за чего приходится много гадать поэтому просто пробегаемся
 // по всем постам и проверяем, какие из них отсутствуют в наборе
 
-const HANDLED_POSTS = new WeakSet<HTMLDivElement>();
+const handledPosts = new WeakSet<HTMLDivElement>();
 
-const HANDLE_DEBOUNCE = 50; // ms
+const perHandleDebounce = 50; // ms
 
 /**
  * Обработчик события загрузки нового поста в ленте
  */
 function onFeedRefresh() {
-	const posts = elems<HTMLDivElement>(".feed_row .post");
+  const posts = elems<HTMLDivElement>(".feed_row .post");
 
-	for (const post of asArray(posts)) {
-		if (HANDLED_POSTS.has(post)) continue;
+  for (const post of asArray(posts)) {
+    if (handledPosts.has(post)) continue;
 
-		injectActionsMenuItem({
-			element: post,
-			kind: TreatingKind.FeedRow,
-		});
+    injectActionsMenuItem({
+      element: post,
+      kind: TreatingKind.FeedRow,
+    });
 
-		HANDLED_POSTS.add(post);
-	}
+    handledPosts.add(post);
+  }
 }
 
 /**
  * Добавляет обёртку для обработчика события загрузки постов в ленте
  */
 function addFeedRefreshHandler() {
-	const feedModule = getWindow().feed;
+  const feedModule = getWindow().feed;
 
-	if (feedModule == null) return;
+  if (feedModule == null) return;
 
-	Reflect.set(
-		feedModule,
-		"onPostLoaded",
-		wrapFunction(
-			getBound(feedModule, "onPostLoaded"),
-			debounce(onFeedRefresh, HANDLE_DEBOUNCE),
-		),
-	);
+  Reflect.set(
+    feedModule,
+    "onPostLoaded",
+    wrapFunction(
+      getBound(feedModule, "onPostLoaded"),
+      debounce(onFeedRefresh, perHandleDebounce),
+    ),
+  );
 }
 
 const INTERCEPTORS: Interception.InterceptorsCollection = [
-	["GroupsList", () => mountRowsListMenuItems(TreatingKind.GroupRow)],
-	["Bookmarks", mountBookmarksListMenuItems],
-	["Friends", () => mountRowsListMenuItems(TreatingKind.FriendRow)],
-	["feed", addFeedRefreshHandler],
+  ["GroupsList", () => mountRowsListMenuItems(TreatingKind.GroupRow)],
+  ["Bookmarks", mountBookmarksListMenuItems],
+  ["Friends", () => mountRowsListMenuItems(TreatingKind.FriendRow)],
+  ["feed", addFeedRefreshHandler],
 ];
 
 /**
@@ -245,5 +241,5 @@ const INTERCEPTORS: Interception.InterceptorsCollection = [
  * открывающий окно изменения списков
  */
 export function prepare() {
-	Interception.setupInitInterceptors(INTERCEPTORS);
+  Interception.setupInitInterceptors(INTERCEPTORS);
 }

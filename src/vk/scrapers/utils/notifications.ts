@@ -1,10 +1,10 @@
-import { Func } from "@common/types";
+import type { Func } from "@common/types";
 import { observe } from "@utils/dom";
 import { useForceUpdate } from "@utils/hooks";
-import {
-	NotificationsTogglerHook,
-	NotificationsHookState,
-	INotificationsHookStateAvailable,
+import type {
+  NotificationsTogglerHook,
+  NotificationsHookState,
+  INotificationsHookStateAvailable,
 } from "../types/notifications";
 
 type NotNull<T> = T extends null | undefined ? never : T;
@@ -13,13 +13,13 @@ type NotNull<T> = T extends null | undefined ? never : T;
  * Представляет собой объединение ключей E, которые
  */
 type HandlerProperties<E> = {
-	[Key in keyof E]: NotNull<E[Key]> extends Func
-		? unknown extends ThisParameterType<NotNull<E[Key]>>
-			? never
-			: GlobalEventHandlers extends ThisParameterType<NotNull<E[Key]>>
-			? Key
-			: never
-		: never;
+  [Key in keyof E]: NotNull<E[Key]> extends Func
+    ? unknown extends ThisParameterType<NotNull<E[Key]>>
+      ? never
+      : GlobalEventHandlers extends ThisParameterType<NotNull<E[Key]>>
+      ? Key
+      : never
+    : never;
 }[keyof E];
 
 type Handlers<E> = { [Key in HandlerProperties<E>]: E[Key] };
@@ -34,21 +34,21 @@ type Handlers<E> = { [Key in HandlerProperties<E>]: E[Key] };
  * @return Элемент, обработчик `handlerName` которого содержит `search`
  */
 export function findWithCallback<
-	E extends Element,
-	H extends Handlers<E>,
-	K extends keyof H,
+  E extends Element,
+  H extends Handlers<E>,
+  K extends keyof H,
 >(elements: E[], handlerName: K, search: string) {
-	for (const element of elements) {
-		const handler = element[handlerName as keyof E];
+  for (const element of elements) {
+    const handler = element[handlerName as keyof E];
 
-		if (typeof handler !== "function") continue;
+    if (typeof handler !== "function") continue;
 
-		if (!handler.toString().includes(search)) continue;
+    if (!handler.toString().includes(search)) continue;
 
-		return element;
-	}
+    return element;
+  }
 
-	return null;
+  return null;
 }
 
 /**
@@ -60,73 +60,73 @@ export function findWithCallback<
  * @return Функция-хук для использования переключателя уведомлений
  */
 export function createTogglerHook(
-	toggleElement: HTMLElement,
-	readValue: () => boolean,
-	toggle: () => void,
+  toggleElement: HTMLElement,
+  readValue: () => boolean,
+  toggle: () => void,
 ): NotificationsTogglerHook {
-	let isToggling = false;
-	let lastReading = readValue();
-	let forceUpdate: (() => void) | null = null;
-	let currentCallback: (() => void) | null = null;
-	let state: INotificationsHookStateAvailable | null = null;
+  let isToggling = false;
+  let lastReading = readValue();
+  let forceUpdate: (() => void) | null = null;
+  let currentCallback: (() => void) | null = null;
+  let state: INotificationsHookStateAvailable | null = null;
 
-	const disconnect = () => {
-		if (currentCallback == null) return;
+  const disconnect = () => {
+    if (currentCallback == null) return;
 
-		observe(toggleElement).removeCallback(currentCallback);
-	};
+    observe(toggleElement).removeCallback(currentCallback);
+  };
 
-	let $toggle: () => void;
+  let $toggle: () => void;
 
-	const updateState = () => {
-		state = {
-			isAvailable: "yes",
-			isToggling,
-			isToggled: lastReading,
-			toggle: $toggle,
-			disconnect,
-		};
+  const updateState = () => {
+    state = {
+      isAvailable: "yes",
+      isToggling,
+      isToggled: lastReading,
+      toggle: $toggle,
+      disconnect,
+    };
 
-		return state;
-	};
+    return state;
+  };
 
-	$toggle = () => {
-		isToggling = true;
+  $toggle = () => {
+    isToggling = true;
 
-		updateState();
+    updateState();
 
-		forceUpdate?.();
+    forceUpdate?.();
 
-		toggle();
-	};
+    toggle();
+  };
 
-	const ensureBinding = () => {
-		if (currentCallback != null) return;
+  const ensureBinding = () => {
+    if (currentCallback != null) return;
 
-		currentCallback = () => {
-			const currentReading = readValue();
+    currentCallback = () => {
+      const currentReading = readValue();
 
-			if (lastReading === currentReading) return;
+      if (lastReading === currentReading) return;
 
-			lastReading = currentReading;
+      lastReading = currentReading;
 
-			isToggling = false;
+      isToggling = false;
 
-			updateState();
+      updateState();
 
-			forceUpdate?.();
-		};
+      forceUpdate?.();
+    };
 
-		observe(toggleElement).addCallback(currentCallback);
-	};
+    observe(toggleElement).addCallback(currentCallback);
+  };
 
-	return () => {
-		forceUpdate = useForceUpdate();
+  return () => {
+    forceUpdate = useForceUpdate();
 
-		ensureBinding();
+    ensureBinding();
 
-		return state ?? updateState();
-	};
+    return state ?? updateState();
+  };
 }
 
 /**
@@ -135,12 +135,12 @@ export function createTogglerHook(
  * @return Функция-хук, которая никогда не меняет своё состояние
  */
 export function createDummyTogglerHook(): NotificationsTogglerHook {
-	const state: NotificationsHookState = {
-		isAvailable: "no",
-		disconnect() {
-			/* Not empty! */
-		},
-	};
+  const state: NotificationsHookState = {
+    isAvailable: "no",
+    disconnect() {
+      /* Not empty! */
+    },
+  };
 
-	return () => state;
+  return () => state;
 }

@@ -21,4 +21,7 @@
 @grant GM_setValue
 @grant GM.getValue
 @grant GM_getValue
+@grant GM.getResourceText
+@grant GM_getResourceText
+@resource deps https://gist.githack.com/Brawaru/68c22bcabc666231c5a900c94056598d/raw/eb25af69cbd694c373db1e72ce65ef11117a434b/deps.js
 ==/UserScript==

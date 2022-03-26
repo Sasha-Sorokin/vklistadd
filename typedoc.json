@@ -1,5 +1,5 @@
 {
-	"out": "api_doc",
-	"excludePrivate": true,
-	"entryPoints": ["src"]
+  "out": "api_doc",
+  "excludePrivate": true,
+  "entryPoints": ["src"]
 }

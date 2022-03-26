@@ -1,20 +1,20 @@
-import { SupportedModule } from "@vk/scrapers";
+import type { SupportedModule } from "@vk/scrapers";
 
 export type Member = string | symbol | number;
 
 type ActionDispatch = (...args: any[]) => {
-	type: string;
+  type: string;
 };
 
 export type Actions<Action> = Action extends ActionDispatch
-	? ReturnType<Action>
-	: never;
+  ? ReturnType<Action>
+  : never;
 
 /**
  * Отметить в свойствах Type под ключами Keys как допускающие null
  */
 export type Nullable<Type, Keys extends keyof Type = keyof Type> = {
-	[Key in Keys]: Type[Key] | null;
+  [Key in Keys]: Type[Key] | null;
 };
 
 /**
@@ -26,17 +26,17 @@ export type Diff<Type, Omitted> = Type extends Omitted ? never : Type;
  * Исключить из свойств Type под ключами Keys тип null
  */
 export type Ensured<Type, Keys extends keyof Type = keyof Type> = {
-	[Key in keyof Type]: Key extends Keys ? Diff<Type[Key], null> : Type[Key];
+  [Key in keyof Type]: Key extends Keys ? Diff<Type[Key], null> : Type[Key];
 };
 
 /**
  * Представляет собой контекст модуля
  */
 export interface IModuleContext {
-	/**
-	 * Идентификатор модуля
-	 */
-	module: SupportedModule;
+  /**
+   * Идентификатор модуля
+   */
+  module: SupportedModule;
 }
 
 /**
@@ -49,7 +49,7 @@ export type Style = { [property: string]: number | string } | string;
  * Condition
  */
 export type MatchKeys<Base, Condition> = {
-	[Key in keyof Base]: Base[Key] extends Condition ? Key : never;
+  [Key in keyof Base]: Base[Key] extends Condition ? Key : never;
 }[keyof Base];
 
 /**
@@ -66,7 +66,7 @@ export type SubType<Base, Condition> = Pick<Base, MatchKeys<Base, Condition>>;
  * @deprecated Use {@link Record} instead
  */
 export interface IHashMap<T> {
-	[classKey: string]: T;
+  [classKey: string]: T;
 }
 
 /**

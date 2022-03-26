@@ -1,56 +1,56 @@
 import { usePreventedCallback } from "@utils/hooks";
-import { h } from "preact";
-import { useContext } from "preact/hooks";
 import { TranslationContext } from "@components/contexts/TranslationContext";
 import { toStyleCombiner } from "@utils/fashion";
-import { LOCK_COMBO } from "@common/css";
+import { lockCombo } from "@common/css";
 import { Title } from "@components/vk/Tooltip";
 import { LinkButton } from "@components/vk/LinkButton";
+import { useContext } from "@external/preact/hooks";
+import { h } from "@external/preact";
 
-const PLUS_ICON = "/images/icons/filter_add.png";
+const plusIconUrl = "/images/icons/filter_add.png";
 
-const STYLE = toStyleCombiner(
-	{
-		button: {
-			marginTop: "10px",
-			width: "max-content",
-			lineHeight: "17px",
-			cursor: "pointer",
-			display: "block",
+const styleCombiner = toStyleCombiner(
+  {
+    button: {
+      marginTop: "10px",
+      width: "max-content",
+      lineHeight: "17px",
+      cursor: "pointer",
+      display: "block",
 
-			"&::before": {
-				content: "''",
-				background: `url("${PLUS_ICON}") 1px 3px no-repeat`,
-				width: "15px",
-				height: "15px",
-				float: "left",
-				margin: "0 7px 0 0",
-			},
-		},
-	},
-	{
-		locked: LOCK_COMBO,
-	},
+      "&::before": {
+        content: "''",
+        background: `url("${plusIconUrl}") 1px 3px no-repeat`,
+        width: "15px",
+        height: "15px",
+        float: "left",
+        margin: "0 7px 0 0",
+      },
+    },
+  },
+  {
+    locked: lockCombo,
+  },
 );
 
 // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-const TOOLTIP_OFFSETS = [-10, 8] as const;
+const defaultTooltipOffsets = [-10, 8] as const;
 
-const CENTER_TOOLTIP = { center: true };
+const centerTooltip = { center: true };
 
 /**
  * Представляет собой свойства ссылки
  */
 export interface IAddListButtonProps {
-	/**
-	 * Ссылка отключена и не отзывается на клики
-	 */
-	disabled?: boolean;
+  /**
+   * Ссылка отключена и не отзывается на клики
+   */
+  disabled?: boolean;
 
-	/**
-	 * Обработчик нажатия на ссылку
-	 */
-	onClick?(this: void): void;
+  /**
+   * Обработчик нажатия на ссылку
+   */
+  onClick?(this: void): void;
 }
 
 /**
@@ -58,23 +58,23 @@ export interface IAddListButtonProps {
  * @return Ссылка на добавление нового списка
  */
 export function AddListButton(props: IAddListButtonProps) {
-	const { onClick } = props;
-	const disabled = props.disabled ?? false;
+  const { onClick } = props;
+  const disabled = props.disabled ?? false;
 
-	const onLinkClick = usePreventedCallback(disabled ? null : onClick);
+  const onLinkClick = usePreventedCallback(disabled ? null : onClick);
 
-	const { addListButton: translation } = useContext(TranslationContext);
-	return (
-		<Title
-			text={translation.tooltip}
-			shift={TOOLTIP_OFFSETS}
-			opts={CENTER_TOOLTIP}
-		>
-			<LinkButton
-				onClick={onLinkClick}
-				className={STYLE("button", "locked", disabled)}
-				children={translation.text}
-			/>
-		</Title>
-	);
+  const { addListButton: translation } = useContext(TranslationContext);
+  return (
+    <Title
+      text={translation.tooltip}
+      shift={defaultTooltipOffsets}
+      opts={centerTooltip}
+    >
+      <LinkButton
+        onClick={onLinkClick}
+        className={styleCombiner("button", "locked", disabled)}
+        children={translation.text}
+      />
+    </Title>
+  );
 }

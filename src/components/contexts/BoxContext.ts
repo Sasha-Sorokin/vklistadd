@@ -1,5 +1,5 @@
-import { createContext } from "preact";
-import { IBoxDetail } from "@/box/types";
+import { createContext } from "@external/preact";
+import type { IBoxDetail } from "@/box/types";
 
 /**
  * Некоторый контекст бокса

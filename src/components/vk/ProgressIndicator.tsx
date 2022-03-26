@@ -1,15 +1,15 @@
-import { h } from "preact";
-import { useRef, useEffect, useState } from "preact/hooks";
 import { getWindow } from "@utils/window";
 import { c, toClassName } from "@utils/fashion";
-import { Style } from "@common/types";
+import type { Style } from "@common/types";
+import { h } from "@external/preact";
+import { useEffect, useRef, useState } from "@external/preact/hooks";
 
-const CENTERED_CLASS = toClassName("centeredClass", {
-	width: "max-content",
-	margin: "0 auto",
+const centeredClass = toClassName("centeredClass", {
+  width: "max-content",
+  margin: "0 auto",
 });
 
-const NUMBER_OF_SPACES_AND_TOTALLY_NOT_A_MAGIC_NUMBER = 2;
+const numberOfSpacesAndTotallyNotAMagicNumber = 2;
 
 /**
  * Так как Goober будет бесконечно создавать `<style>` элементы каждый раз
@@ -18,7 +18,7 @@ const NUMBER_OF_SPACES_AND_TOTALLY_NOT_A_MAGIC_NUMBER = 2;
  * страницы «навечно», не имеет смысла мудрить и «выгружать» что-либо из этой
  * карты.
  */
-const SIZE_CLASSES = new Map<number, string>();
+const sizeClasses = new Map<number, string>();
 
 /**
  * Генерирует стиль для изменения размера точек в индикаторе прогресса и
@@ -30,52 +30,52 @@ const SIZE_CLASSES = new Map<number, string>();
  * любому элементу, содержащему в дочерних классах индикатор прогресса
  */
 export function dotsSize(dotSize: number) {
-	let className = SIZE_CLASSES.get(dotSize);
+  let className = sizeClasses.get(dotSize);
 
-	if (className != null) return className;
+  if (className != null) return className;
 
-	const spaceSize = dotSize / NUMBER_OF_SPACES_AND_TOTALLY_NOT_A_MAGIC_NUMBER;
+  const spaceSize = dotSize / numberOfSpacesAndTotallyNotAMagicNumber;
 
-	className = toClassName(`dotSize${dotSize}`, {
-		"& .pr .pr_bt": {
-			width: `${dotSize}px`,
-			height: `${dotSize}px`,
-			marginRight: `${spaceSize}px`,
+  className = toClassName(`dotSize${dotSize}`, {
+    "& .pr .pr_bt": {
+      width: `${dotSize}px`,
+      height: `${dotSize}px`,
+      marginRight: `${spaceSize}px`,
 
-			"&:first": {
-				marginLeft: `${spaceSize}px`,
-			},
-		},
-	});
+      "&:first": {
+        marginLeft: `${spaceSize}px`,
+      },
+    },
+  });
 
-	SIZE_CLASSES.set(dotSize, className);
+  sizeClasses.set(dotSize, className);
 
-	return className;
+  return className;
 }
 
 /**
  * Представляет собой опции индикатора прогресса
  */
 export interface IProgressIndicatorProps {
-	/**
-	 * Булевое значение, если индикатор должен отображаться по центру
-	 * родительского элемента (если это возможно; применяет `margin: 0 auto`)
-	 */
-	centered?: boolean;
+  /**
+   * Булевое значение, если индикатор должен отображаться по центру
+   * родительского элемента (если это возможно; применяет `margin: 0 auto`)
+   */
+  centered?: boolean;
 
-	/**
-	 * Стили, применимые к корневому элементу индикатора
-	 */
-	style?: Style;
+  /**
+   * Стили, применимые к корневому элементу индикатора
+   */
+  style?: Style;
 
-	/**
-	 * Название класса, применяемое к корневому элементу индикатора
-	 *
-	 * Элемент индикатора имеет класс `pr`, когда как каждая точка в нём
-	 * имеет класс `pr_bt`. Это можно использовать для вычисления размера
-	 * индикатора
-	 */
-	className?: string;
+  /**
+   * Название класса, применяемое к корневому элементу индикатора
+   *
+   * Элемент индикатора имеет класс `pr`, когда как каждая точка в нём
+   * имеет класс `pr_bt`. Это можно использовать для вычисления размера
+   * индикатора
+   */
+  className?: string;
 }
 
 /**
@@ -85,25 +85,25 @@ export interface IProgressIndicatorProps {
  * @return DIV элемент с тремя точками внутри
  */
 export function ProgressIndicator(props: IProgressIndicatorProps) {
-	const { centered, className, style } = props;
-	const progressHolder = useRef<HTMLDivElement>(null);
-	const [isMounted, setMounted] = useState(false);
+  const { centered, className, style } = props;
+  const progressHolder = useRef<HTMLDivElement>(null);
+  const [isMounted, setMounted] = useState(false);
 
-	useEffect(() => {
-		const holder = progressHolder.current;
+  useEffect(() => {
+    const holder = progressHolder.current;
 
-		if (holder == null || isMounted) return;
+    if (holder == null || isMounted) return;
 
-		getWindow().showProgress(holder);
+    getWindow().showProgress(holder);
 
-		setMounted(true);
-	}, [progressHolder, isMounted]);
+    setMounted(true);
+  }, [progressHolder, isMounted]);
 
-	return (
-		<div
-			ref={progressHolder}
-			className={c(className, CENTERED_CLASS, centered ?? false)}
-			style={style}
-		/>
-	);
+  return (
+    <div
+      ref={progressHolder}
+      className={c(className, centeredClass, centered ?? false)}
+      style={style}
+    />
+  );
 }

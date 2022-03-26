@@ -1,4 +1,6 @@
-import { render, VNode } from "preact";
+import { render } from "@external/preact";
+// eslint-disable-next-line no-restricted-imports
+import type { VNode } from "preact";
 
 /**
  * Представляет собой родительский элемент, в который будет встроен фрагмент с
@@ -12,8 +14,8 @@ type InsertFunctionOrParent = ((fragment: DocumentFragment) => void) | Element;
  * и возвращающую готовый элемент
  */
 type GetComponentFunctionOrComponent<PropsType> =
-	| ((props: PropsType) => VNode<PropsType>)
-	| VNode<PropsType>;
+  | ((props: PropsType) => VNode<PropsType>)
+  | VNode<PropsType>;
 
 /**
  * Представляет собой функцию, которая отрисовывает и встраивает компонент в
@@ -23,8 +25,8 @@ type GetComponentFunctionOrComponent<PropsType> =
  * передаётся фрагмент для ручного встраивания компонента
  */
 export type MountFunction<PropsType> = (
-	InsertFunctionOrParent: InsertFunctionOrParent,
-	props: PropsType,
+  InsertFunctionOrParent: InsertFunctionOrParent,
+  props: PropsType,
 ) => void;
 
 /**
@@ -34,10 +36,10 @@ export type MountFunction<PropsType> = (
  * @return Элемент, который необходимо отрисовать
  */
 function elementToRender<PropsType>(
-	component: GetComponentFunctionOrComponent<PropsType>,
-	props: PropsType,
+  component: GetComponentFunctionOrComponent<PropsType>,
+  props: PropsType,
 ) {
-	return typeof component === "function" ? component(props) : component;
+  return typeof component === "function" ? component(props) : component;
 }
 
 /**
@@ -48,16 +50,16 @@ function elementToRender<PropsType>(
  * @param fragement Фрагмент, который необходимо встроить
  */
 function insertFragement(
-	parent: InsertFunctionOrParent,
-	fragement: DocumentFragment,
+  parent: InsertFunctionOrParent,
+  fragement: DocumentFragment,
 ) {
-	if (typeof parent === "function") {
-		parent(fragement);
+  if (typeof parent === "function") {
+    parent(fragement);
 
-		return;
-	}
+    return;
+  }
 
-	parent.appendChild(fragement);
+  parent.appendChild(fragement);
 }
 
 /**
@@ -68,16 +70,16 @@ function insertFragement(
  * @param set Набор, в который будут скопированны ссылки на элементы
  */
 function cloneReferences(fragment: DocumentFragment, set: Set<Node>) {
-	set.clear();
+  set.clear();
 
-	// Array.prototype.slice — это самый надёжный способ получить массив
-	// всех элементов. Array.from и другие методы ненадёжны тем, что в
-	// определённых случаях неправильно сопоставляют элементы в массиве
-	// ...
-	// (по крайней мере, так было на момент написания этого комментария)
-	const children = Array.prototype.slice.call(fragment.childNodes) as Node[];
+  // Array.prototype.slice — это самый надёжный способ получить массив
+  // всех элементов. Array.from и другие методы ненадёжны тем, что в
+  // определённых случаях неправильно сопоставляют элементы в массиве
+  // ...
+  // (по крайней мере, так было на момент написания этого комментария)
+  const children = Array.prototype.slice.call(fragment.childNodes) as Node[];
 
-	for (const child of children) set.add(child);
+  for (const child of children) set.add(child);
 }
 
 /**
@@ -100,31 +102,31 @@ function cloneReferences(fragment: DocumentFragment, set: Set<Node>) {
  * @return Функция для отрисовки и встраивания компонента в любой элемент
  */
 export function asRoaming<PropsType>(
-	component: GetComponentFunctionOrComponent<PropsType>,
+  component: GetComponentFunctionOrComponent<PropsType>,
 ): MountFunction<PropsType> {
-	let currentNodes: Set<Node> | null = null;
+  let currentNodes: Set<Node> | null = null;
 
-	return function renderAndMount(
-		insertFunctionOrParent: InsertFunctionOrParent,
-		props: PropsType,
-	) {
-		const fragment = document.createDocumentFragment();
+  return function renderAndMount(
+    insertFunctionOrParent: InsertFunctionOrParent,
+    props: PropsType,
+  ) {
+    const fragment = document.createDocumentFragment();
 
-		if (currentNodes == null) {
-			currentNodes = new Set();
-		} else {
-			// Для того, чтобы снова отрендерить компонент не рендеря повторно
-			// уже созданные компоненты, нам нужно восстановить дерево
-			// во фрагменте
-			for (const node of currentNodes) fragment.appendChild(node);
-		}
+    if (currentNodes == null) {
+      currentNodes = new Set();
+    } else {
+      // Для того, чтобы снова отрендерить компонент не рендеря повторно
+      // уже созданные компоненты, нам нужно восстановить дерево
+      // во фрагменте
+      for (const node of currentNodes) fragment.appendChild(node);
+    }
 
-		render(elementToRender(component, props), fragment);
+    render(elementToRender(component, props), fragment);
 
-		cloneReferences(fragment, currentNodes);
+    cloneReferences(fragment, currentNodes);
 
-		insertFragement(insertFunctionOrParent, fragment);
-	};
+    insertFragement(insertFunctionOrParent, fragment);
+  };
 }
 
 /**
@@ -140,16 +142,16 @@ export function asRoaming<PropsType>(
  * @return Функция для отрисовки и встраивания компонента в любой элемент
  */
 export function asReplicable<PropsType>(
-	component: GetComponentFunctionOrComponent<PropsType>,
+  component: GetComponentFunctionOrComponent<PropsType>,
 ): MountFunction<PropsType> {
-	return function replicateAndMount(
-		insertFunctionOrParent: InsertFunctionOrParent,
-		props: PropsType,
-	) {
-		const fragment = document.createDocumentFragment();
+  return function replicateAndMount(
+    insertFunctionOrParent: InsertFunctionOrParent,
+    props: PropsType,
+  ) {
+    const fragment = document.createDocumentFragment();
 
-		render(elementToRender(component, props), fragment);
+    render(elementToRender(component, props), fragment);
 
-		insertFragement(insertFunctionOrParent, fragment);
-	};
+    insertFragement(insertFunctionOrParent, fragment);
+  };
 }

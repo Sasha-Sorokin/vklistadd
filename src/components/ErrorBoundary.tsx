@@ -1,74 +1,78 @@
-import { h, ComponentChild, VNode, Fragment } from "preact";
 import { getVKTranslation } from "@utils/i18n";
 import { log } from "@utils/debug";
-import { useErrorBoundary } from "preact/hooks";
 import { c } from "@utils/fashion";
-import { MARGIN_RESET, ERROR_MULTILINE } from "@common/css";
+import { marginReset, errorMultiple } from "@common/css";
+// eslint-disable-next-line no-restricted-imports
+import type { ComponentChild, VNode } from "preact";
+import { useErrorBoundary, useCallback } from "@external/preact/hooks";
+import { Fragment, h } from "@external/preact";
 import { ErrorBlock } from "./vk/ErrorBlock";
 
-const TAG = "!!";
-const LINK_PLACEHOLDER = `{${Math.random()}`;
+const tagWrap = "!!";
+const linkPlaceholder = `{${Math.random()}`;
 
 /**
  * Обрабатывает текст ошибки и возвращает его в параграфах
  *
- * @param text Текст ошибки в текущей локализации
+ * @param _text Текст ошибки в текущей локализации
  * @return Дочернее содержимое контейнера ошибки
  */
-function wrapText(text: string) {
-	let link: ComponentChild;
+function wrapText(_text: string) {
+  let text = _text;
+  let link: ComponentChild;
 
-	{
-		const lPos = text.indexOf(TAG) + TAG.length;
+  {
+    const lPos = text.indexOf(tagWrap) + tagWrap.length;
 
-		const linkText = text.slice(lPos, text.indexOf(TAG, lPos));
+    const linkText = text.slice(lPos, text.indexOf(tagWrap, lPos));
 
-		link = (
-			<a
-				href="__report_link__"
-				target="_blank"
-				rel="noreferrer"
-				children={linkText}
-			/>
-		);
+    link = (
+      <a
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        href={GM?.info.script.supportURL ?? GM_info.script.supportURL ?? "#"}
+        target="_blank"
+        rel="noreferrer"
+        children={linkText}
+      />
+    );
 
-		text = text.replace(`${TAG}${linkText}${TAG}`, LINK_PLACEHOLDER);
-	}
+    text = text.replace(`${tagWrap}${linkText}${tagWrap}`, linkPlaceholder);
+  }
 
-	const chunks = text.split("\n");
+  const chunks = text.split("\n");
 
-	let first = true;
+  let first = true;
 
-	const result: ComponentChild[] = [];
+  const result: ComponentChild[] = [];
 
-	for (const chunk of chunks) {
-		if (first) first = false;
-		else result.push(<br />);
+  for (const chunk of chunks) {
+    if (first) first = false;
+    else result.push(<br />);
 
-		if (chunk === "") continue;
+    if (chunk === "") continue;
 
-		if (chunk.includes(LINK_PLACEHOLDER)) {
-			const [before, after] = chunk.split(LINK_PLACEHOLDER);
+    if (chunk.includes(linkPlaceholder)) {
+      const [before, after] = chunk.split(linkPlaceholder);
 
-			result.push(before, link, after);
+      result.push(before, link, after);
 
-			continue;
-		}
+      continue;
+    }
 
-		result.push(<label>{chunk}</label>);
-	}
+    result.push(<label>{chunk}</label>);
+  }
 
-	return result;
+  return result;
 }
 
 /**
  * Представляет собой свойства компонента обработки ошибочного поведения
  */
 export interface IErrorBoundaryProps {
-	/**
-	 * Дочерние компоненты под эгидой обработчика ошибок
-	 */
-	children: VNode<unknown>;
+  /**
+   * Дочерние компоненты под эгидой обработчика ошибок
+   */
+  children: VNode<unknown>;
 }
 
 /**
@@ -78,33 +82,39 @@ export interface IErrorBoundaryProps {
  * ошибку
  */
 export function ErrorBoundary(props: IErrorBoundaryProps) {
-	const { children } = props;
+  const { children } = props;
 
-	// Из-за ошибки в типах Preact, мы не можем использовать обработчик
-	// с параметром ошибки: https://github.com/preactjs/preact/pull/2397.
-	// Чтобы обойти это, объявляем наш обработчик как never
-	const [error] = useErrorBoundary(((err: Error): void => {
-		log(
-			"error",
-			"%cError boundary caught an error%c",
-			"font-weight: bold;",
-			"",
-			err,
-		);
-	}) as never);
+  // Из-за ошибки в типах Preact, мы не можем использовать обработчик
+  // с параметром ошибки: https://github.com/preactjs/preact/pull/2397.
+  // Чтобы обойти это, объявляем наш обработчик как never
+  const [error, reset] = useErrorBoundary(((err: Error): void => {
+    log(
+      "error",
+      "%cError boundary caught an error%c",
+      "font-weight: bold;",
+      "",
+      err,
+    );
+  }) as never);
 
-	const {
-		errorBoundary: { text },
-	} = getVKTranslation();
+  const retryOnClick = useCallback(() => reset(), [reset]);
 
-	if (error != null) {
-		return (
-			<ErrorBlock
-				className={c(MARGIN_RESET, ERROR_MULTILINE)}
-				children={wrapText(text)}
-			/>
-		);
-	}
+  const {
+    errorBoundary: { text, retry },
+  } = getVKTranslation();
 
-	return <Fragment>{children}</Fragment>;
+  if (error != null) {
+    return (
+      <Fragment>
+        <ErrorBlock
+          className={c(marginReset, errorMultiple)}
+          children={wrapText(text)}
+        />
+
+        <button onClick={retryOnClick}>{retry}</button>
+      </Fragment>
+    );
+  }
+
+  return <Fragment>{children}</Fragment>;
 }

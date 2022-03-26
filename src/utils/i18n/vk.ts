@@ -1,15 +1,14 @@
 import { getWindow } from "@utils/window";
-import { ERROR_MESSAGES } from "@utils/debug";
-import { IHashMap } from "@common/types";
-import { LanguageCode, TRANSLATIONS } from "./translations";
+import { errorMessages } from "@utils/errors";
+import { LanguageCode, translations } from "./translations";
 import { getNavigatorLanguage } from "./navigator";
 
-const VK_LANGUAGE_MAPPINGS: IHashMap<LanguageCode | undefined> = {
-	0: "ru-RU",
-	777: "ru-RU",
-	100: "ru-RU",
-	1: "ru-RU",
-	3: "en-US",
+const vkLanguageMappings: Record<number, LanguageCode | undefined> = {
+  0: "ru-RU",
+  777: "ru-RU",
+  100: "ru-RU",
+  1: "ru-RU",
+  3: "en-US",
 };
 
 /**
@@ -20,14 +19,14 @@ const VK_LANGUAGE_MAPPINGS: IHashMap<LanguageCode | undefined> = {
  * @return Код языка, для которого у нас есть перевод
  */
 function detectVKLanguage() {
-	const { langConfig } = getWindow();
+  const { langConfig } = getWindow();
 
-	// проверка на правильное состояние
-	if ((langConfig as unknown) == null) {
-		throw new Error(ERROR_MESSAGES.vkLanguageDetectFail);
-	}
+  // проверка на правильное состояние
+  if ((langConfig as unknown) == null) {
+    throw new Error(errorMessages.vkLanguageDetectFail);
+  }
 
-	return VK_LANGUAGE_MAPPINGS[langConfig.id] ?? getNavigatorLanguage();
+  return vkLanguageMappings[langConfig.id] ?? getNavigatorLanguage();
 }
 
 let vkLanguage: LanguageCode | null = null;
@@ -36,16 +35,16 @@ let vkLanguage: LanguageCode | null = null;
  * @return Язык, выбранный в ВКонтакте
  */
 export function getVKLanguage() {
-	if (vkLanguage == null) {
-		vkLanguage = detectVKLanguage();
-	}
+  if (vkLanguage == null) {
+    vkLanguage = detectVKLanguage();
+  }
 
-	return vkLanguage;
+  return vkLanguage;
 }
 
 /**
  * @return Переводы для языка, выбранного во ВКонтакте
  */
 export function getVKTranslation() {
-	return TRANSLATIONS[getVKLanguage()];
+  return translations[getVKLanguage()];
 }

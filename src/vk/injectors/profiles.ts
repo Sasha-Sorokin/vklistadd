@@ -4,28 +4,28 @@ import { setupInitInterceptors } from "@utils/interceptors";
 
 const CONTAINER = ".profile_actions > .page_actions_expanded" as const;
 
-const MOUNT_MENU_ITEM = getRoaming();
+const mountFunction = getRoaming();
 
 /**
  * Встраивает элемент меню, открывающий бокс
  */
 function mountMenuItem() {
-	const container = elem(CONTAINER);
+  const container = elem(CONTAINER);
 
-	if (container == null) return;
+  if (container == null) return;
 
-	let referenceElement = elem(
-		".PageActionCellSeparator",
-		container,
-	)?.nextElementSibling;
+  let referenceElement = elem(
+    ".PageActionCellSeparator",
+    container,
+  )?.nextElementSibling;
 
-	referenceElement ??= container.firstElementChild?.nextElementSibling;
+  referenceElement ??= container.firstElementChild?.nextElementSibling;
 
-	if (referenceElement == null) return;
+  if (referenceElement == null) return;
 
-	MOUNT_MENU_ITEM((menuItem) => {
-		insertBefore(referenceElement!, menuItem);
-	}, undefined);
+  mountFunction((menuItem) => {
+    insertBefore(referenceElement!, menuItem);
+  }, undefined);
 }
 
 /**
@@ -34,5 +34,5 @@ function mountMenuItem() {
  * изменения списков
  */
 export function prepare() {
-	setupInitInterceptors([["Profile", mountMenuItem]]);
+  setupInitInterceptors([["Profile", mountMenuItem]]);
 }

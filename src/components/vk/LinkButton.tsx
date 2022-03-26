@@ -1,23 +1,25 @@
-import { h, JSX } from "preact";
 import { c, toClassName } from "@utils/fashion";
+import { h } from "@external/preact";
 
-const LINK_BUTTON_CLASS = toClassName("linkButton", {
-	background: "none",
-	border: "none",
-	font: "inherit",
-	color: "#2a5885",
-	cursor: "pointer",
-	padding: "inherit",
+type IntrinsicElements = import("preact").JSX.IntrinsicElements;
 
-	"&:hover, &:focus": { textDecoration: "underline" },
+const linkButtonClass = toClassName("linkButton", {
+  background: "none",
+  border: "none",
+  font: "inherit",
+  color: "#2a5885",
+  cursor: "pointer",
+  padding: "inherit",
+
+  "&:hover, &:focus": { textDecoration: "underline" },
 });
 
 /**
  * @param props Обычные свойства кнопки
  * @return Кнопку стилизованную под ссылку
  */
-export function LinkButton(props: JSX.IntrinsicElements["button"]) {
-	const { className } = props;
+export function LinkButton(props: IntrinsicElements["button"]) {
+  const { className } = props;
 
-	return <button {...props} className={c(LINK_BUTTON_CLASS, className)} />;
+  return <button {...props} className={c(linkButtonClass, true, className)} />;
 }

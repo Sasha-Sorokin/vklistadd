@@ -4,9 +4,10 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 
-[*.{ts,tsx}]
+[*.{ts,tsx,js}]
 charset = utf-8
-indent_style = tab
+indent_style = space
+indent_size = 2
 
 [*.md]
 charset = utf-8

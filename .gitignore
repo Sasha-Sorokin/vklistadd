@@ -2,3 +2,5 @@ node_modules
 .vscode
 api_doc
 yarn-error.log
+dist
+!dist/vklistadd.user.js

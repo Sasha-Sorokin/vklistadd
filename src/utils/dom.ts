@@ -1,5 +1,6 @@
 import { getWindow } from "./window";
-import { ERROR_MESSAGES, log } from "./debug";
+import { log } from "./debug";
+import { errorMessages } from "./errors";
 
 /**
  * Возвращает элемент, который соответствует селекторам
@@ -9,10 +10,10 @@ import { ERROR_MESSAGES, log } from "./debug";
  * @return Найденный элемент
  */
 export function elem<E extends Element = Element>(
-	selectors: string,
-	scope?: Element,
+  selectors: string,
+  scope?: Element,
 ): E | null {
-	return (scope ?? getWindow().document).querySelector(selectors);
+  return (scope ?? getWindow().document).querySelector(selectors);
 }
 
 /**
@@ -23,10 +24,10 @@ export function elem<E extends Element = Element>(
  * @return Отобранные элементы
  */
 export function elems<E extends Element = Element>(
-	selectors: string,
-	scope?: Element,
+  selectors: string,
+  scope?: Element,
 ): NodeListOf<E> {
-	return (scope ?? getWindow().document).querySelectorAll(selectors);
+  return (scope ?? getWindow().document).querySelectorAll(selectors);
 }
 
 /**
@@ -37,11 +38,11 @@ export function elems<E extends Element = Element>(
  * @param newNode Элемент, который встраивается перед `referenceNode`
  */
 export function insertBefore(referenceNode: Node, newNode: Node) {
-	const { parentNode } = referenceNode;
+  const { parentNode } = referenceNode;
 
-	if (parentNode == null) throw new Error(ERROR_MESSAGES.noParentNode);
+  if (parentNode == null) throw new Error(errorMessages.noParentNode);
 
-	parentNode.insertBefore(newNode, referenceNode);
+  parentNode.insertBefore(newNode, referenceNode);
 }
 
 /**
@@ -51,9 +52,9 @@ export function insertBefore(referenceNode: Node, newNode: Node) {
  * @return Массив узлов из переданного списка
  */
 export function asArray<E extends Element = Element>(
-	nodeList: NodeListOf<E> | HTMLCollectionOf<E>,
+  nodeList: NodeListOf<E> | HTMLCollectionOf<E>,
 ) {
-	return Array.prototype.slice.call(nodeList) as E[];
+  return Array.prototype.slice.call(nodeList) as E[];
 }
 
 /**
@@ -61,10 +62,10 @@ export function asArray<E extends Element = Element>(
  * @return `value` без кавычек
  */
 export function unwrapCSSValue(value: string) {
-	return /^"(.+)"$|^'(.+)'$/.exec(value)?.[1] ?? value;
+  return /^"(.+)"$|^'(.+)'$/.exec(value)?.[1] ?? value;
 }
 
-const DOM_PARSER = new DOMParser();
+const domParser = new DOMParser();
 
 /**
  * @param input DOM строка, которую требуется разобрать
@@ -76,9 +77,9 @@ const DOM_PARSER = new DOMParser();
  * ```
  */
 export function decodeDOMString(input: string) {
-	const { documentElement } = DOM_PARSER.parseFromString(input, "text/html");
+  const { documentElement } = domParser.parseFromString(input, "text/html");
 
-	return documentElement.textContent;
+  return documentElement.textContent;
 }
 
 /**
@@ -86,9 +87,9 @@ export function decodeDOMString(input: string) {
  * @return Массив дочерних элементов `element` или null
  */
 export function childrenOf<E extends Element>(element?: Element | null) {
-	return element == null
-		? null
-		: asArray<E>(element.childNodes as NodeListOf<E>);
+  return element == null
+    ? null
+    : asArray<E>(element.childNodes as NodeListOf<E>);
 }
 
 export type ParentMatchFunction = (e: HTMLElement) => boolean;
@@ -102,35 +103,35 @@ export type ParentMatchFunction = (e: HTMLElement) => boolean;
  * @return Первый родительский элемент, удовлетворяющий `search`, либо `null`
  */
 export function findMatchingParent<E extends HTMLElement>(
-	element: HTMLElement,
-	match: string | ParentMatchFunction,
+  element: HTMLElement,
+  match: string | ParentMatchFunction,
 ): E | null {
-	let currentParent: HTMLElement | null = element;
+  let currentParent: HTMLElement | null = element;
 
-	// eslint-disable-next-line no-return-assign
-	const nextParent = () => {
-		currentParent = currentParent?.parentElement ?? null;
+  // eslint-disable-next-line no-return-assign
+  const nextParent = () => {
+    currentParent = currentParent?.parentElement ?? null;
 
-		return currentParent;
-	};
+    return currentParent;
+  };
 
-	const isMatchFunction = typeof match === "function";
+  const isMatchFunction = typeof match === "function";
 
-	while (nextParent() != null) {
-		if (isMatchFunction) {
-			if (match(currentParent)) {
-				return currentParent as E;
-			}
+  while (nextParent() != null) {
+    if (isMatchFunction) {
+      if (match(currentParent)) {
+        return currentParent as E;
+      }
 
-			continue;
-		}
+      continue;
+    }
 
-		if (currentParent.matches(match)) {
-			return currentParent as E;
-		}
-	}
+    if (currentParent.matches(match)) {
+      return currentParent as E;
+    }
+  }
 
-	return null;
+  return null;
 }
 
 type Callback = (mutations: MutationRecord[]) => void;
@@ -139,33 +140,33 @@ type Callback = (mutations: MutationRecord[]) => void;
  * Представляет собой наблюдение за элементом
  */
 interface IObservation {
-	/**
-	 * Добавляет обработчик события изменений
-	 */
-	addCallback(callback: Callback): void;
+  /**
+   * Добавляет обработчик события изменений
+   */
+  addCallback(callback: Callback): void;
 
-	/**
-	 * Убирает обработчик события изменений
-	 */
-	removeCallback(callback: Callback): void;
+  /**
+   * Убирает обработчик события изменений
+   */
+  removeCallback(callback: Callback): void;
 }
 
 const OBSERVATIONS = new WeakMap<HTMLElement, Readonly<IObservation>>();
 
 // eslint-disable-next-line @typescript-eslint/no-extra-parens
-export const OBSERVE_OPTIONS_ATTRIBUTES: Readonly<MutationObserverInit> =
-	Object.freeze({
-		subtree: false,
-		childList: false,
-		attributes: true,
-	});
+export const observeOptionsAttributes: Readonly<MutationObserverInit> =
+  Object.freeze({
+    subtree: false,
+    childList: false,
+    attributes: true,
+  });
 
 /**
  * Время в миллисекундах до того, как наблюдатель будет устранён
  */
-const BEFORE_OBSERVER_DESTROY = 1000; // мс
+const beforeObserverDestroy = 1000; // мс
 
-const CURRENT_DESTROY_TIMERS = new WeakMap<MutationObserver, number>();
+const currentDestroyTimers = new WeakMap<MutationObserver, number>();
 
 /**
  * Создаёт наблюдатель за изменениями указанного DOM элемента с возможностью
@@ -179,68 +180,68 @@ const CURRENT_DESTROY_TIMERS = new WeakMap<MutationObserver, number>();
  * @return Объект с методами для добавления обработчиков
  */
 export function observe(
-	element: HTMLElement,
-	options = OBSERVE_OPTIONS_ATTRIBUTES,
+  element: HTMLElement,
+  options = observeOptionsAttributes,
 ) {
-	let observation = OBSERVATIONS.get(element);
+  let observation = OBSERVATIONS.get(element);
 
-	if (observation == null) {
-		const callbacks = new Set<Callback>();
+  if (observation == null) {
+    const callbacks = new Set<Callback>();
 
-		const observer = new MutationObserver((mutations) => {
-			log("log", element, "mutated, calling callbacks", callbacks);
+    const observer = new MutationObserver((mutations) => {
+      log("log", element, "mutated, calling callbacks", callbacks);
 
-			for (const callback of callbacks) {
-				try {
-					callback(mutations);
-				} catch (err) {
-					log("warn", "Observer callback failure:", err);
-				}
-			}
-		});
+      for (const callback of callbacks) {
+        try {
+          callback(mutations);
+        } catch (err) {
+          log("warn", "Observer callback failure:", err);
+        }
+      }
+    });
 
-		const destroy = () => {
-			observer.disconnect();
+    const destroy = () => {
+      observer.disconnect();
 
-			OBSERVATIONS.delete(element);
+      OBSERVATIONS.delete(element);
 
-			log("info", "Observer destroyed", { element });
-		};
+      log("info", "Observer destroyed", { element });
+    };
 
-		const clearDestroy = () => {
-			const destroyTimer = CURRENT_DESTROY_TIMERS.get(observer);
+    const clearDestroy = () => {
+      const destroyTimer = currentDestroyTimers.get(observer);
 
-			if (destroyTimer == null) return;
+      if (destroyTimer == null) return;
 
-			clearTimeout(destroyTimer);
-		};
+      clearTimeout(destroyTimer);
+    };
 
-		const scheduleDestroy = () => {
-			const destroyTimer = setTimeout(destroy, BEFORE_OBSERVER_DESTROY);
+    const scheduleDestroy = () => {
+      const destroyTimer = setTimeout(destroy, beforeObserverDestroy);
 
-			CURRENT_DESTROY_TIMERS.set(observer, destroyTimer);
-		};
+      currentDestroyTimers.set(observer, destroyTimer);
+    };
 
-		observation = Object.freeze({
-			addCallback: (callback) => {
-				callbacks.add(callback);
+    observation = Object.freeze({
+      addCallback: (callback) => {
+        callbacks.add(callback);
 
-				clearDestroy();
-			},
+        clearDestroy();
+      },
 
-			removeCallback: (callback) => {
-				callbacks.delete(callback);
+      removeCallback: (callback) => {
+        callbacks.delete(callback);
 
-				if (callbacks.size !== 0) return;
+        if (callbacks.size !== 0) return;
 
-				scheduleDestroy();
-			},
-		} as IObservation);
+        scheduleDestroy();
+      },
+    } as IObservation);
 
-		observer.observe(element, options);
+    observer.observe(element, options);
 
-		OBSERVATIONS.set(element, observation);
-	}
+    OBSERVATIONS.set(element, observation);
+  }
 
-	return observation;
+  return observation;
 }

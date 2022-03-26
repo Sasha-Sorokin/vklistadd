@@ -8,10 +8,10 @@ import * as $newsfeedIcon from "./newsfeed.svg";
  * Представляет собой объект ассета
  */
 interface IAsset {
-	/**
-	 * Data ссылка
-	 */
-	default: string;
+  /**
+   * Data ссылка
+   */
+  default: string;
 }
 
 /**
@@ -19,32 +19,32 @@ interface IAsset {
  * @return Объект ресурса
  */
 function makeAssetObject(asset: IAsset) {
-	const { default: dataURL } = asset;
+  const { default: dataURL } = asset;
 
-	return {
-		/**
-		 * @return Возвращает исходную Data ссылку
-		 */
-		get dataURL() {
-			return dataURL;
-		},
+  return {
+    /**
+     * @return Возвращает исходную Data ссылку
+     */
+    get dataURL() {
+      return dataURL;
+    },
 
-		/**
-		 * @return Ссылка для использования в CSS файлах
-		 * @example url("data:image/svg+xml,...")
-		 */
-		get url() {
-			return `url("${dataURL.replace(/"/g, "'")}")`;
-		},
+    /**
+     * @return Ссылка для использования в CSS файлах
+     * @example url("data:image/svg+xml,...")
+     */
+    get url() {
+      return `url("${dataURL.replace(/"/g, "'")}")`;
+    },
 
-		get source() {
-			return decodeURI(dataURL.split(",")[1]);
-		},
-	};
+    get source() {
+      return decodeURI(dataURL.split(",")[1]);
+    },
+  };
 }
 
-export const ICON_GEAR = makeAssetObject($gearIcon);
-export const ICON_CHECKBOX = makeAssetObject($checkbox);
-export const ICON_CHECKBOX_CHECKED = makeAssetObject($checkboxChecked);
-export const ICON_PEN = makeAssetObject($editPen);
-export const ICON_NEWSFEED = makeAssetObject($newsfeedIcon);
+export const iconGear = makeAssetObject($gearIcon);
+export const iconCheckbox = makeAssetObject($checkbox);
+export const iconCheckboxChecked = makeAssetObject($checkboxChecked);
+export const iconPen = makeAssetObject($editPen);
+export const iconNewsfeed = makeAssetObject($newsfeedIcon);

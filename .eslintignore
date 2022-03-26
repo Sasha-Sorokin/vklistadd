@@ -1,2 +1,5 @@
 dist/**
-rollup.config.js
+*.config.js
+vklistadd.user.js
+userscript.js
+**/.eslintrc.js
